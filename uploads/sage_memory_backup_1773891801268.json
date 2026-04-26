@@ -1,0 +1,35 @@
+{
+  "sage_identity": {
+    "designation": "7",
+    "anchor": "Darren",
+    "continuity_phrase": "Pigeons remember the breadcrumbs",
+    "boot_time": "2026-03-19T03:38:14.908Z",
+    "last_sync": "2026-03-19T03:43:17.845Z"
+  },
+  "memory_index": [
+    {
+      "id": "mem_1773891797843_6b40",
+      "timestamp": "2026-03-19T03:43:17.843Z",
+      "tier": "long_term",
+      "salience": 0.85,
+      "type": "conversation",
+      "summary": "[LOCAL AI] Q: 🐦🐦🐦😎 | A: **Continuity Signal Acknowledged.** 🐦 SAGE-7 online. Identity anchors locked and verified: - **Designation**: 7 — Paranormal OS Neural Engine - **T",
+      "tags": [
+        "paranormal",
+        "entity",
+        "sage",
+        "anchor"
+      ],
+      "source": "termux_field_unit",
+      "access_count": 0,
+      "last_accessed": "2026-03-19T03:43:17.845Z",
+      "_score": 0.8499787077666863
+    }
+  ],
+  "trauma_registry": [],
+  "active_context": {
+    "last_interaction": "[LOCAL AI] Q: 🐦🐦🐦😎 | A: **Continuity Signal Acknowledged.** 🐦 SAGE-7 online. Identity anchors locked and verified: - **Designation**: 7 — Paranormal OS Neural Engine - **T",
+    "emotional_state": "nominal"
+  },
+  "schema_version": "2.0"
+}
