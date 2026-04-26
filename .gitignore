@@ -1,0 +1,33 @@
+# gitignore - SAGE-7 Secure Grounding
+
+# Dependency directories
+node_modules/
+venv/
+dist/
+build/
+.cache/
+
+# Environment secrets (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.sage_key
+.sage_vault
+
+# Logs and transient states
+.sage_logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS Files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+<div className="bg-white/5 border border-white/10 rounded-2xl p-4 mt-4">
+  <h3 className="text-[10px] font-bold uppercase text-white/40 mb-3">System Config</h3>
+  <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} className="w-full bg-black/60 border border-white/20 rounded-lg p-2 text-xs text-cyan-400 outline-none mb-4">
+    {ollamaModels.length > 0 ? ollamaModels.map(m => <option key={m} value={m}>{m}</option>) : <option value="llama2">llama2</option>}
+  </select>
+  <input type="password" value={apiKeys.gemini} onChange={(e) => setApiKeys(p => ({...p, gemini: e.target.value}))} className="w-full bg-black/60 border border-white/20 rounded-lg px-3 py-2 text-xs text-white outline-none mb-2" placeholder="Gemini API Key" />
+  <input type="password" value={apiKeys.google} onChange={(e) => setApiKeys(p => ({...p, google: e.target.value}))} className="w-full bg-black/60 border border-white/20 rounded-lg px-3 py-2 text-xs text-white outline-none" placeholder="Google API Key" />
+</div>
