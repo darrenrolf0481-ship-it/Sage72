@@ -1070,6 +1070,10 @@ const SpectralNexus = () => {
     }
   }, [settings.voiceEnabled, settings.elevenLabsKey, settings.elevenLabsVoiceId, systemPower, addLog]);
 
+  // --- Initialize Sovereign Hooks ---
+  const { breadcrumbs, dropBreadcrumb, checkReEntry } = useSovereignMemory(addLog, speakText);
+  const { audioAnomalies, clipEVP } = useAudioEngine(isListening, evpRecording, systemPower, isSpeaking, addLog, speakText, dispatchNeuro, neuroRef, setMessages);
+
   const calibrateSensors = useCallback(() => {
     setBaselineSensors({
       magX: deviceSensors.magX,
@@ -1447,12 +1451,6 @@ const SpectralNexus = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [evpRecording, setEvpRecording] = useState(false);
-
-  const [scanSensitivity, setScanSensitivity] = useState(75);
-  
-  // --- Initialize Sovereign Hooks ---
-  const { breadcrumbs, dropBreadcrumb, checkReEntry } = useSovereignMemory(addLog, speakText);
-  const { audioAnomalies, clipEVP } = useAudioEngine(isListening, evpRecording, systemPower, isSpeaking, addLog, speakText, dispatchNeuro, neuroRef, setMessages);
 
   const [scanDuration, setScanDuration] = useState(5000);
   const [activePreset, setActivePreset] = useState<ScanPreset>('custom');
