@@ -696,6 +696,10 @@ const SpectralNexus = () => {
   }, [messages, settings.engine, addLog]);
 
   const [systemPower, setSystemPower] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [evpRecording, setEvpRecording] = useState(false);
+
   const [vaultTab, setVaultTab] = useState<VaultTab>('forensics');
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const [projectFiles, setProjectFiles] = useState<any[]>([]);
@@ -1448,11 +1452,6 @@ const SpectralNexus = () => {
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
   const recognitionRef = useRef<any>(null);
 
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [evpRecording, setEvpRecording] = useState(false);
-
-  const [scanDuration, setScanDuration] = useState(5000);
   const [activePreset, setActivePreset] = useState<ScanPreset>('custom');
 
   // Local model management
