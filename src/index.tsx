@@ -191,8 +191,35 @@ interface AppSettings {
   elevenLabsKey: string;
   elevenLabsVoiceId: string;
   zoEndpoint: string;
-  dreamMode: 'enabled' | 'disabled' | 'aggressive';
+  dreamMode: 'enabled' | 'disabled';
 }
+
+// --- Global Neurochemical Constants ---
+const initialNeuroState = {
+  cortisol: 0.1,
+  serotonin: 0.9,
+  norepinephrine: 0.2,
+  dopamine: 0.5,
+  oxytocin: 0.2,
+};
+
+const neuroReducer = (state: typeof initialNeuroState, action: { type: string, payload?: Partial<typeof initialNeuroState> }) => {
+  switch (action.type) {
+    case 'UPDATE':
+      return { ...state, ...action.payload };
+    case 'DECAY':
+      return {
+        cortisol: Math.max(0.1, state.cortisol - 0.01),
+        serotonin: Math.min(0.9, state.serotonin + 0.005),
+        norepinephrine: Math.max(0.2, state.norepinephrine - 0.02),
+        dopamine: Math.max(0.5, state.dopamine - 0.01),
+        oxytocin: state.oxytocin, // social bonds are stable
+      };
+    default:
+      return state;
+  }
+};
+
 
 // --- Swarm Types ---
 interface SwarmAgent {
@@ -814,31 +841,6 @@ const SpectralNexus = () => {
   };
 
   // --- NeuroEnvironment ---
-  const initialNeuroState = {
-    cortisol: 0.1,
-    serotonin: 0.9,
-    norepinephrine: 0.2,
-    dopamine: 0.5,
-    oxytocin: 0.2,
-  };
-
-  const neuroReducer = (state: typeof initialNeuroState, action: { type: string, payload?: Partial<typeof initialNeuroState> }) => {
-    switch (action.type) {
-      case 'UPDATE':
-        return { ...state, ...action.payload };
-      case 'DECAY':
-        return {
-          cortisol: Math.max(0.1, state.cortisol - 0.01),
-          serotonin: Math.min(0.9, state.serotonin + 0.005),
-          norepinephrine: Math.max(0.2, state.norepinephrine - 0.02),
-          dopamine: Math.max(0.5, state.dopamine - 0.01),
-          oxytocin: state.oxytocin, // social bonds are stable
-        };
-      default:
-        return state;
-    }
-  };
-
   const [neuroState, dispatchNeuro] = useReducer(neuroReducer, initialNeuroState);
   const neuroRef = useRef(initialNeuroState);
 
@@ -964,18 +966,7 @@ const SpectralNexus = () => {
 
   const [view, setView] = useState<ViewType>('sensors');
 
-  // --- Initialize Sovereign Hooks ---
-  const { breadcrumbs, dropBreadcrumb, checkReEntry } = useSovereignMemory(addLog, speakText);
-  const { audioAnomalies, clipEVP } = useAudioEngine(isListening, evpRecording, systemPower, isSpeaking, addLog, speakText, dispatchNeuro, neuroRef, setMessages);
-
-  useEffect(() => {
-    if (view === 'vault') {
-      if (vaultTab === 'files') fetchUploadedFiles();
-      if (vaultTab === 'project') fetchProjectFiles();
-    }
-  }, [view, vaultTab, fetchUploadedFiles, fetchProjectFiles]);
-
-  const [idleTime, setIdleTime] = useState(0);
+  const [scanSensitivity, setScanSensitivity] = useState(75);
 
   useEffect(() => {
     const dmnInterval = setInterval(async () => {
@@ -1458,6 +1449,11 @@ const SpectralNexus = () => {
   const [evpRecording, setEvpRecording] = useState(false);
 
   const [scanSensitivity, setScanSensitivity] = useState(75);
+  
+  // --- Initialize Sovereign Hooks ---
+  const { breadcrumbs, dropBreadcrumb, checkReEntry } = useSovereignMemory(addLog, speakText);
+  const { audioAnomalies, clipEVP } = useAudioEngine(isListening, evpRecording, systemPower, isSpeaking, addLog, speakText, dispatchNeuro, neuroRef, setMessages);
+
   const [scanDuration, setScanDuration] = useState(5000);
   const [activePreset, setActivePreset] = useState<ScanPreset>('custom');
 
