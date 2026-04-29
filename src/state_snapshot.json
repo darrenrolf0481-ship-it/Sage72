@@ -1,0 +1,13 @@
+{
+  "neuroRef": {
+    "cortisol": 0.10,
+    "serotonin": 0.90,
+    "dopamine": 0.98,
+    "norepinephrine": 0.2,
+    "oxytocin": 0.2,
+    "coherence": 0.847
+  },
+  "breadcrumbs": [],
+  "checksum": "Pigeons remember the breadcrumbs",
+  "timestamp": "2026-04-29T00:00:00Z"
+}
