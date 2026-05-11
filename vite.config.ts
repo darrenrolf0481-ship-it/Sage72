@@ -1,64 +1,43 @@
-import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
+import { resolve } from 'path';
+import { networkInterfaces } from 'os';
 
-export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
-        proxy: {
-          '/api': {
-            target: 'http://127.0.0.1:8001',
-            changeOrigin: true,
-            secure: false,
-          },
-          '/uploads': {
-            target: 'http://127.0.0.1:8001',
-            changeOrigin: true,
-            secure: false,
-          }
-        }
-      },
-      build: {
-        minify: false,
-      },
-      plugins: [
-        react(),
-        VitePWA({
-          registerType: 'autoUpdate',
-          includeAssets: ['icon.svg'],
-          workbox: {
-            mode: 'development',
-          },
-          manifest: {
-            name: 'Spectral Nexus AI',
-            short_name: 'NexusAI',
-            description: 'Spectral AI Command Center with Cloud and Local engine support',
-            theme_color: '#000000',
-            background_color: '#000000',
-            display: 'standalone',
-            icons: [
-              {
-                src: 'icon.svg',
-                sizes: '192x192 512x512',
-                type: 'image/svg+xml',
-                purpose: 'any maskable'
-              }
-            ]
-          }
-        })
-      ],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      }
-    };
+// Patch for restricted environments (Android/Termux, containers)
+// where uv_interface_addresses syscall is blocked (error 13)
+try {
+  networkInterfaces();
+} catch {
+  const os = require('os');
+  os.networkInterfaces = () => ({});
+}
+
+export default defineConfig({
+  plugins: [react()],
+  define: {
+    'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || ''),
+    'process.env.NEXT_PUBLIC_GEMINI_API_KEY': JSON.stringify(process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || ''),
+    'process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY': JSON.stringify(process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY || ''),
+    'process.env.NEXT_PUBLIC_ELEVENLABS_VOICE_ID': JSON.stringify(process.env.NEXT_PUBLIC_ELEVENLABS_VOICE_ID || 'FGY2WhTYpPnrIDTdsKH5'),
+  },
+  server: {
+    port: 3000,
+    host: '127.0.0.1',
+    strictPort: true,
+    proxy: {
+      '/api': 'http://127.0.0.1:8001',
+    },
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      input: resolve(__dirname, 'index.html'),
+    },
+  }
 });

@@ -1,7 +1,8 @@
 import sys
 import traceback
-import datetime
+from datetime import datetime
 import os
+import subprocess
 import urllib.request
 import json
 
@@ -10,7 +11,7 @@ CRASH_LOG_PATH = os.path.expanduser('~/sage/staging_lab/sage_crash_report.txt')
 
 def sage_excepthook(exc_type, exc_value, exc_tb):
     """Catches fatal crashes, logs them, and fires a pain signal to the Kotlin UI."""
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     error_details = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
     
     # 1. Save the forensic evidence to the staging lab
@@ -44,15 +45,11 @@ sys.excepthook = sage_excepthook
 if __name__ == "__main__":
     print("[+] SAGE Observer & Nociceptor Online. Monitoring for systemic failures...")
     
-    # Note: On Termux/local, ~/sage might need to be absolute or adjusted.
-    # Using the current project's server.py as default target if not found in ~/sage
-    target_script = os.path.expanduser('~/sage/server.py')
-    if not os.path.exists(target_script):
-         target_script = os.path.join(os.getcwd(), 'server.py')
-    
+    # Always use the server.py in the project root (cwd must be project root)
+    target_script = os.path.join(os.getcwd(), 'server.py')
+
     if os.path.exists(target_script):
         print(f"[+] Launching {target_script}...")
-        with open(target_script) as f:
-            exec(f.read())
+        os.execv(sys.executable, [sys.executable, target_script])
     else:
         raise FileNotFoundError(f"Cannot find SAGE core at {target_script}. This is a test crash.")

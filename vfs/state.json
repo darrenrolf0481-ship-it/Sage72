@@ -1,0 +1,10 @@
+{
+  "framework": "Star City",
+  "persona": "Sage7",
+  "active_nodes": ["Vision", "Audio", "VFS"],
+  "last_sync": "2026-05-03T02:57:25-05:00",
+  "sensory": {
+    "vision_active": true,
+    "audio_active": true
+  }
+}

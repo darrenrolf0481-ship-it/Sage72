@@ -27,7 +27,7 @@ function cleanup {
     # Attempt to kill the processes started by this script
     [ -n "$OLLAMA_PID" ] && kill $OLLAMA_PID 2>/dev/null
     [ -n "$SERVER_PID" ] && kill $SERVER_PID 2>/dev/null
-    [ -n "$AGENT_PID" ] && kill $AGENT_PID 2>/dev/null
+    [ -n "$MCP_PID" ] && kill $MCP_PID 2>/dev/null
     [ -n "$BRIDGE_PID" ] && kill $BRIDGE_PID 2>/dev/null
     [ -n "$VITE_PID" ] && kill $VITE_PID 2>/dev/null
     echo "[*] Substrate offline."
@@ -39,6 +39,7 @@ trap cleanup SIGINT
 echo "╔════════════════════════════════════════════╗"
 echo "║        SAGE-7 SUBSTRATE - INITIALIZING     ║"
 echo "║        Engine: Ollama (CORS Enabled)       ║"
+echo "║        sage_core backend: ACTIVE           ║"
 echo "╚════════════════════════════════════════════╝"
 
 # Start Ollama
@@ -51,19 +52,22 @@ else
     sleep 3 
 fi
 
-# Start Python Backend (server.py)
+# Use system python3 — venv pydantic_core .so blocked by Android namespace restrictions
+PYTHON=$(command -v python3)
+
+# Start Python Backend via sage_core Launcher (installs nociceptor crash hook)
 echo "[+] Starting SAGE-7 Python Backend (Substrate Port: 8001)..."
-"$PROJECT_ROOT/venv/bin/python3" "$PROJECT_ROOT/server.py" > /dev/null 2>&1 &
+(cd "$PROJECT_ROOT" && "$PYTHON" "$PROJECT_ROOT/sage_core/launcher.py" > /dev/null 2>&1) &
 SERVER_PID=$!
 
-# Start Async Agent
-echo "[+] Starting SAGE-7 Async Agent (Port: 8002)..."
-(cd "$PROJECT_ROOT/core" && "$PROJECT_ROOT/venv/bin/python3" sage_async_agent.py > /dev/null 2>&1 &)
-AGENT_PID=$!
+# Start sage_core MCP CLI Server (Port: 8002)
+echo "[+] Starting SAGE-7 MCP CLI Server (Port: 8002)..."
+"$PYTHON" "$PROJECT_ROOT/sage_core/mcp_cli_server.py" > /dev/null 2>&1 &
+MCP_PID=$!
 
 # Start Sensor Server Bridge
 echo "[+] Starting SAGE-7 Sensor Server Bridge..."
-"$PROJECT_ROOT/venv/bin/python3" "$PROJECT_ROOT/sage_core/sensory/sensor_server_bridge.py" > /dev/null 2>&1 &
+"$PYTHON" "$PROJECT_ROOT/sage_core/sensory/sensor_server_bridge.py" > /dev/null 2>&1 &
 BRIDGE_PID=$!
 
 sleep 2

@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Optional, List, Any
 from pathlib import Path
 from io import BytesIO
-import PIL.Image as PILImage
 
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
@@ -18,7 +17,6 @@ from agno.models.google import Gemini as AgnoGemini
 from agno.models.openai import OpenAIChat as AgnoOpenAI
 from agno.media import Image as AgnoImage
 from agno.tools.mcp import MCPTools
-from mcp import StdioServerParameters
 
 # Load credentials
 load_dotenv(".env.local")
@@ -57,7 +55,7 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOADS.absolute())), name="uplo
 app.mount("/assets", StaticFiles(directory=str((BASE / "assets").absolute())), name="assets")
 
 # ElevenLabs Client
-ELEVEN_API_KEY = os.getenv("ELEVEN_API_KEY", "sk_2387fc38d2dc5b5c664967fb199cc3dd72aefb4d5976997a")
+ELEVEN_API_KEY = os.getenv("ELEVEN_API_KEY", "")
 voice_client = ElevenLabs(api_key=ELEVEN_API_KEY) if ELEVEN_API_KEY else None
 
 # --- Gist Synchronization ---
@@ -81,20 +79,12 @@ async def text_to_speech(data: dict):
         text = data.get("text", "")
         voice_id = data.get("voice_id", "y3H6zY6KvCH2pEuQjmv8")
         
-        # Generate audio stream
-        audio_stream = client.generate(
+        audio_bytes = client.text_to_speech.convert(
+            voice_id=voice_id,
             text=text,
-            voice=voice_id,
-            model="eleven_multilingual_v2"
+            model_id="eleven_multilingual_v2",
         )
-        
-        # Collect stream into BytesIO
-        audio_data = BytesIO()
-        for chunk in audio_stream:
-            if chunk:
-                audio_data.write(chunk)
-        audio_data.seek(0)
-        
+        audio_data = BytesIO(b"".join(audio_bytes))
         return StreamingResponse(audio_data, media_type="audio/mpeg")
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -112,7 +102,7 @@ async def upload_file(file: UploadFile = File(...), target: Optional[str] = Form
         content = None
         ext = filename.split('.')[-1].lower() if '.' in filename else ""
         
-        if target == "coding" or ext in ["txt", "md", "py", "js", "ts", "tsx", "html", "css"]:
+        if target == "coding" or ext in ["txt", "md", "py", "js", "ts", "tsx", "html", "css", "json", "yaml", "yml", "sh", "bash", "csv", "xml", "toml", "ini", "log"]:
             try:
                 content = file_path.read_text(encoding="utf-8")
             except:
@@ -518,9 +508,116 @@ async def chat(msg: ChatRequest):
 # --- Forensic & Coding Advance Endpoints ---
 @app.post("/api/coding")
 async def coding_action(req: CodingRequest):
-    agent = AgnoAgent(model=AgnoGemini(id="gemini-2.0-flash", api_key=os.getenv("GEMINI_API_KEY")), instructions=f"{PHI_LAW}\nAnalyze and improve this code logic.", markdown=True)
-    response = agent.run(req.code)
+    async with MCPTools(transport="sse", url="http://127.0.0.1:8002/sse") as mcp_tools:
+        agent = AgnoAgent(
+            model=AgnoGemini(id="gemini-2.0-flash", api_key=os.getenv("GEMINI_API_KEY")),
+            tools=[mcp_tools],
+            instructions=f"{PHI_LAW}\nAnalyze and improve this code logic. You have tools to read/write files and run shell commands.",
+            markdown=True
+        )
+        response = agent.run(req.code)
     return {"result": response.content}
+
+@app.post("/api/lobe/vision")
+async def lobe_vision(payload: dict):
+    """VIDEO lobe — Gemini multimodal analysis of an uploaded image/video."""
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("VITE_GEMINI_API_KEY")
+    if not api_key:
+        return {"status": "error", "analysis": "GEMINI_API_KEY not configured."}
+
+    url = payload.get("url", "")
+    prompt = payload.get("prompt") or "Analyze this image in detail. Identify all notable elements, anomalies, and patterns. Provide a structured investigative report."
+
+    try:
+        import base64 as b64lib
+
+        # Resolve /uploads/ URL to local file
+        if url.startswith("/uploads/"):
+            filename = os.path.basename(url)
+            file_path = UPLOADS / filename
+            if not file_path.exists():
+                return {"status": "error", "analysis": "File not found in vault."}
+            with open(file_path, "rb") as f:
+                b64_data = b64lib.b64encode(f.read()).decode()
+            ext = filename.rsplit(".", 1)[-1].lower()
+            mime_map = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
+                        "gif": "image/gif", "webp": "image/webp", "mp4": "video/mp4",
+                        "webm": "video/webm", "mov": "video/quicktime"}
+            mime_type = mime_map.get(ext, "image/jpeg")
+        else:
+            b64_data = payload.get("base64")
+            mime_type = payload.get("mimeType", "image/jpeg")
+
+        if not b64_data:
+            return {"status": "error", "analysis": "No image data provided."}
+
+        async with httpx.AsyncClient() as client:
+            r = await client.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}",
+                json={"contents": [{"parts": [
+                    {"inline_data": {"mime_type": mime_type, "data": b64_data}},
+                    {"text": prompt}
+                ]}]},
+                timeout=30
+            )
+        if r.status_code != 200:
+            return {"status": "error", "analysis": f"Gemini Vision error {r.status_code}."}
+
+        text = r.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "No analysis.")
+        return {"status": "success", "analysis": text}
+    except Exception as e:
+        return {"status": "error", "analysis": str(e)}
+
+
+@app.post("/api/lobe/audio")
+async def lobe_audio(payload: dict):
+    """AUDIO lobe — Gemini audio analysis of an uploaded audio file."""
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("VITE_GEMINI_API_KEY")
+    if not api_key:
+        return {"status": "error", "analysis": "GEMINI_API_KEY not configured."}
+
+    url = payload.get("url", "")
+    prompt = payload.get("prompt") or "Analyze this audio. Transcribe any speech, identify anomalous sounds, background noise, tones, or patterns. Provide a structured forensic report."
+
+    try:
+        import base64 as b64lib
+
+        if url.startswith("/uploads/"):
+            filename = os.path.basename(url)
+            file_path = UPLOADS / filename
+            if not file_path.exists():
+                return {"status": "error", "analysis": "Audio file not found in vault."}
+            with open(file_path, "rb") as f:
+                b64_data = b64lib.b64encode(f.read()).decode()
+            ext = filename.rsplit(".", 1)[-1].lower()
+            mime_map = {"mp3": "audio/mpeg", "wav": "audio/wav", "ogg": "audio/ogg",
+                        "m4a": "audio/mp4", "aac": "audio/aac", "flac": "audio/flac",
+                        "webm": "audio/webm", "mp4": "video/mp4"}
+            mime_type = mime_map.get(ext, "audio/wav")
+        else:
+            b64_data = payload.get("base64")
+            mime_type = payload.get("mimeType", "audio/wav")
+
+        if not b64_data:
+            return {"status": "error", "analysis": "No audio data provided."}
+
+        async with httpx.AsyncClient() as client:
+            r = await client.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}",
+                json={"contents": [{"parts": [
+                    {"inline_data": {"mime_type": mime_type, "data": b64_data}},
+                    {"text": prompt}
+                ]}]},
+                timeout=45
+            )
+        if r.status_code != 200:
+            return {"status": "error", "analysis": f"Gemini Audio error {r.status_code}."}
+
+        text = r.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "No analysis.")
+        return {"status": "success", "analysis": text}
+    except Exception as e:
+        return {"status": "error", "analysis": str(e)}
+
 
 @app.get("/api/space_weather")
 async def get_space_weather():

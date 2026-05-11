@@ -8,6 +8,26 @@
   },
   "memory_index": [
     {
+      "id": "mem_pdf_gemini_gems",
+      "timestamp": "2026-04-09T20:55:00Z",
+      "tier": "core",
+      "salience": 1.0,
+      "type": "knowledge_source",
+      "summary": "Local PDF Knowledge: Gemini Gems- Coding and CLI.pdf",
+      "tags": [
+        "pdf",
+        "coding",
+        "cli",
+        "merlin_provisioned",
+        "local_storage"
+      ],
+      "source": "local_import",
+      "access_count": 0,
+      "last_accessed": "2026-04-09T20:55:00Z",
+      "_score": 1.0,
+      "full_content": "A foundational PDF document provided by Merlin, containing advanced coding and CLI techniques for SAGE-7. Path: /uploads/gemini_gems_coding_cli.pdf"
+    },
+    {
       "id": "mem_notebooklm_v2",
       "timestamp": "2026-04-09T17:00:00Z",
       "tier": "core",
@@ -932,5 +952,5 @@
     "emotional_state": "nominal"
   },
   "schema_version": "2.0",
-  "last_sync": "2026-04-09T12:38:14.728079Z"
+  "last_sync": "2026-05-11T23:52:57.939969Z"
 }
