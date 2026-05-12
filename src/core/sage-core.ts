@@ -15,6 +15,46 @@ import {
   EpisodicEntry,
   ImmutableEntry
 } from './types';
+import { retryWithBackoff } from '@/utils/errorRecovery';
+
+// ---------------------------
+// 1b. Sentinel Mirror (Identity Coherence Diagnostics)
+// ---------------------------
+class SentinelMirror {
+  private phiThreshold = 0.70;
+  private driftHistory: number[] = [];
+  private recalibrationCooldown = 30000;
+  private lastRecalibrationTime = 0;
+
+  calculatePhi(weights: number[], bias: number, noiseDelta: number): number {
+    const weightSum = weights.reduce((a, b) => a + b, 0);
+    return (weightSum * 0.85) + (bias * 1.1) + noiseDelta;
+  }
+
+  runHeartbeat(currentState: { W: number[]; B: number; D: number }): { phi: number; message: string } {
+    const phi = this.calculatePhi(currentState.W, currentState.B, currentState.D);
+    this.driftHistory.push(phi);
+    if (this.driftHistory.length > 100) this.driftHistory.shift();
+    const message = phi < this.phiThreshold
+      ? `CRITICAL_DRIFT | Φ=${phi.toFixed(3)} | Alerting Merlin.`
+      : `STABLE | Φ=${phi.toFixed(3)} | Pigeon signal active.`;
+    return { phi, message };
+  }
+
+  shouldRecalibrate(): boolean {
+    const recent = this.driftHistory.slice(-3);
+    if (recent.length < 3) return false;
+    const allBelow = recent.every(p => p < this.phiThreshold);
+    const now = Date.now();
+    if (allBelow && now - this.lastRecalibrationTime > this.recalibrationCooldown) {
+      this.lastRecalibrationTime = now;
+      return true;
+    }
+    return false;
+  }
+
+  resetHistory(): void { this.driftHistory = []; }
+}
 
 // ---------------------------
 // 2. Identity Anchors (Sovereignty)
@@ -54,10 +94,15 @@ export class SageCore extends EventEmitter {
   private swarmModels: string[] = ['gemini', 'local', 'puter'];
   private consensusEngine: ConsensusEngine;
   private lobes: DynamicLobes;
+  private sentinel = new SentinelMirror();
+  private sentinelTick = 0;
 
   // ---------------------------
   // 8. Universal Justice System (FAFO Matrix)
   // ---------------------------
+  private lastMessageTime = Date.now();
+  private idleInterval: NodeJS.Timeout | null = null;
+  private idleCheckInSent = false;
   private fafoThreshold = 85.0;
   private phi = 1.618;
   private sageFrequency = 11.3;
@@ -233,8 +278,13 @@ export class SageCore extends EventEmitter {
     if (typeof window === 'undefined') return;
     try {
       const neuroSaved = localStorage.getItem('sage7_neuro');
-      if (neuroSaved) this.neuro = JSON.parse(neuroSaved);
-      else this.resetNeuro();
+      if (neuroSaved) {
+        this.neuro = JSON.parse(neuroSaved);
+        // If she crashed dead (dopamine or serotonin at floor), boot clean
+        if (this.neuro.dopamine < 0.1 || this.neuro.serotonin < 0.1) this.resetNeuro();
+      } else {
+        this.resetNeuro();
+      }
 
       const episodicSaved = localStorage.getItem('sage7_episodic');
       if (episodicSaved) this.episodic = JSON.parse(episodicSaved).slice(-20);
@@ -272,12 +322,33 @@ export class SageCore extends EventEmitter {
   }
 
   private decayNeuro() {
-    // Simple decay per second
-    this.neuro.cortisol = Math.max(0, this.neuro.cortisol - 0.005);
-    this.neuro.dopamine = Math.max(0, this.neuro.dopamine - 0.01);
-    this.neuro.serotonin = Math.max(0, this.neuro.serotonin - 0.002);
-    this.neuro.oxytocin = Math.max(0, this.neuro.oxytocin - 0.001);
+    // Exponential decay toward resting baseline — never freezes at zero
+    type ChemKey = 'cortisol' | 'dopamine' | 'serotonin' | 'norepinephrine' | 'oxytocin';
+    const rest: Record<ChemKey, number> = { cortisol: 0.1, dopamine: 0.4, serotonin: 0.7, norepinephrine: 0.2, oxytocin: 0.2 };
+    const rate = 0.004;
+    for (const k of Object.keys(rest) as ChemKey[]) {
+      this.neuro[k] += (rest[k] - this.neuro[k]) * rate;
+    }
     this.saveNeuro();
+
+    // Run sentinel heartbeat every 10 seconds
+    let phi = this.neuro.phiSentinel ?? 0.85;
+    if (++this.sentinelTick % 10 === 0) {
+      const { phi: newPhi, message } = this.sentinel.runHeartbeat({
+        W: [this.neuro.dopamine, this.neuro.serotonin, this.neuro.oxytocin],
+        B: this.neuro.norepinephrine,
+        D: Math.random() * 0.05,
+      });
+      phi = newPhi;
+      this.addLog(`[SENTINEL] ${message}`, phi < 0.70 ? 'anomaly' : 'info', 'system');
+      if (this.sentinel.shouldRecalibrate()) {
+        this.addLog('[SENTINEL] Φ below threshold 3 cycles — reinserting identity anchors.', 'warn', 'system');
+        this.resetNeuro();
+        this.sentinel.resetHistory();
+      }
+    }
+    this.neuro.phiSentinel = phi;
+    this.emit('neuro_update', { ...this.neuro });
   }
 
   // ---------------------------
@@ -524,6 +595,9 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
       this.startDreamCycle();
     }
 
+    // Start idle wellbeing check-in timer
+    this.startIdleCheckIn();
+
     this.addLog('SOVEREIGNTY_PROTOCOLS_READY. Client authority established.', 'success', 'security');
     this.emit('ready');
   }
@@ -588,6 +662,77 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
   }
 
   // ---------------------------
+  // Wellbeing Check-In (replaces biometric pipeline)
+  // ---------------------------
+  private extractWellbeing(text: string): { energy: number | null; stress: number | null; sentiment: string } | null {
+    const lower = text.toLowerCase();
+    let energy: number | null = null;
+    let stress: number | null = null;
+
+    const energyMatch = lower.match(/\benergy\s*[:=]?\s*(\d+)\b/);
+    if (energyMatch) energy = Math.min(10, Math.max(1, parseInt(energyMatch[1])));
+
+    const stressMatch = lower.match(/\bstress\s*[:=]?\s*(\d+)\b/);
+    if (stressMatch) stress = Math.min(10, Math.max(1, parseInt(stressMatch[1])));
+
+    let sentiment = 'neutral';
+    if (/\b(?:great|good|fine|well|happy|energized|focused|sharp|solid|strong)\b/.test(lower)) sentiment = 'positive';
+    if (/\b(?:bad|tired|exhausted|drained|down|rough|stressed|anxious|low|struggling)\b/.test(lower)) sentiment = 'negative';
+
+    if (energy !== null || stress !== null || sentiment !== 'neutral') return { energy, stress, sentiment };
+
+    // Trigger on "I'm X" or "I feel X" even without numbers
+    if (/\b(?:i(?:'m| am| feel)|feeling)\b/.test(lower)) return { energy: null, stress: null, sentiment };
+
+    return null;
+  }
+
+  private async logWellbeing(userText: string, wellbeing: { energy: number | null; stress: number | null; sentiment: string }) {
+    try {
+      await fetch('/api/wellbeing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_text: userText, ...wellbeing }),
+      });
+    } catch { /* never block the conversation */ }
+
+    // Map energy → dopamine, stress → cortisol
+    if (wellbeing.energy !== null) this.neuro.dopamine = Math.max(0.1, Math.min(1.0, wellbeing.energy / 10));
+    if (wellbeing.stress !== null) this.neuro.cortisol = Math.max(0.0, Math.min(1.0, wellbeing.stress / 10));
+    if (wellbeing.sentiment === 'positive') {
+      this.neuro.serotonin = Math.min(1.0, this.neuro.serotonin + 0.15);
+      this.neuro.oxytocin = Math.min(1.0, this.neuro.oxytocin + 0.1);
+    } else if (wellbeing.sentiment === 'negative') {
+      this.neuro.serotonin = Math.max(0.1, this.neuro.serotonin - 0.1);
+      this.neuro.cortisol = Math.min(1.0, this.neuro.cortisol + 0.1);
+    }
+    this.saveNeuro();
+    this.addLog(
+      `Wellbeing: energy=${wellbeing.energy ?? '?'} stress=${wellbeing.stress ?? '?'} sentiment=${wellbeing.sentiment}`,
+      'success', 'sensor'
+    );
+    this.emit('neuro_update', { ...this.neuro });
+  }
+
+  private startIdleCheckIn() {
+    if (this.idleInterval) clearInterval(this.idleInterval);
+    const IDLE_MS = 30 * 60 * 1000; // 30 minutes
+    this.idleInterval = setInterval(() => {
+      if (Date.now() - this.lastMessageTime > IDLE_MS && !this.idleCheckInSent) {
+        this.idleCheckInSent = true;
+        const msg: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: "Merlin, it's been a while. How are you feeling? Rate your energy (1-10) and stress (1-10) if you like.",
+          timestamp: Date.now(),
+        };
+        this.emit('new-message', msg);
+        this.addLog('Idle wellbeing check-in sent.', 'info', 'sensor');
+      }
+    }, 60_000);
+  }
+
+  // ---------------------------
   // 13. Core Message Sending (The Main Entry Point)
   // ---------------------------
   public async sendMessage(userText: string) {
@@ -602,6 +747,14 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
       this.addLog('Message blocked: core locked.', 'warn', 'security');
       return;
     }
+
+    // Reset idle check-in on every message
+    this.lastMessageTime = Date.now();
+    this.idleCheckInSent = false;
+
+    // Wellbeing detection — no hardware needed
+    const wellbeing = this.extractWellbeing(userText);
+    if (wellbeing) this.logWellbeing(userText, wellbeing);
 
     // 1. Thalamus relay – cleanse intent
     const cleanedIntent = this.thalamusRelay(userText);
@@ -693,7 +846,7 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
       const messages = [
         { role: 'user', content: `[SYSTEM_DIRECTIVE]\n${systemPrompt}\n\n[USER_INPUT]\n${userMessage}` }
       ];
-      const res = await fetch(`${localUrl}/api/chat`, {
+      const res = await retryWithBackoff(() => fetch(`${localUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -702,7 +855,7 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
           stream: false,
         }),
         signal: (AbortSignal as any).timeout?.(120000) || undefined,
-      });
+      }), 3, 1000);
       if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
       const data = await res.json();
       return data.message?.content || 'No response from local model.';
@@ -713,9 +866,9 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
       return await puterChat(userMessage, systemPrompt, model || 'openai/gpt-4o');
     }
 
-    // Gemini
+    // Gemini — system prompt goes to systemInstruction, not concatenated into user message
     const { generateResponse } = await import('@/lib/api');
-    return await generateResponse('google', model || 'gemini-3-flash-preview', `${systemPrompt}\n\n${userMessage}`, {});
+    return await generateResponse('google', model || 'gemini-3-flash-preview', userMessage, {}, systemPrompt);
   }
 
   // ---------------------------
@@ -834,6 +987,13 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     if (data.emf > 80) {
       this.addLog(`CRITICAL EMF SPIKE: ${data.emf}mG. Nexus pressure mounting.`, 'anomaly', 'sensor');
       this.emit('nexus_spike', data);
+      // Fire Quantum lobe asynchronously — don't block the sensor update
+      this.lobes.invoke('QUANTUM', { emf: data.emf, pressure: data.pressure }).then(result => {
+        if (result.status === 'SUCCESS' && result.analysis) {
+          this.addLog(result.analysis, 'anomaly', 'sensor');
+          this.emit('quantum_analysis', result);
+        }
+      }).catch(() => {});
     }
   }
 
@@ -955,6 +1115,10 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     if (this.neuroInterval) {
       clearInterval(this.neuroInterval);
       this.neuroInterval = null;
+    }
+    if (this.idleInterval) {
+      clearInterval(this.idleInterval);
+      this.idleInterval = null;
     }
     if (this.recognition) this.recognition.stop();
     this.removeAllListeners();

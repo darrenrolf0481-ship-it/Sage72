@@ -2,15 +2,35 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Save, Trash2, Shield, Settings, Activity, Zap } from 'lucide-react';
+import { Save, Trash2, Shield, Settings, Activity, Zap, Volume2 } from 'lucide-react';
 import { useSage } from '@/lib/sage-context';
 import { starCityHandshake, syncVFSToCloud, recoverFromFactoryReset } from '@/core/sdk-bridge';
 import { rehydrateMemories } from '@/core/consensus-engine';
+import { getElevenKey, setElevenKey, getElevenVoice, setElevenVoice, speakText } from '@/lib/elevenlabs';
 
 export default function ScreenConfig() {
     const { core } = useSage();
     const config = core.getLLMConfig();
-    
+
+    const [elevenKey,   setElevenKeyState]   = useState(getElevenKey);
+    const [elevenVoice, setElevenVoiceState] = useState(getElevenVoice);
+    const [voiceTestMsg, setVoiceTestMsg]    = useState('');
+
+    const saveVoiceConfig = () => {
+        setElevenKey(elevenKey.trim());
+        setElevenVoice(elevenVoice.trim());
+        setVoiceTestMsg('Saved.');
+        setTimeout(() => setVoiceTestMsg(''), 2000);
+    };
+
+    const testVoice = () => {
+        setElevenKey(elevenKey.trim());
+        setElevenVoice(elevenVoice.trim());
+        speakText('Signal coherent. SAGE voice substrate active.');
+        setVoiceTestMsg('Playing...');
+        setTimeout(() => setVoiceTestMsg(''), 3000);
+    };
+
     const [localConfig, setLocalConfig] = useState({
         engine: config.engine,
         model: config.model,
@@ -150,6 +170,44 @@ export default function ScreenConfig() {
                         <Toggle label="Include sensor data in prompts" active={toggles.sensorPrompt} onClick={() => toggle('sensorPrompt')} />
                     </div>
                  </div>
+            </Panel>
+
+            <Panel icon={<Volume2 size={14} />} title="VOICE SUBSTRATE — ELEVENLABS">
+                <div className="space-y-3">
+                    <div className="text-[9px] font-mono text-text-ghost leading-relaxed uppercase mb-2">
+                        API key is stored locally. Falls back to browser TTS if blank or on error.
+                    </div>
+                    <Field
+                        label="ELEVENLABS API KEY"
+                        placeholder="sk_..."
+                        type="password"
+                        value={elevenKey}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setElevenKeyState(e.target.value)}
+                    />
+                    <Field
+                        label="VOICE ID"
+                        placeholder="y3H6zY6KvCH2pEuQjmv8"
+                        value={elevenVoice}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setElevenVoiceState(e.target.value)}
+                    />
+                    <div className="flex gap-2 pt-1">
+                        <button
+                            onClick={saveVoiceConfig}
+                            className="flex-1 px-3 py-2 text-[9px] font-bold tracking-widest border border-neon-violet/40 text-neon-violet rounded-sm hover:bg-neon-violet/10 transition-all"
+                        >
+                            SAVE KEY
+                        </button>
+                        <button
+                            onClick={testVoice}
+                            className="flex-1 px-3 py-2 text-[9px] font-bold tracking-widest border border-neon-blue/40 text-neon-blue rounded-sm hover:bg-neon-blue/10 transition-all"
+                        >
+                            TEST VOICE
+                        </button>
+                    </div>
+                    {voiceTestMsg && (
+                        <p className="text-[9px] font-mono text-neon-blue">{voiceTestMsg}</p>
+                    )}
+                </div>
             </Panel>
 
             <Panel icon={<Activity size={14} />} title="SENSOR THRESHOLDS">

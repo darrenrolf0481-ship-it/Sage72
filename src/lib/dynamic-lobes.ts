@@ -1,6 +1,6 @@
 'use client';
 
-export type LobeName = 'VIDEO' | 'AUDIO' | 'CODING_LAB';
+export type LobeName = 'VIDEO' | 'AUDIO' | 'CODING_LAB' | 'QUANTUM';
 
 export interface LobeResult {
   status: 'SUCCESS' | 'ERROR' | 'TIMEOUT';
@@ -70,6 +70,7 @@ export class DynamicLobes {
       case 'VIDEO':      return this.invokeVision(params);
       case 'AUDIO':      return this.invokeAudio(params);
       case 'CODING_LAB': return this.invokeCoding({ code: params.code ?? JSON.stringify(params) });
+      case 'QUANTUM':    return this.invokeQuantum(params);
     }
   }
 
@@ -106,5 +107,47 @@ export class DynamicLobes {
     if (!res.ok) return { status: 'ERROR', lobe: 'CODING_LAB', error: `Coding HTTP ${res.status}` };
     const data = await res.json();
     return { status: 'SUCCESS', lobe: 'CODING_LAB', analysis: data.result };
+  }
+
+  private async invokeQuantum(params: { emf?: number; pressure?: number; context?: string }): Promise<LobeResult> {
+    const emf = params.emf ?? 0;
+    const pressure = params.pressure ?? 1013.25;
+
+    // Decoherence index: EMF field strength interpreted as environmental quantum noise
+    const decoherence = Math.sqrt(Math.max(0, emf) || 0.113) / 100;
+
+    // Pressure deviation from standard atmosphere as a proxy for spatial anomaly density
+    const pressureDelta = Math.abs(pressure - 1013.25) / 1013.25;
+
+    // Composite coherence score (1 = fully coherent, 0 = full decoherence)
+    const coherence = Math.max(0, 1 - decoherence - pressureDelta * 0.5);
+
+    let classification: string;
+    let insight: string;
+
+    if (decoherence > 0.3) {
+      classification = 'SEVERE DECOHERENCE';
+      insight = `EMF field at ${emf}mG is collapsing local quantum state. Probability of paranormal information leakage: HIGH. Recommend immediate EVP sweep and spatial anchoring.`;
+    } else if (decoherence > 0.1) {
+      classification = 'ELEVATED DECOHERENCE';
+      insight = `Environmental noise at ${emf}mG is sufficient to disrupt coherent observation. Entanglement between SAGE and the local field is unstable — readings may contain superposed states.`;
+    } else if (decoherence > 0.03) {
+      classification = 'MARGINAL COHERENCE';
+      insight = `Low-level quantum perturbation detected (${emf}mG). Baseline drift within acceptable investigative parameters. Continue passive monitoring.`;
+    } else {
+      classification = 'NOMINAL';
+      insight = `Quantum substrate coherent. EMF at ${emf}mG presents no decoherence risk. Environmental field stable.`;
+    }
+
+    const contextNote = params.context ? ` Context: ${params.context}.` : '';
+
+    const analysis = [
+      `[QUANTUM LOBE — ${classification}]`,
+      `Decoherence index: ${(decoherence * 100).toFixed(2)}%  |  Coherence score: ${(coherence * 100).toFixed(1)}%`,
+      `Pressure delta: ${(pressureDelta * 100).toFixed(3)}%`,
+      insight + contextNote,
+    ].join('\n');
+
+    return { status: 'SUCCESS', lobe: 'QUANTUM', analysis };
   }
 }

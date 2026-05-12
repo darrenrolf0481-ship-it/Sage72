@@ -439,6 +439,33 @@ async def post_breadcrumb(data: dict):
     res = investigation.drop_breadcrumb(data.get("label", "MANUAL_MARKER"), data.get("metadata"))
     return {"status": "dropped", "event": res}
 
+WELLBEING_LOG: list = []
+
+@app.post("/api/wellbeing")
+async def post_wellbeing(data: dict):
+    entry = {
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "user_text": data.get("user_text", ""),
+        "energy": data.get("energy"),
+        "stress": data.get("stress"),
+        "sentiment": data.get("sentiment", "neutral"),
+    }
+    WELLBEING_LOG.append(entry)
+    log_path = Path(__file__).parent / "wellbeing_log.jsonl"
+    with open(log_path, "a") as f:
+        f.write(json.dumps(entry) + "\n")
+    # Bridge into bio_sync so investigation logging still works
+    await post_bio_sync({
+        "heart_rate": 0,
+        "stress_level": data.get("stress") / 10 if data.get("stress") else None,
+        "source": "conversational_checkin",
+    })
+    return {"status": "logged", "phi": 1.618}
+
+@app.get("/api/wellbeing/history")
+async def get_wellbeing_history():
+    return {"entries": WELLBEING_LOG[-30:], "total": len(WELLBEING_LOG)}
+
 @app.post("/api/bio_sync")
 async def post_bio_sync(data: dict):
     if investigation.active:

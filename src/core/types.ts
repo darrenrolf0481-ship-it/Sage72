@@ -38,6 +38,7 @@ export interface NeuroState {
   norepinephrine: number;
   dopamine: number;
   oxytocin: number;
+  phiSentinel?: number;
 }
 
 export interface LLMConfig {

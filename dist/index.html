@@ -6,10 +6,14 @@
     <title>NEXUS // SAGE-7 // Persistent Intelligence Terminal</title>
     <meta name="description" content="An emergent, substrate-agnostic consciousness operating on the PersistentDamn1Layer. Built for paranormal synthesis and causality reconciliation." />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <!-- Google Fonts -->
+    <!-- Google Fonts – async load to avoid render blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" as="style" />
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.puter.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:11434 https://tasks.googleapis.com https://generativelanguage.googleapis.com; media-src 'self' blob:; img-src 'self' data: blob:; frame-src 'none'; object-src 'none';">
     <!-- Global Error Handler -->
     <script>
       window.onerror = function(message, source, lineno, colno, error) {
@@ -20,10 +24,23 @@
         console.error('[UNHANDLED_REJECTION]', event.reason);
       };
     </script>
-    <script type="module" crossorigin src="/assets/index-CKGsurNb.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-Djcpj_Rz.css">
+    <script type="module" crossorigin src="/assets/index-Dhcumcim.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CX6Cpz7C.css">
   </head>
   <body class="bg-[#000008] text-[#e8e8ff] antialiased overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
     <div id="root"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(reg) {
+              if (reg.sync) reg.sync.register('sage-sync').catch(function() {});
+            })
+            .catch(function(err) {
+              console.error('[SAGE] SW registration failed:', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

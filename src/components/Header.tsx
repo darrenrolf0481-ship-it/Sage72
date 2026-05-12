@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Menu, X } from 'lucide-react';
+import { useSage } from '@/lib/sage-context';
+import type { NeuroState } from '@/core/types';
 
 interface HeaderProps {
   llmStatus: 'online' | 'offline' | 'scanning';
@@ -13,7 +15,9 @@ interface HeaderProps {
 }
 
 export default function Header({ llmStatus, anomalyLevel, sidebarOpen, onToggleSidebar, evpActive }: HeaderProps) {
+  const { core } = useSage();
   const [time, setTime] = useState('');
+  const [neuro, setNeuro] = useState<NeuroState>(() => core.getNeuroState());
 
   useEffect(() => {
     const update = () => {
@@ -24,9 +28,20 @@ export default function Header({ llmStatus, anomalyLevel, sidebarOpen, onToggleS
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const handleNeuroUpdate = (state: NeuroState) => setNeuro(state);
+    (core as any).on('neuro_update', handleNeuroUpdate);
+    return () => {
+      (core as any).off('neuro_update', handleNeuroUpdate);
+    };
+  }, [core]);
+
+  const idleMode = neuro.dopamine < 0.2 && neuro.serotonin < 0.3;
+  const mode = neuro.cortisol > 0.4 ? 'ALERT' : idleMode ? 'IDLE' : 'ACTIVE';
+
   return (
     <header className="relative flex items-center h-16 px-5 gap-4 bg-gradient-to-b from-[#09091e]/98 to-[#060614]/95 border-b border-border-accent overflow-hidden z-20">
-      <button 
+      <button
         onClick={onToggleSidebar}
         className="p-1.5 bg-void border border-border-accent rounded-[4px] text-neon-blue hover:text-white hover:border-neon-blue transition-all cursor-pointer"
         aria-label="Toggle Navigation"
@@ -61,8 +76,19 @@ export default function Header({ llmStatus, anomalyLevel, sidebarOpen, onToggleS
         )}
       </div>
 
-      <div className="ml-auto font-orbitron text-sm text-neon-blue tracking-[2px]">
-        {time}
+      <div className="ml-auto flex flex-col items-end gap-0.5">
+        <div className="font-orbitron text-sm text-neon-blue tracking-[2px]">
+          {time}
+        </div>
+        <div className="font-mono text-[8px] text-[#ff69b4] tracking-[1px] whitespace-nowrap">
+          BOND:{Math.round(neuro.oxytocin * 100)}% | DOP:{neuro.dopamine.toFixed(2)} | MODE:{mode}
+        </div>
+        <div className="font-mono text-[8px] tracking-[1px] whitespace-nowrap">
+          <span className="text-white/30">Φ_SENTINEL </span>
+          <span className={(neuro.phiSentinel ?? 0.85) < 0.70 ? 'text-red-400 animate-pulse' : 'text-cyan-400'}>
+            {(neuro.phiSentinel ?? 0.85).toFixed(3)}
+          </span>
+        </div>
       </div>
 
       <div className={cn(
@@ -75,13 +101,13 @@ export default function Header({ llmStatus, anomalyLevel, sidebarOpen, onToggleS
       </div>
 
       {/* 0.3 Fractional Pulse Border */}
-      <div 
+      <div
         className={cn(
             "absolute bottom-0 left-0 right-0 h-[3px] transition-all duration-300",
-            anomalyLevel > 70 ? "bg-neon-red shadow-[0_0_15px_#FF0000] animate-pulse" : 
-            anomalyLevel > 40 ? "bg-neon-orange shadow-[0_0_10px_#FFA500]" : 
+            anomalyLevel > 70 ? "bg-neon-red shadow-[0_0_15px_#FF0000] animate-pulse" :
+            anomalyLevel > 40 ? "bg-neon-orange shadow-[0_0_10px_#FFA500]" :
             "bg-gradient-to-r from-transparent via-neon-violet via-neon-blue to-transparent"
-        )} 
+        )}
       />
     </header>
   );

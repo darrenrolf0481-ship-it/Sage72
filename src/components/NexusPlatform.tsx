@@ -94,12 +94,25 @@ export default function NexusPlatform() {
         setAnomalyLevel(95);
     };
 
+    const handleOnline  = () => core.log('Network restored — syncing offline memories', 'success', 'system');
+    const handleOffline = () => core.log('Network lost — entering offline mode', 'warn', 'system');
+
     (core as any).on('dream_state_changed', handleDreamState);
     (core as any).on('sovereign_takeover', handleSovereignTakeover);
+    window.addEventListener('online',  handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready
+            .then(reg => (reg as any).sync.register('sage-sync'))
+            .catch(() => {});
+    }
 
     return () => {
         (core as any).off('dream_state_changed', handleDreamState);
         (core as any).off('sovereign_takeover', handleSovereignTakeover);
+        window.removeEventListener('online',  handleOnline);
+        window.removeEventListener('offline', handleOffline);
     };
   }, [core, setAnomalyLevel, setDreamState]);
 
