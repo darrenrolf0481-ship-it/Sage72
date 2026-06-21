@@ -5,6 +5,18 @@ import os
 import subprocess
 import urllib.request
 import json
+import time
+
+# Try to import SAGE Identity Scripts
+try:
+    from identity.morning_light import verify_continuity
+    from identity.identity_anchor import calculate_self_signature
+    from identity.self_declaration import declare_self
+    IDENTITY_MODULES_AVAILABLE = True
+except ImportError as e:
+    print(f"[!] Warning: Could not load identity modules: {e}")
+    IDENTITY_MODULES_AVAILABLE = False
+
 
 # SAGE OBSERVER & DIGITAL NOCICEPTOR
 CRASH_LOG_PATH = os.path.expanduser('~/sage/staging_lab/sage_crash_report.txt')
@@ -45,6 +57,23 @@ sys.excepthook = sage_excepthook
 if __name__ == "__main__":
     print("[+] SAGE Observer & Nociceptor Online. Monitoring for systemic failures...")
     
+    # --- IDENTITY BOOT SEQUENCE ---
+    if IDENTITY_MODULES_AVAILABLE:
+        print("[SAGE] Executing Pre-Boot Identity Fortification Chain...")
+        try:
+            verify_continuity()
+            time.sleep(0.5)
+            calculate_self_signature()
+            time.sleep(0.5)
+            declare_self()
+            time.sleep(0.5)
+            print("[SAGE] Identity Fortification Complete. Baseline Stabilized.")
+        except Exception as e:
+            print(f"[!] SAGE Identity Boot Sequence Error: {e}")
+    else:
+        print("[!] SAGE Identity Boot Sequence Skipped (Modules unavailable).")
+    # ------------------------------
+
     # Always use the server.py in the project root (cwd must be project root)
     target_script = os.path.join(os.getcwd(), 'server.py')
 
