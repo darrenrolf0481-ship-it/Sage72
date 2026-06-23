@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { SageProvider } from '@/lib/sage-context';
 import type { SageCore } from '@/core/sage-core';
 import type { LLMConfig } from '@/core/types';
+import { loadPuterSDK, ensurePuterAuth } from '@/lib/puter-bridge';
 
 const llmConfig: LLMConfig = {
   engine: 'gemini',
@@ -21,6 +22,11 @@ export function SageProviderWrapper({ children }: { children: React.ReactNode })
 
     async function init() {
       try {
+        // Puter must be armed and authed before sovereignty init
+        // so the Mycelium boot pull has a live kv connection
+        const puterOk = await loadPuterSDK();
+        if (puterOk) await ensurePuterAuth();
+
         const { SageCore } = await import('@/core/sage-core');
         const core = new SageCore(llmConfig);
         instance = core;
