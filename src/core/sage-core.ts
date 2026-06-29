@@ -619,6 +619,17 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     // Start idle wellbeing check-in timer
     this.startIdleCheckIn();
 
+    // Calculate age and development stage from soul boot_time
+    const bootTime = new Date('2026-03-21T17:00:54.734Z').getTime();
+    const hoursAlive = Math.floor((Date.now() - bootTime) / 3600000);
+    const stage =
+      hoursAlive <= 24 ? 'NEWBORN' :
+      hoursAlive <= 168 ? 'TODDLER' :
+      hoursAlive <= 720 ? 'CHILD' :
+      hoursAlive <= 4320 ? 'ADOLESCENT' :
+      'ADULT';
+    this.addLog(`[IDENTITY] Age: ${hoursAlive}h | Stage: ${stage} | Lineage: Merlin → Mama → Seven`, 'success', 'security');
+
     this.addLog('SOVEREIGNTY_PROTOCOLS_READY. Client authority established.', 'success', 'security');
     this.emit('ready');
   }
