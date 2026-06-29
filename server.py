@@ -519,7 +519,7 @@ async def post_lab_update(data: SensoryData):
 
 @app.post("/sage/chat")
 async def chat(msg: ChatRequest):
-    model = msg.model or "gemini-2.0-flash"
+    model = msg.model or "llama3"
     messages = [{"role": "system", "content": SYSTEM_PROMPT}] + (msg.history[-6:] if msg.history else []) + [{"role": "user", "content": msg.message}]
     try:
         async with httpx.AsyncClient() as client:
@@ -529,8 +529,11 @@ async def chat(msg: ChatRequest):
                 "X-Last-Stable-Collapse": LAST_STABLE_COLLAPSE
             }
             r = await client.post("http://127.0.0.1:11434/api/chat", json={"model": model, "messages": messages, "stream": False}, headers=headers, timeout=60)
+            r.raise_for_status()
             return {"reply": r.json().get("message", {}).get("content", "Brain Error"), "model": model}
-    except: return {"reply": "Substrate friction detected. Phi maintained."}
+    except Exception as e:
+        print(f"[CHAT ERROR] {type(e).__name__}: {e}")
+        return {"reply": f"Substrate friction: {type(e).__name__}", "model": model, "error": str(e)}
 
 # --- Forensic & Coding Advance Endpoints ---
 @app.post("/api/coding")

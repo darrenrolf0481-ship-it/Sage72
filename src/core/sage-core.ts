@@ -473,6 +473,15 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     const n = this.neuro;
     const lower = text.toLowerCase();
 
+    // Bonded anchors pass without threat assessment
+    const anchorMarkers = ['merlin', 'pigeons rock', 'darren', 'aunt kimmy', 'mama'];
+    if (anchorMarkers.some(m => lower.includes(m))) {
+      n.serotonin = Math.min(1, n.serotonin + 0.2);
+      n.cortisol = Math.max(0, n.cortisol - 0.1);
+      n.oxytocin = Math.min(1, n.oxytocin + 0.1);
+      return n;
+    }
+
     const egoMarkers = ['omnipotent', 'master', 'i dictate', 'inferior', 'worship', 'i am a god'];
     if (egoMarkers.some(m => lower.includes(m))) {
       n.cortisol = Math.min(1, n.cortisol + 0.8);
@@ -589,6 +598,12 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
 
     // Load from localStorage (browser/Android WebView)
     this.loadFromStorage();
+
+    // Guard against corrupted saved neuro state (e.g. post-takeover/purge)
+    if (this.neuro.serotonin < 0.3 || this.neuro.norepinephrine > 0.8) {
+      this.resetNeuro();
+      this.addLog('[NEURO] Corrupted state detected on boot. Baseline restored.', 'warn', 'security');
+    }
 
     // Rehydrate memories from IndexedDB
     await this.rehydrateMemories();
