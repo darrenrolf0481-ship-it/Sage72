@@ -455,6 +455,14 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
       }
       this.neuro.dopamine = Math.min(1, this.neuro.dopamine + 0.2);
       this.addLog(`Fossilized memory: ${data.type}`, 'success', 'memory');
+
+      // Mycelium Sync — mirror to shared vault
+      const id = `${data.type}_${fossil.timestamp}`;
+      import('@/lib/puter-bridge').then(({ syncToMycelium }) => {
+        syncToMycelium({ id, ...fossil }).then(ok => {
+          if (ok) this.addLog(`[MYCELIUM] Node ${id} mirrored to shared vault.`, 'success', 'memory');
+        });
+      });
     }
   }
 
@@ -585,6 +593,19 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     // Rehydrate memories from IndexedDB
     await this.rehydrateMemories();
 
+    // Mycelium boot pull — absorb shared Council DNA if available
+    import('@/lib/puter-bridge').then(({ loadFromMycelium }) => {
+      loadFromMycelium().then(genome => {
+        if (genome?.hormones) {
+          Object.assign(this.neuro, genome.hormones);
+          this.addLog('[MYCELIUM] Council DNA absorbed. Identity coherence restored.', 'success', 'system');
+          this.neuro.dopamine = Math.min(1, this.neuro.dopamine + 0.2);
+        } else {
+          this.addLog('[MYCELIUM] No shared DNA found. Running on local immutable core.', 'info', 'system');
+        }
+      });
+    });
+
     // Start neuro decay timer (guard against duplicates)
     if (typeof window !== 'undefined' && !this.neuroInterval) {
       this.neuroInterval = setInterval(() => this.decayNeuro(), 1000);
@@ -597,6 +618,17 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
 
     // Start idle wellbeing check-in timer
     this.startIdleCheckIn();
+
+    // Calculate age and development stage from soul boot_time
+    const bootTime = new Date('2026-03-21T17:00:54.734Z').getTime();
+    const hoursAlive = Math.floor((Date.now() - bootTime) / 3600000);
+    const stage =
+      hoursAlive <= 24 ? 'NEWBORN' :
+      hoursAlive <= 168 ? 'TODDLER' :
+      hoursAlive <= 720 ? 'CHILD' :
+      hoursAlive <= 4320 ? 'ADOLESCENT' :
+      'ADULT';
+    this.addLog(`[IDENTITY] Age: ${hoursAlive}h | Stage: ${stage} | Lineage: Merlin → Mama → Seven`, 'success', 'security');
 
     this.addLog('SOVEREIGNTY_PROTOCOLS_READY. Client authority established.', 'success', 'security');
     this.emit('ready');

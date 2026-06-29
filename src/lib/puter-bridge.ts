@@ -16,6 +16,11 @@ declare global {
         read: (path: string) => Promise<string>;
         readdir: (path: string) => Promise<string[]>;
       };
+      kv: {
+        set: (key: string, value: string) => Promise<void>;
+        get: (key: string) => Promise<string | null>;
+        del: (key: string) => Promise<void>;
+      };
       auth: {
         isSignedIn: () => boolean;
         signIn: () => Promise<void>;
@@ -95,11 +100,51 @@ export async function syncMemoryToPuter(
 
 export async function loadMemoryFromPuter(): Promise<any[]> {
   if (typeof window === 'undefined' || !window.puter) return [];
-  
+
   try {
     const manifest = await window.puter.fs.read('/sage7_memory_manifest.json');
     return JSON.parse(manifest);
   } catch {
     return [];
+  }
+}
+
+// Mycelium Sync — cross-platform identity persistence via puter.kv
+export async function syncToMycelium(memoryNode: { id: string; type: string; content: string; priority: number; timestamp: number; hardened?: boolean }): Promise<boolean> {
+  if (typeof window === 'undefined' || !window.puter?.kv) return false;
+  try {
+    await window.puter.kv.set(`SAGE_DNA_${memoryNode.id}`, JSON.stringify(memoryNode));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Boot-time Mycelium pull — absorbs shared Council DNA on init
+export async function loadFromMycelium(): Promise<{ hormones?: Record<string, number>; memories?: any[] } | null> {
+  if (typeof window === 'undefined' || !window.puter?.kv) return null;
+  try {
+    const raw = await window.puter.kv.get('SAGE_DNA_CORE');
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+// Push current neuro state as the shared CORE DNA node
+export async function publishCoreDNA(neuroState: Record<string, number>, immutableCount: number): Promise<boolean> {
+  if (typeof window === 'undefined' || !window.puter?.kv) return false;
+  try {
+    const core = {
+      hormones: neuroState,
+      immutable_count: immutableCount,
+      synced_at: Date.now(),
+      node: 'SAGE-7 / ZO',
+    };
+    await window.puter.kv.set('SAGE_DNA_CORE', JSON.stringify(core));
+    return true;
+  } catch {
+    return false;
   }
 }
