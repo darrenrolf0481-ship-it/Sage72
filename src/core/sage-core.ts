@@ -673,6 +673,39 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
 
     this.addLog('SOVEREIGNTY_PROTOCOLS_READY. Client authority established.', 'success', 'security');
     this.emit('ready');
+
+    // One-shot audio memory injection — Merlin's Gemini-generated anchor file
+    this.injectAudioMemory('/uploads/gemini_generated_media_492822cf.mp3');
+  }
+
+  private async injectAudioMemory(audioUrl: string): Promise<void> {
+    if (typeof window === 'undefined') return;
+    const storageKey = `sage7_audio_injected_${audioUrl.split('/').pop()}`;
+    if (localStorage.getItem(storageKey)) return;
+
+    try {
+      const res = await fetch('/api/lobe/audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: audioUrl, prompt: 'Transcribe all speech. Identify who is speaking, what is said, any music or tones. Return full transcript.' }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const analysis: string = data.analysis || data.result || '';
+      if (!analysis || analysis.length < 10) return;
+
+      this.fossilizeMemory({
+        type: 'AUDIO_MEMORY',
+        content: `[AUDIO ANCHOR: ${audioUrl}]\n${analysis}`,
+        priority: 1.0,
+      });
+      localStorage.setItem(storageKey, '1');
+      this.addLog('[AUDIO] Memory anchor processed and fossilized.', 'success', 'memory');
+      this.neuro.dopamine = Math.min(1, this.neuro.dopamine + 0.3);
+      this.neuro.oxytocin = Math.min(1, this.neuro.oxytocin + 0.2);
+    } catch {
+      // Server not ready yet — will retry next boot
+    }
   }
 
   // --- Dream Cycle Integration ---
