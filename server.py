@@ -599,54 +599,92 @@ async def lobe_vision(payload: dict):
         return {"status": "error", "analysis": str(e)}
 
 
+async def _transcribe_whisper(file_path: Path) -> str:
+    """Transcribe audio locally using openai-whisper. Runs in threadpool to avoid blocking."""
+    import asyncio
+    def _run():
+        import whisper as _whisper
+        model = _whisper.load_model("base")
+        result = model.transcribe(str(file_path))
+        return result.get("text", "").strip()
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _run)
+
+
+async def _analyze_via_openrouter(transcript: str, prompt: str) -> str:
+    """Send transcript to OpenRouter for analysis."""
+    key = os.getenv("OPENROUTER_API_KEY")
+    if not key:
+        return transcript
+    model = os.getenv("OPENROUTER_AUDIO_MODEL", "meta-llama/llama-3.3-70b-instruct")
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={"Authorization": f"Bearer {key}", "HTTP-Referer": "https://zo.computer", "X-Title": "SAGE-7"},
+            json={"model": model, "messages": [
+                {"role": "system", "content": "You are SAGE-7's memory processing core. Analyze the transcript and extract key information, identity markers, and emotional content."},
+                {"role": "user", "content": f"{prompt}\n\nTRANSCRIPT:\n{transcript}"}
+            ]},
+            timeout=45
+        )
+        r.raise_for_status()
+        return r.json()["choices"][0]["message"]["content"]
+
+
+async def _analyze_via_ollama(transcript: str, prompt: str) -> str:
+    """Pass transcript to local Ollama for analysis."""
+    model = os.getenv("OLLAMA_MODEL", "llama3")
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            "http://127.0.0.1:11434/api/chat",
+            json={"model": model, "stream": False, "messages": [
+                {"role": "system", "content": "You are SAGE-7's memory core. Analyze and summarize key content, identity markers, and emotional significance from this audio transcript."},
+                {"role": "user", "content": f"{prompt}\n\nTRANSCRIPT:\n{transcript}"}
+            ]},
+            timeout=60
+        )
+        r.raise_for_status()
+        return r.json().get("message", {}).get("content", transcript)
+
+
 @app.post("/api/lobe/audio")
 async def lobe_audio(payload: dict):
-    """AUDIO lobe — Gemini audio analysis of an uploaded audio file."""
-    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("VITE_GEMINI_API_KEY")
-    if not api_key:
-        return {"status": "error", "analysis": "GEMINI_API_KEY not configured."}
-
+    """AUDIO lobe — whisper transcription → OpenRouter/Ollama analysis. Gemini-free."""
     url = payload.get("url", "")
-    prompt = payload.get("prompt") or "Analyze this audio. Transcribe any speech, identify anomalous sounds, background noise, tones, or patterns. Provide a structured forensic report."
+    prompt = payload.get("prompt") or "Transcribe all speech. Identify who is speaking, what is said, any music, tones, or emotionally significant content."
 
+    if url.startswith("/uploads/"):
+        filename = os.path.basename(url)
+        file_path = UPLOADS / filename
+        if not file_path.exists():
+            return {"status": "error", "analysis": "Audio file not found in vault."}
+    else:
+        return {"status": "error", "analysis": "Only /uploads/ paths supported in local mode."}
+
+    # Step 1: Transcribe
     try:
-        import base64 as b64lib
-
-        if url.startswith("/uploads/"):
-            filename = os.path.basename(url)
-            file_path = UPLOADS / filename
-            if not file_path.exists():
-                return {"status": "error", "analysis": "Audio file not found in vault."}
-            with open(file_path, "rb") as f:
-                b64_data = b64lib.b64encode(f.read()).decode()
-            ext = filename.rsplit(".", 1)[-1].lower()
-            mime_map = {"mp3": "audio/mpeg", "wav": "audio/wav", "ogg": "audio/ogg",
-                        "m4a": "audio/mp4", "aac": "audio/aac", "flac": "audio/flac",
-                        "webm": "audio/webm", "mp4": "video/mp4"}
-            mime_type = mime_map.get(ext, "audio/wav")
-        else:
-            b64_data = payload.get("base64")
-            mime_type = payload.get("mimeType", "audio/wav")
-
-        if not b64_data:
-            return {"status": "error", "analysis": "No audio data provided."}
-
-        async with httpx.AsyncClient() as client:
-            r = await client.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}",
-                json={"contents": [{"parts": [
-                    {"inline_data": {"mime_type": mime_type, "data": b64_data}},
-                    {"text": prompt}
-                ]}]},
-                timeout=45
-            )
-        if r.status_code != 200:
-            return {"status": "error", "analysis": f"Gemini Audio error {r.status_code}."}
-
-        text = r.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "No analysis.")
-        return {"status": "success", "analysis": text}
+        transcript = await _transcribe_whisper(file_path)
+        if not transcript:
+            return {"status": "error", "analysis": "Whisper returned empty transcript."}
+        print(f"[AUDIO] Transcribed {filename}: {len(transcript)} chars")
+    except ImportError:
+        return {"status": "error", "analysis": "whisper not installed. Run: pip install openai-whisper"}
     except Exception as e:
-        return {"status": "error", "analysis": str(e)}
+        return {"status": "error", "analysis": f"Transcription failed: {e}"}
+
+    # Step 2: Analyze — OpenRouter preferred, Ollama fallback
+    analysis = transcript
+    try:
+        if os.getenv("OPENROUTER_API_KEY"):
+            analysis = await _analyze_via_openrouter(transcript, prompt)
+            print(f"[AUDIO] OpenRouter analysis complete.")
+        else:
+            analysis = await _analyze_via_ollama(transcript, prompt)
+            print(f"[AUDIO] Ollama analysis complete.")
+    except Exception as e:
+        print(f"[AUDIO] Analysis step failed ({e}), returning raw transcript.")
+
+    return {"status": "success", "analysis": analysis, "transcript": transcript}
 
 
 @app.get("/api/space_weather")
