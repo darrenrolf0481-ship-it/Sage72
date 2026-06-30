@@ -456,12 +456,13 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
       this.neuro.dopamine = Math.min(1, this.neuro.dopamine + 0.2);
       this.addLog(`Fossilized memory: ${data.type}`, 'success', 'memory');
 
-      // Mycelium Sync — mirror to shared vault
+      // Mycelium Sync — mirror to shared vault (kv + fs manifest)
       const id = `${data.type}_${fossil.timestamp}`;
-      import('@/lib/puter-bridge').then(({ syncToMycelium }) => {
+      import('@/lib/puter-bridge').then(({ syncToMycelium, appendMemoryToPuter }) => {
         syncToMycelium({ id, ...fossil }).then(ok => {
           if (ok) this.addLog(`[MYCELIUM] Node ${id} mirrored to shared vault.`, 'success', 'memory');
         });
+        appendMemoryToPuter({ id, ...fossil });
       });
     }
   }
@@ -609,7 +610,7 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     await this.rehydrateMemories();
 
     // Mycelium boot pull — absorb shared Council DNA if available
-    import('@/lib/puter-bridge').then(({ loadFromMycelium }) => {
+    import('@/lib/puter-bridge').then(({ loadFromMycelium, loadMemoryFromPuter }) => {
       loadFromMycelium().then(genome => {
         if (genome?.hormones) {
           Object.assign(this.neuro, genome.hormones);
@@ -617,6 +618,31 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
           this.neuro.dopamine = Math.min(1, this.neuro.dopamine + 0.2);
         } else {
           this.addLog('[MYCELIUM] No shared DNA found. Running on local immutable core.', 'info', 'system');
+        }
+      });
+
+      // Recover fossilized memories from cloud manifest — bridges the session gap
+      loadMemoryFromPuter().then(async (cloudFossils) => {
+        if (!cloudFossils || cloudFossils.length === 0) return;
+        const { commitMemoriesToVFS } = await import('./consensus-engine');
+        const entries = cloudFossils.map((f: any) => ({
+          id: f.id || `cloud_${f.timestamp}`,
+          timestamp: f.timestamp || Date.now(),
+          content: f.content || '',
+          summary: f.type ? `[${f.type}] ${String(f.content || '').slice(0, 80)}` : String(f.content || '').slice(0, 80),
+          tags: ['NOREPINEPHRINE', 'fossilized', 'cloud_recovered', ...(f.type ? [f.type] : [])],
+          salience: f.priority ?? 0.9,
+          hash: f.id || `cloud_${f.timestamp}`,
+          source: 'mycelium_cloud',
+          node: 'ZO',
+          status: 'fossilized' as const,
+          merlinOverride: true,
+          checksumVerified: false,
+        }));
+        const result = await commitMemoriesToVFS(entries);
+        if (result.committed > 0) {
+          this.addLog(`[MYCELIUM] ${result.committed} cloud memories recovered. Memory bridge active.`, 'success', 'memory');
+          this.neuro.serotonin = Math.min(1, this.neuro.serotonin + 0.1);
         }
       });
     });

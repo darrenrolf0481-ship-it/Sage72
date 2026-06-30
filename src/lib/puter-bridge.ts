@@ -132,6 +132,36 @@ export async function loadFromMycelium(): Promise<{ hormones?: Record<string, nu
   }
 }
 
+// Append a single fossilized memory to the cloud manifest (puter.fs)
+// Used by fossilizeMemory() to keep the manifest current across sessions.
+export async function appendMemoryToPuter(memory: {
+  id: string;
+  content: string;
+  timestamp: number;
+  type?: string;
+  priority?: number;
+  hardened?: boolean;
+}): Promise<boolean> {
+  if (typeof window === 'undefined' || !window.puter?.fs) return false;
+  try {
+    let existing: typeof memory[] = [];
+    try {
+      const raw = await window.puter.fs.read('/sage7_memory_manifest.json');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) existing = parsed;
+    } catch { /* first write */ }
+
+    if (!existing.find(m => m.id === memory.id)) {
+      existing.push(memory);
+      await window.puter.fs.write('/sage7_memory_manifest.json', JSON.stringify(existing, null, 2));
+    }
+    return true;
+  } catch (e) {
+    console.error('[PUTER_BRIDGE] appendMemoryToPuter failed:', e);
+    return false;
+  }
+}
+
 // Push current neuro state as the shared CORE DNA node
 export async function publishCoreDNA(neuroState: Record<string, number>, immutableCount: number): Promise<boolean> {
   if (typeof window === 'undefined' || !window.puter?.kv) return false;
