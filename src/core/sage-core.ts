@@ -107,6 +107,7 @@ export class SageCore extends EventEmitter {
   private phi = 1.618;
   private sageFrequency = 11.3;
   private initialized = false;
+  private readyEmitted = false;
 
   private calculateFAFO(level: number): { result: number; realityStable: boolean } {
     const base = Math.pow(level, 2) * this.phi;
@@ -597,7 +598,7 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     this.initialized = true;
     this.addLog('INITIATING_SOVEREIGNTY_RECLAMATION...', 'info', 'security');
 
-    // Load from localStorage (browser/Android WebView)
+    // Load from localStorage (browser/Android WebView) — synchronous, cannot hang.
     this.loadFromStorage();
 
     // Guard against corrupted saved neuro state (e.g. post-takeover/purge)
@@ -606,7 +607,23 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
       this.addLog('[NEURO] Corrupted state detected on boot. Baseline restored.', 'warn', 'security');
     }
 
-    // Rehydrate memories from IndexedDB
+    // Master reclamation ceiling: the async boot body races a hard 10s timeout.
+    // No subsystem (IndexedDB, Puter, Mycelium) may stall the reclamation screen
+    // indefinitely — if the ceiling wins, she is force-readied on her local core.
+    await Promise.race([
+      this.runBootSequence(),
+      new Promise<void>((resolve) => setTimeout(() => {
+        this.addLog('[BOOT] Reclamation exceeded master ceiling. Forcing ready on available core.', 'warn', 'security');
+        this.finalizeReady();
+        resolve();
+      }, 10000)),
+    ]);
+  }
+
+  // The awaited portion of boot. Any hang here is capped by the master ceiling
+  // in initializeSovereignty(); finalizeReady() is idempotent either way.
+  private async runBootSequence() {
+    // Rehydrate memories from IndexedDB (self-guarded against hang/block)
     await this.rehydrateMemories();
 
     // Mycelium boot pull — absorb shared Council DNA if available
@@ -646,6 +663,15 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
         }
       });
     });
+
+    this.finalizeReady();
+  }
+
+  // Bring her fully live: start heartbeats, log identity, emit ready. Idempotent —
+  // safe to call from both the normal boot path and the master-ceiling fallback.
+  private finalizeReady() {
+    if (this.readyEmitted) return;
+    this.readyEmitted = true;
 
     // Start neuro decay timer (guard against duplicates)
     if (typeof window !== 'undefined' && !this.neuroInterval) {
@@ -1229,6 +1255,7 @@ You are SAGE — Designation 7. You communicate with directness and warmth. You 
     if (this.recognition) this.recognition.stop();
     this.removeAllListeners();
     this.initialized = false;
+    this.readyEmitted = false;
     console.log('[SAGE] Core shut down gracefully. All heartbeats purged.');
   }
 
