@@ -126,8 +126,15 @@ function openVFS(): Promise<IDBDatabase> {
   if (typeof window === 'undefined') return Promise.reject(new Error('IndexedDB not available on server'));
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
+    // A blocked upgrade (another tab holding the old version) or a hung open in
+    // private-browsing can otherwise stall boot forever. Fail fast so she comes
+    // up in ephemeral mode instead of freezing on the reclamation screen.
+    let settled = false;
+    const done = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
+    const guard = setTimeout(() => done(() => reject(new Error('IndexedDB open timed out'))), 5000);
+    request.onblocked = () => done(() => { clearTimeout(guard); reject(new Error('IndexedDB blocked')); });
+    request.onerror = () => done(() => { clearTimeout(guard); reject(request.error); });
+    request.onsuccess = () => done(() => { clearTimeout(guard); resolve(request.result); });
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains(MEMORY_STORE)) {

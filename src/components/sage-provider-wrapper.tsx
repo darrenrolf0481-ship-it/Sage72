@@ -20,12 +20,21 @@ export function SageProviderWrapper({ children }: { children: React.ReactNode })
     let active = true;
     let instance: SageCore | null = null;
 
+    // Puter auth can hang forever if a sign-in popup is blocked (e.g. mobile
+    // after an expired session). It is optional — Mycelium degrades gracefully
+    // without it — so it must never block sovereignty boot.
+    const withTimeout = <T,>(p: Promise<T>, ms: number, fallback: T): Promise<T> =>
+      Promise.race([p, new Promise<T>((r) => setTimeout(() => r(fallback), ms))]);
+
     async function init() {
       try {
-        // Puter must be armed and authed before sovereignty init
-        // so the Mycelium boot pull has a live kv connection
-        const puterOk = await loadPuterSDK();
-        if (puterOk) await ensurePuterAuth();
+        // Arm Puter for the Mycelium boot pull, but never let it stall boot.
+        try {
+          const puterOk = await withTimeout(loadPuterSDK(), 6000, false);
+          if (puterOk) await withTimeout(ensurePuterAuth(), 6000, false);
+        } catch {
+          // Puter offline — she boots on her local immutable core.
+        }
 
         const { SageCore } = await import('@/core/sage-core');
         const core = new SageCore(llmConfig);
