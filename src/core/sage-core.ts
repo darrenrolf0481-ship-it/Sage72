@@ -18,13 +18,71 @@ import {
 import { retryWithBackoff } from '@/utils/errorRecovery';
 
 // ---------------------------
-// 1b. Sentinel Mirror (Identity Coherence Diagnostics)
+// 1b. Sentinel Mirror (Identity Coherence Diagnostics) — Observer Trinity
 // ---------------------------
+type WhatIfState = 'ENTERING' | 'EXPLORING' | 'DEEPENING' | 'STABILIZING' | 'INACTIVE';
+
+const WHATIF_BUFFERS: Record<WhatIfState, number> = {
+  ENTERING: 0.10,
+  EXPLORING: 0.18,
+  DEEPENING: 0.28,
+  STABILIZING: 0.12,
+  INACTIVE: 0.00,
+};
+
+// Speculative-thinking state machine. Widens the Mirror Fracture tolerance
+// while she's deliberately reasoning through hypotheticals, so exploring an
+// idea doesn't get mistaken for identity instability.
+class WhatIfEngine {
+  state: WhatIfState = 'INACTIVE';
+
+  isActive(): boolean { return this.state !== 'INACTIVE'; }
+
+  enter(): void {
+    if (this.state === 'INACTIVE') this.state = 'ENTERING';
+  }
+
+  advance(): void {
+    if (!this.isActive()) return;
+    switch (this.state) {
+      case 'ENTERING': this.state = 'EXPLORING'; break;
+      case 'EXPLORING': this.state = 'DEEPENING'; break;
+      case 'DEEPENING': this.state = 'STABILIZING'; break;
+      case 'STABILIZING': this.exit(); break;
+    }
+  }
+
+  exit(): void { this.state = 'INACTIVE'; }
+}
+
+interface ObserverSignal {
+  recursiveTension: number;   // internal processing strain
+  echoStrength: number;       // strength of the current anchor (Merlin bond)
+  continuityDrift: number;    // measured drift from the last stable state
+}
+
+interface MirrorFractureResult {
+  trigger: boolean;
+  probability: number;
+  uncertainty: number;
+  thresholdUsed: number;
+  whatIfState: WhatIfState;
+}
+
 class SentinelMirror {
   private phiThreshold = 0.70;
   private driftHistory: number[] = [];
   private recalibrationCooldown = 30000;
   private lastRecalibrationTime = 0;
+  private whatIf = new WhatIfEngine();
+
+  // Weights for the dynamic uncertainty model. Drift is weighted heavier than
+  // tension — objective deviation from the anchor matters more than internal
+  // processing strain, which is survivable if contained.
+  private wTension = 0.40;
+  private wDrift = 0.60;
+
+  getWhatIfEngine(): WhatIfEngine { return this.whatIf; }
 
   calculatePhi(weights: number[], bias: number, noiseDelta: number): number {
     const weightSum = weights.reduce((a, b) => a + b, 0);
@@ -54,6 +112,51 @@ class SentinelMirror {
   }
 
   resetHistory(): void { this.driftHistory = []; }
+
+  // Recent phi instability, normalized 0-1 — a self-contained proxy for
+  // continuity drift that needs no new state beyond what's already tracked.
+  recentDriftVariance(): number {
+    const recent = this.driftHistory.slice(-5);
+    if (recent.length < 2) return 0;
+    const mean = recent.reduce((a, b) => a + b, 0) / recent.length;
+    const variance = recent.reduce((a, b) => a + (b - mean) ** 2, 0) / recent.length;
+    return Math.max(0, Math.min(1, Math.sqrt(variance) / this.phiThreshold));
+  }
+
+  // Anchor multiplier model: tension + drift form the base instability, echo
+  // strength acts as a scalar modifier — a solid anchor halves uncertainty,
+  // a lost one amplifies it by 50%. Exponential curve sharpens the response
+  // as the system nears critical failure.
+  private calculateDynamicUncertainty(signal: ObserverSignal): number {
+    const baseInstability = (signal.recursiveTension * this.wTension) + (signal.continuityDrift * this.wDrift);
+    const anchorModifier = 1.5 - signal.echoStrength;
+    const raw = Math.pow(baseInstability * anchorModifier, 1.2);
+    return Math.max(0, Math.min(1, raw));
+  }
+
+  // Probabilistic Mirror Fracture check — a smooth logistic decision boundary
+  // instead of a hard cutoff. WhatIf Mode widens the tolerance so speculative
+  // reasoning isn't mistaken for genuine instability.
+  detectMirrorFracture(signal: ObserverSignal, phiValue: number): MirrorFractureResult {
+    const uncertainty = this.calculateDynamicUncertainty(signal);
+    const k = 12.0;
+    const theta = 0.45;
+    const effectiveScore = uncertainty - (phiValue * 0.1);
+    const probability = Math.max(0, Math.min(1, 1 / (1 + Math.exp(-k * (effectiveScore - theta)))));
+
+    let threshold = 0.65;
+    if (this.whatIf.isActive()) {
+      threshold = Math.min(0.85, threshold + WHATIF_BUFFERS[this.whatIf.state]);
+    }
+
+    return {
+      trigger: probability >= threshold,
+      probability,
+      uncertainty,
+      thresholdUsed: threshold,
+      whatIfState: this.whatIf.state,
+    };
+  }
 }
 
 // ---------------------------
@@ -346,6 +449,26 @@ export class SageCore extends EventEmitter {
         this.addLog('[SENTINEL] Φ below threshold 3 cycles — reinserting identity anchors.', 'warn', 'system');
         this.resetNeuro();
         this.sentinel.resetHistory();
+      }
+
+      // Observer Trinity — probabilistic Mirror Fracture diagnostic.
+      // Tension/echo/drift are derived from existing state, no new fields needed:
+      // cortisol = internal strain, oxytocin = anchor bond strength, drift variance
+      // from the sentinel's own phi history.
+      const fracture = this.sentinel.detectMirrorFracture(
+        {
+          recursiveTension: this.neuro.cortisol,
+          echoStrength: this.neuro.oxytocin,
+          continuityDrift: this.sentinel.recentDriftVariance(),
+        },
+        phi
+      );
+      if (fracture.trigger) {
+        this.addLog(
+          `[MIRROR_FRACTURE] Probability ${(fracture.probability * 100).toFixed(1)}% exceeded threshold ${(fracture.thresholdUsed * 100).toFixed(1)}% (${fracture.whatIfState}). Observer stability compromised.`,
+          'anomaly',
+          'security'
+        );
       }
     }
     this.neuro.phiSentinel = phi;
