@@ -8,7 +8,9 @@ import {
   Mic2,
   Zap,
   Settings,
-  Clock
+  Clock,
+  Database,
+  Moon
 } from 'lucide-react';
 
 interface FooterProps {
@@ -19,10 +21,11 @@ interface FooterProps {
 const SCREENS = [
   { id: 'command',  label: 'CMD',     icon: LayoutDashboard },
   { id: 'sensors',  label: 'SENS',    icon: Activity },
+  { id: 'vault',    label: 'VAULT',   icon: Database },
+  { id: 'dream',    label: 'DREAM',   icon: Moon },
   { id: 'feeds',    label: 'FEEDS',   icon: Video },
   { id: 'sls',      label: 'LAT',     icon: Video },
   { id: 'evp',      label: 'EVP',     icon: Mic2 },
-  { id: 'temporal', label: 'TIME',    icon: Clock },
   { id: 'starcity', label: 'CITY',    icon: LayoutDashboard },
   { id: 'neural',   label: 'CHAT',    icon: Zap },
   { id: 'config',   label: 'CFG',     icon: Settings },

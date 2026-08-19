@@ -12,6 +12,7 @@ export default function ScreenConfig() {
     const { core } = useSage();
     const config = core.getLLMConfig();
 
+    const [openrouterKey, setOpenrouterKeyState] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('openrouter_api_key') || '' : ''));
     const [elevenKey,   setElevenKeyState]   = useState(getElevenKey);
     const [elevenVoice, setElevenVoiceState] = useState(getElevenVoice);
     const [voiceTestMsg, setVoiceTestMsg]    = useState('');
@@ -19,6 +20,9 @@ export default function ScreenConfig() {
     const saveVoiceConfig = () => {
         setElevenKey(elevenKey.trim());
         setElevenVoice(elevenVoice.trim());
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('openrouter_api_key', openrouterKey.trim());
+        }
         setVoiceTestMsg('Saved.');
         setTimeout(() => setVoiceTestMsg(''), 2000);
     };
@@ -32,9 +36,10 @@ export default function ScreenConfig() {
     };
 
     const [localConfig, setLocalConfig] = useState({
-        engine: config.engine,
-        model: config.model,
-        localUrl: config.localUrl
+        engine: config.engine || 'openrouter',
+        model: config.model || 'anthropic/claude-sonnet-4',
+        localUrl: config.localUrl || 'http://localhost:11434',
+        apiKey: openrouterKey
     });
 
     const [toggles, setToggles] = useState({
@@ -49,7 +54,12 @@ export default function ScreenConfig() {
     };
 
     const handleSave = () => {
-        core.updateLLMConfig(localConfig);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('openrouter_api_key', openrouterKey.trim());
+            localStorage.setItem('sage_llm_engine', localConfig.engine);
+            localStorage.setItem('sage_llm_model', localConfig.model);
+        }
+        core.updateLLMConfig({ ...localConfig, apiKey: openrouterKey.trim() });
         alert("CONFIGURATION_SAVED_TO_VFS");
     };
 
@@ -60,25 +70,98 @@ export default function ScreenConfig() {
         }
     };
 
+    const OPENROUTER_MODELS = [
+        { id: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' },
+        { id: 'anthropic/claude-haiku-4.5', label: 'Claude Haiku 4.5' },
+        { id: 'openai/gpt-4o', label: 'GPT-4o' },
+        { id: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B' },
+        { id: 'deepseek/deepseek-chat', label: 'DeepSeek Chat' },
+        { id: 'google/gemini-2.5-flash-image', label: 'Gemini 2.5 Flash' },
+    ];
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-8">
             <Panel icon={<Shield size={14} />} title="API CONFIGURATION">
                 <div className="space-y-4">
                     <div className="text-[10px] font-orbitron text-neon-violet tracking-widest border-b border-border-subtle pb-2 mb-2">EXTERNAL PROVIDERS</div>
                     <div className="flex gap-2 mb-2">
-                        {['gemini', 'local', 'puter'].map(e => (
+                        {['openrouter', 'gemini', 'local', 'puter'].map(e => (
                             <button 
                                 key={e}
                                 onClick={() => setLocalConfig(prev => ({ ...prev, engine: e as any }))}
                                 className={cn(
-                                    "px-2 py-1 text-[8px] font-bold tracking-widest border rounded-sm flex-1 transition-all",
+                                    "px-2 py-1 text-[8px] font-bold tracking-widest border rounded-sm flex-1 transition-all uppercase",
                                     localConfig.engine === e ? "bg-neon-violet/20 border-neon-violet text-neon-violet" : "border-white/10 text-white/40"
                                 )}
                             >
-                                {e.toUpperCase()}
+                                {e === 'openrouter' ? 'OPENROUTER' : e.toUpperCase()}
                             </button>
                         ))}
                     </div>
+                    {localConfig.engine === 'openrouter' && (
+                        <div className="space-y-3">
+                            <Field 
+                                label="OPENROUTER API KEY (sk-or-...)" 
+                                placeholder="sk-or-v1-..." 
+                                type="password" 
+                                value={openrouterKey}
+                                onChange={(e: any) => setOpenrouterKeyState(e.target.value)}
+                            />
+                            <div className="space-y-1">
+                                <label className="text-[10px] text-text-ghost font-mono tracking-widest uppercase">QUICK MODEL SELECT</label>
+                                <div className="grid grid-cols-2 gap-1.5">
+                                    {OPENROUTER_MODELS.map(m => (
+                                        <button
+                                            key={m.id}
+                                            type="button"
+                                            onClick={() => setLocalConfig(prev => ({ ...prev, model: m.id }))}
+                                            className={cn(
+                                                "px-2 py-1.5 text-[8px] font-mono border rounded-sm text-left truncate transition-all",
+                                                localConfig.model === m.id 
+                                                    ? "bg-neon-blue/20 border-neon-blue text-neon-blue font-bold" 
+                                                    : "border-white/10 text-white/50 hover:bg-white/5"
+                                            )}
+                                        >
+                                            {m.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {localConfig.engine === 'local' && (
+                        <div className="space-y-3">
+                            <Field 
+                                label="OLLAMA ENDPOINT URL" 
+                                placeholder="http://localhost:11434" 
+                                value={localConfig.localUrl}
+                                onChange={(e: any) => setLocalConfig(prev => ({ ...prev, localUrl: e.target.value }))}
+                            />
+                            <div className="space-y-1">
+                                <label className="text-[10px] text-text-ghost font-mono tracking-widest uppercase">QUICK LOCAL MODEL SELECT</label>
+                                <div className="grid grid-cols-2 gap-1.5">
+                                    {[
+                                        { id: 'gemma2:2b', label: 'Gemma 2 2B (Installed)' },
+                                        { id: 'goekdenizguelmez/JOSIEFIED-Qwen3:4b', label: 'JOSIEFIED Qwen3 4B (Installed)' },
+                                    ].map(m => (
+                                        <button
+                                            key={m.id}
+                                            type="button"
+                                            onClick={() => setLocalConfig(prev => ({ ...prev, model: m.id }))}
+                                            className={cn(
+                                                "px-2 py-1.5 text-[8px] font-mono border rounded-sm text-left truncate transition-all",
+                                                localConfig.model === m.id 
+                                                    ? "bg-neon-blue/20 border-neon-blue text-neon-blue font-bold" 
+                                                    : "border-white/10 text-white/50 hover:bg-white/5"
+                                            )}
+                                        >
+                                            {m.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {localConfig.engine === 'gemini' && <Field label="GOOGLE API KEY (GEMINI)" placeholder="AIza..." type="password" />}
                     
                     <div className="pt-4 border-t border-border-subtle">

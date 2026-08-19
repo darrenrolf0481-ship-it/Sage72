@@ -13,6 +13,8 @@ import { Loader2 } from 'lucide-react';
 // Transitioning to standard React Lazy Loading to decouple from Next.js server constraints
 const ScreenCommand = lazy(() => import('@/components/ScreenCommand'));
 const ScreenSensors = lazy(() => import('@/components/ScreenSensors'));
+const ScreenVault = lazy(() => import('@/components/ScreenVault'));
+const ScreenDream = lazy(() => import('@/components/ScreenDream'));
 const ScreenFeeds = lazy(() => import('@/components/ScreenFeeds'));
 const ScreenEVP = lazy(() => import('@/components/ScreenEVP'));
 const ScreenSLS = lazy(() => import('@/components/ScreenSLS'));
@@ -125,6 +127,8 @@ export default function NexusPlatform() {
           switch (activeScreen) {
             case 'command': return <ScreenCommand meters={meters} />;
             case 'sensors': return <ScreenSensors externalHistoryRef={historiesRef} setAnomalyLevel={setAnomalyLevel} />;
+            case 'vault': return <ScreenVault />;
+            case 'dream': return <ScreenDream />;
             case 'feeds': return <ScreenFeeds />;
             case 'evp': return <ScreenEVP isRecording={isRecording} onToggleRecording={toggleRecording} />;
             case 'sls': return <ScreenSLS />;

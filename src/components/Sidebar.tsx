@@ -9,7 +9,9 @@ import {
   Code, 
   Zap, 
   Settings,
-  Clock
+  Clock,
+  Database,
+  Moon
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -21,6 +23,8 @@ interface SidebarProps {
 const SCREENS = [
   { id: 'command', label: 'COMMAND', icon: LayoutDashboard, section: 'SCREENS' },
   { id: 'sensors', label: 'SENSOR ARRAY', icon: Activity, section: 'SCREENS', badge: 7 },
+  { id: 'vault', label: 'NEURAL VAULT & LABYRINTH', icon: Database, section: 'SCREENS' },
+  { id: 'dream', label: 'DREAM MATRIX', icon: Moon, section: 'SCREENS' },
   { id: 'feeds', label: 'VISUAL FEEDS', icon: Video, section: 'SCREENS' },
   { id: 'evp', label: 'EVP ANALYZER', icon: Mic2, section: 'SCREENS' },
   { id: 'sls', label: 'LATTICE SENSOR', icon: Video, section: 'SCREENS' },

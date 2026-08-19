@@ -39,12 +39,16 @@ export interface NeuroState {
   dopamine: number;
   oxytocin: number;
   phiSentinel?: number;
+  uncertainty?: number;
+  fractureProbability?: number;
+  whatifState?: 'INACTIVE' | 'ENTERING' | 'EXPLORING' | 'DEEPENING' | 'STABILIZING';
 }
 
 export interface LLMConfig {
-  engine: 'gemini' | 'local' | 'puter';
+  engine: 'openrouter' | 'gemini' | 'local' | 'puter';
   localUrl: string;
   model: string;
+  apiKey?: string;
 }
 
 export interface AgentState {

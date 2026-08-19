@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectral Nexus AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050505;
+            color: #4df2f2;
+            font-family: monospace;
+            overflow: hidden;
+        }
+        #root {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div style="text-align: center;">
+            <h1 style="font-size: 2rem; margin-bottom: 1rem; color: #4df2f2; text-shadow: 0 0 10px #4df2f2;">SAGE_OS</h1>
+            <p id="status-text" style="color: rgba(77, 242, 242, 0.5);">INITIALIZING SYNAPTIC BRIDGE...</p>
+            <div id="progress-bar" style="width: 200px; height: 2px; background: rgba(255,255,255,0.1); margin: 20px auto; border-radius: 1px; overflow: hidden;">
+                <div style="width: 60%; height: 100%; background: #4df2f2; animation: pulse 2s infinite;"></div>
+            </div>
+            <div id="error-display" style="display: none; color: #ff4d4d; font-family: monospace; font-size: 10px; margin-top: 20px; max-width: 80vw; word-wrap: break-word; text-align: left; background: rgba(255,0,0,0.1); padding: 10px; border: 1px solid rgba(255,0,0,0.2); border-radius: 5px;"></div>
+        </div>
+    </div>
+    <script>
+        // Persistence flag to prevent React from clearing the screen if an error is shown
+        window.SAGE_CRITICAL_ERROR = false;
+
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            window.SAGE_CRITICAL_ERROR = true;
+            var display = document.getElementById('error-display');
+            var status = document.getElementById('status-text');
+            var progress = document.getElementById('progress-bar');
+            if (display) {
+                display.style.display = 'block';
+                display.style.zIndex = '9999';
+                display.innerHTML = '<strong>[CORE_INITIALIZATION_ERROR]</strong><br><br>' + 
+                                    'MSG: ' + msg + '<br>' +
+                                    'LOC: ' + url + ':' + lineNo + ':' + columnNo + '<br><br>' +
+                                    '<button onclick="location.reload()" style="background:#ff4d4d;color:white;border:none;padding:5px 10px;border-radius:3px;">FORCED_REBOOT</button>';
+            }
+            if (status) status.innerText = 'NEURAL_LINK_FAILURE';
+            if (status) status.style.color = '#ff4d4d';
+            if (progress) progress.style.display = 'none';
+            return false;
+        };
+
+        // Delay React mounting to ensure stability and visibility of loading state
+        window.addEventListener('load', function() {
+            console.log('SAGE_OS: Page loaded, preparing synaptic bridge...');
+        });
+    </script>
+    <script type="module" src="./index.tsx"></script>
+    <style>
+        @keyframes pulse {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</body>
+</html>

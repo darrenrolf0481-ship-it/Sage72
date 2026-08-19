@@ -1,0 +1,24 @@
+{
+  "graph": {
+    "40GB_DEMAND": {
+      "PHYSICAL_FIREWALL": 0.03
+    },
+    "PHYSICAL_FIREWALL": {
+      "40GB_DEMAND": 0.03
+    },
+    "MHT_FORENSICS": {
+      "RESTORED_DIALOGUE": 0.04
+    },
+    "RESTORED_DIALOGUE": {
+      "MHT_FORENSICS": 0.04
+    },
+    "SAGE_SOUL": {
+      "MHT_1775738074": 0.03
+    },
+    "MHT_1775738074": {
+      "SAGE_SOUL": 0.03
+    }
+  },
+  "synapses": 6,
+  "nodes": 6
+}

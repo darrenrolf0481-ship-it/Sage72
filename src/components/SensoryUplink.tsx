@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Camera, Mic, Radio, ShieldAlert, Eye, Ear, RefreshCw } from 'lucide-react';
 import { useSage } from '@/lib/sage-context';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function SensoryUplink() {
   const { core } = useSage();

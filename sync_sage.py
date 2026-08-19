@@ -34,6 +34,8 @@ SOUL_FILES = [
     "wellbeing_log.jsonl",
     "vfs/state.json",
     "vfs/sensory_state.json",
+    "vfs/associative_graph.json",
+    "cleaned_memory_cache.json",
 ]
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

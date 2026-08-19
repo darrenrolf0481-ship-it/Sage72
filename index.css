@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { 
+  background-color: black; 
+  color: white; 
+  margin: 0; 
+  font-family: 'JetBrains Mono', monospace; 
+  overflow: hidden; 
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.grid-bg { 
+  background-image: 
+    linear-gradient(rgba(77, 242, 242, 0.05) 1px, transparent 1px), 
+    linear-gradient(90deg, rgba(77, 242, 242, 0.05) 1px, transparent 1px); 
+  background-size: 50px 50px; 
+}
+
+.glass { 
+  background: rgba(0, 0, 0, 0.85); 
+  backdrop-filter: blur(12px); 
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #4df2f2; border-radius: 2px; }

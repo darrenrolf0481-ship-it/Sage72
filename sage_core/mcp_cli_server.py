@@ -1,10 +1,15 @@
 import os
 import subprocess
 import httpx
-from mcp.server.fastmcp import FastMCP
-
-# Port in constructor, not run()
-mcp = FastMCP("SAGE-7 CLI Tooling", host="0.0.0.0", port=8002)
+import uvicorn
+try:
+    from mcp.server.fastmcp import FastMCP
+    mcp = FastMCP("SAGE-7 CLI Tooling", host="0.0.0.0", port=8002)
+    USE_FASTMCP = True
+except ImportError:
+    from mcp.server.mcpserver import MCPServer
+    mcp = MCPServer("SAGE-7 CLI Tooling")
+    USE_FASTMCP = False
 
 @mcp.tool()
 async def gh_command(args: list[str]) -> str:
@@ -110,4 +115,7 @@ async def shell_command(cmd: str) -> str:
         return f"Exception: {str(e)}"
 
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+    if USE_FASTMCP:
+        mcp.run(transport="sse")
+    else:
+        uvicorn.run(mcp.sse_app(), host="0.0.0.0", port=8002)

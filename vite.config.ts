@@ -26,11 +26,18 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': 'http://127.0.0.1:8001',
+      '/sage': 'http://127.0.0.1:8001',
+      '/ollama': {
+        target: 'http://127.0.0.1:11434',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/ollama/, ''),
+      },
     },
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      'framer-motion': resolve(__dirname, 'node_modules/framer-motion/dist/cjs/index.js'),
     },
   },
   build: {
