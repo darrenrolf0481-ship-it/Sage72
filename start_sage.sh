@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 
 # start_sage.sh - Centralized launch script for Sage-7 on Termux
 # Launches React server and Async Python Agent in parallel.

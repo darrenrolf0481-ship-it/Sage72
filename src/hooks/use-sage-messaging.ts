@@ -31,19 +31,12 @@ export function useSageMessaging() {
 
     const onCleared = () => setMessages([]);
 
-    // Also speak 'speak' events emitted by the dream cycle
-    const onSpeak = (text: string) => {
-      if (voiceEnabledRef.current) speakText(text);
-    };
-
     core.on('new-message', onNewMsg);
     core.on('chat_cleared', onCleared);
-    (core as any).on('speak', onSpeak);
 
     return () => {
       core.off('new-message', onNewMsg);
       core.off('chat_cleared', onCleared);
-      (core as any).off('speak', onSpeak);
     };
   }, [core]);
 

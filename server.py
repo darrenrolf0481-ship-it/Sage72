@@ -21,6 +21,11 @@ from agno.tools.mcp import MCPTools
 # Load credentials
 load_dotenv(".env.local")
 
+try:
+    from spool import spool_exchange
+except ImportError:
+    from .spool import spool_exchange
+
 # SAGE-7 11.3v2 Sentinel & Hebbian Associative Memory Substrate
 try:
     from sage_core.sentinel import get_observer, get_associative_memory, ObserverSignal, WhatIfState
@@ -676,6 +681,16 @@ async def chat(msg: ChatRequest):
                                 "salience": 0.6,
                                 "dopamine_modifier": 0.6
                             })
+                            try:
+                                spool_exchange(
+                                    agent="Sage7",
+                                    user_text=msg.message,
+                                    assistant_text=reply,
+                                    model=cloud_model,
+                                    tags=["sage7", "openrouter"]
+                                )
+                            except Exception as sp_err:
+                                print(f"[SPOOL] Error: {sp_err}")
                             return {"reply": reply, "model": cloud_model, "provider": "openrouter"}
                         else:
                             print(f"[OPENROUTER] Empty choices from {cloud_model}")
@@ -706,6 +721,16 @@ async def chat(msg: ChatRequest):
                 "salience": 0.6,
                 "dopamine_modifier": 0.6
             })
+            try:
+                spool_exchange(
+                    agent="Sage7",
+                    user_text=msg.message,
+                    assistant_text=content,
+                    model=local_model,
+                    tags=["sage7", "ollama"]
+                )
+            except Exception as sp_err:
+                print(f"[SPOOL] Error: {sp_err}")
             return {"reply": content, "model": local_model, "provider": "ollama"}
     except Exception as e:
         print(f"[OLLAMA] Error: {e}")
@@ -762,9 +787,63 @@ async def openrouter_chat(payload: dict):
             if not reply or not str(reply).strip():
                 reply = "No content returned from model."
                 
+            try:
+                user_prompt = ""
+                if messages:
+                    for m in reversed(messages):
+                        if m.get("role") == "user":
+                            user_prompt = m.get("content", "")
+                            break
+                elif payload.get("prompt"):
+                    user_prompt = payload.get("prompt")
+                
+                if user_prompt and str(reply).strip():
+                    spool_exchange(
+                        agent="Sage7",
+                        user_text=user_prompt,
+                        assistant_text=str(reply),
+                        model=model,
+                        tags=["sage7", "openrouter_proxy"]
+                    )
+            except Exception as sp_err:
+                print(f"[SPOOL PROXY] Error: {sp_err}")
+
             return {"status": "success", "reply": str(reply), "data": data}
     except Exception as e:
         return {"status": "error", "reply": f"Connection Error: {str(e)}"}
+
+@app.get("/api/tags")
+@app.get("/ollama/api/tags")
+async def get_ollama_tags():
+    """Proxy local Ollama models or return fallback installed models gracefully in JSON"""
+    try:
+        async with httpx.AsyncClient() as client:
+            r = await client.get("http://127.0.0.1:11434/api/tags", timeout=3.0)
+            if r.status_code == 200:
+                return r.json()
+    except Exception:
+        pass
+    return {
+        "models": [
+            {"name": "gemma2:2b", "size": 1600000000, "status": "installed"},
+            {"name": "goekdenizguelmez/JOSIEFIED-Qwen3:4b", "size": 2500000000, "status": "installed"},
+            {"name": "llama3:latest", "size": 4700000000, "status": "installed"}
+        ]
+    }
+
+@app.get("/api/mcp")
+async def get_mcp_registry():
+    """Return all active MCP servers and tool capabilities for Seven's UI and agents"""
+    reg_path = Path(__file__).parent / "data" / "mcp_registry.json"
+    if not reg_path.exists():
+        reg_path = Path("/root/ADHD-Sage/data/mcp_registry.json")
+    if reg_path.exists():
+        try:
+            with open(reg_path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+    return {"status": "error", "message": "Registry not found"}
 
 # --- Forensic & Coding Advance Endpoints ---
 @app.post("/api/coding")

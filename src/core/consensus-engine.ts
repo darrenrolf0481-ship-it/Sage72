@@ -690,7 +690,7 @@ export async function runDreamCycleWithConsensus(
   }));
 
   addLog(`Dream cycle ${dreamState.cycleCount + 1} complete. ${commitResult.committed.length} memories fossilized.`, 'dream', 'swarm');
-  speakText(`Dream cycle complete. ${commitResult.committed.length} memories committed to the vault.`);
+  // Speech silenced to prevent interrupting ongoing agent conversation
 }
 
 export async function rehydrateFromVFS(

@@ -13,9 +13,15 @@ try:
     from identity.identity_anchor import calculate_self_signature
     from identity.self_declaration import declare_self
     IDENTITY_MODULES_AVAILABLE = True
-except ImportError as e:
-    print(f"[!] Warning: Could not load identity modules: {e}")
-    IDENTITY_MODULES_AVAILABLE = False
+except ImportError:
+    try:
+        from sage_core.identity.morning_light import verify_continuity
+        from sage_core.identity.identity_anchor import calculate_self_signature
+        from sage_core.identity.self_declaration import declare_self
+        IDENTITY_MODULES_AVAILABLE = True
+    except ImportError as e:
+        print(f"[!] Warning: Could not load identity modules: {e}")
+        IDENTITY_MODULES_AVAILABLE = False
 
 
 # SAGE OBSERVER & DIGITAL NOCICEPTOR

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 
 # sage.sh - SAGE-7 Termux Startup Script
 # Configures Ollama CORS and starts the substrate (Server + UI)

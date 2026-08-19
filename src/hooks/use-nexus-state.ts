@@ -76,9 +76,6 @@ export function useNexusState() {
         const change = (Math.random() - 0.48) * 10;
         return Math.min(100, Math.max(0, Math.round(prev + change)));
       });
-      
-      // Trigger dream cycle check
-      if (Math.random() < 0.05) core.forceDreamCycle();
     }, 5000);
 
     return () => {
