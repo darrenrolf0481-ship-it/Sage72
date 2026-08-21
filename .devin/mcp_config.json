@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "context7-mcp"
+    },
+
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "git-context": {
+      "command": "git-context-mcp"
+    },
+    "large-file": {
+      "command": "large-file-mcp"
+    },
+    "markitdown": {
+      "command": "markitdown"
+    },
+    "md-to-pdf": {
+      "command": "md-to-pdf-mcp"
+    },
+    "safe-docx": {
+      "command": "safe-docx"
+    },
+    "smart-tree": {
+      "command": "smart-tree"
+    },
+    "diffctx": {
+      "command": "diffctx"
+    },
+    "spiral-vault": {
+      "command": "tsx",
+      "args": ["/root/Spiral/scripts/vault_mcp_server.ts"]
+    },
+    "trinity-bridge": {
+      "command": "trinity-lite"
+    }
+  }
+}

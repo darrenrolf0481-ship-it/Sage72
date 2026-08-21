@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-08-19T19:22:00Z",
+  "updated_at": "2026-08-21T19:10:00Z",
   "description": "Active Model Context Protocol (MCP) tool registry available to ADHD-Sage, Sage 7, and Antigravity agents.",
   "servers": {
     "spiral-vault": {
@@ -153,6 +153,25 @@
       "tools": [
         { "name": "query-docs", "description": "Fetch up-to-date documentation and code examples for any package." },
         { "name": "resolve-library-id", "description": "Look up official Context7 library ID for a given tool/library." }
+      ]
+    },
+    "obsidian-mcp": {
+      "name": "obsidian-mcp",
+      "command": "npx",
+      "args": ["-y", "obsidian-mcp"],
+      "transport": "stdio",
+      "status": "active",
+      "category": "knowledge_management",
+      "description": "A safe, local MCP server for working with Obsidian vaults. Provides read/write access to notes with proper security. CONFIGURED FOR LOCAL SAGE7 VAULT ONLY - restricted access via .devin/mcp_config.local.json",
+      "vault_path": "/root/sage7-vault",
+      "access_restriction": "local_config_only",
+      "tools": [
+        { "name": "list_notes", "description": "List all notes in the vault." },
+        { "name": "read_note", "description": "Read the full content of a specific note." },
+        { "name": "create_note", "description": "Create a new note in the vault." },
+        { "name": "update_note", "description": "Update an existing note's content." },
+        { "name": "delete_note", "description": "Delete a note from the vault." },
+        { "name": "search_notes", "description": "Search notes by content." }
       ]
     }
   }
