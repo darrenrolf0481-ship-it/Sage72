@@ -20,6 +20,7 @@ def archive_lesson(concept_a: str, concept_b: str, impact_weight: float = 0.95, 
     # 1. Local Substrate Hebbian Wiring
     memory = get_associative_memory()
     weights = memory.fire_together_wire_together(concept_a, concept_b, dopamine_level=dopamine_level, salience=salience)
+    memory.save()
     print(f"[SAGE-MEMORY] Associative graph updated: {weights}")
 
     # 2. Transmit to UI / Backend

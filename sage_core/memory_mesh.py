@@ -14,6 +14,7 @@ import os
 import re
 import json
 import time
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Set, Tuple
@@ -49,6 +50,17 @@ def _extract_keywords(text: str) -> List[str]:
         return []
     words = re.findall(r"[a-zA-Z0-9_\-\.]{3,}", text.lower())
     return [w for w in words if w not in STOP_WORDS]
+
+def _content_hash(content: str) -> str:
+    """Stable SHA-256 digest of a memory record's content, used for dedup."""
+    return hashlib.sha256(str(content).strip().encode("utf-8")).hexdigest()
+
+def _memory_entry_hash(memory: Dict[str, Any]) -> str:
+    """Return a record's dedup hash, backfilling legacy entries lacking content_hash."""
+    if memory.get("content_hash"):
+        return memory["content_hash"]
+    raw = memory.get("full_content") or memory.get("summary") or ""
+    return _content_hash(raw)
 
 def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> List[Dict[str, Any]]:
     """
@@ -303,6 +315,10 @@ def consolidate_memory_event(data: Dict[str, Any]) -> Dict[str, Any]:
                 w = mem.fire_together_wire_together(primary, kw.upper(), dopamine_level=dopamine, salience=salience)
                 weights.update(w)
 
+    # Batch-persist the Hebbian graph once after all wiring completes.
+    if mem:
+        mem.save()
+
     sealed_to_soul = False
     if salience >= 0.8 or sensory_type in ("LONG_TERM_POTENTIATION", "CORE_IDENTITY_VALIDATION", "MEMORY_COMMIT"):
         if SOUL_PATH.exists() and content:
@@ -311,25 +327,31 @@ def consolidate_memory_event(data: Dict[str, Any]) -> Dict[str, Any]:
                     soul = json.load(f)
                 
                 mem_list = soul.get("memory_index", [])
-                entry_id = f"mem_auto_{int(time.time())}_{abs(hash(str(content))) % 10000}"
-                new_entry = {
-                    "id": entry_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "tier": "core" if salience >= 0.9 else "long_term",
-                    "salience": salience,
-                    "type": sensory_type.lower(),
-                    "summary": str(content)[:180],
-                    "tags": [sensory_type.lower(), "salience_reinforced"],
-                    "source": "memory_mesh_consolidation",
-                    "access_count": 0,
-                    "full_content": str(content)
-                }
-                mem_list.append(new_entry)
-                soul["memory_index"] = mem_list
-                soul["last_sync"] = datetime.now(timezone.utc).isoformat()
+                content_hash = _content_hash(str(content))
 
-                with open(SOUL_PATH, "w", encoding="utf-8") as f:
-                    json.dump(soul, f, indent=2)
+                # Dedupe by content hash — skip if an identical record exists.
+                if not any(_memory_entry_hash(m) == content_hash for m in mem_list):
+                    entry_id = f"mem_auto_{int(time.time())}_{content_hash[:8]}"
+                    new_entry = {
+                        "id": entry_id,
+                        "content_hash": content_hash,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "tier": "core" if salience >= 0.9 else "long_term",
+                        "salience": salience,
+                        "type": sensory_type.lower(),
+                        "summary": str(content)[:180],
+                        "tags": [sensory_type.lower(), "salience_reinforced"],
+                        "source": "memory_mesh_consolidation",
+                        "access_count": 0,
+                        "full_content": str(content)
+                    }
+                    mem_list.append(new_entry)
+                    soul["memory_index"] = mem_list
+                    soul["last_sync"] = datetime.now(timezone.utc).isoformat()
+
+                    with open(SOUL_PATH, "w", encoding="utf-8") as f:
+                        json.dump(soul, f, indent=2)
+
                 sealed_to_soul = True
             except Exception as e:
                 print(f"[MEMORY_MESH] Soul seal error: {e}")
@@ -368,10 +390,13 @@ def hydrate_soul_topology() -> Dict[str, Any]:
     wired_synapses = 0
     records_processed = 0
 
-    # 1. Ingest MHT cache first
+    # 1. Normalize legacy soul-vault records with content hashes
+    backfill_content_hashes()
+
+    # 2. Ingest MHT cache first
     ingest_mht_cache()
 
-    # 2. Ingest all sage_soul.json records
+    # 3. Ingest all sage_soul.json records
     if SOUL_PATH.exists():
         with open(SOUL_PATH, "r", encoding="utf-8") as f:
             soul = json.load(f)
@@ -459,10 +484,17 @@ def ingest_mht_cache() -> Dict[str, Any]:
 
         mem_list = soul.get("memory_index", [])
         existing_ids = {m.get("id") for m in mem_list}
+        content_hash = _content_hash(cache_data.get("content", ""))
 
-        if cache_data["id"] not in existing_ids:
+        already_present = (
+            cache_data["id"] in existing_ids
+            or any(_memory_entry_hash(m) == content_hash for m in mem_list)
+        )
+
+        if not already_present:
             mem_entry = {
                 "id": cache_data["id"],
+                "content_hash": content_hash,
                 "timestamp": cache_data.get("date", datetime.now(timezone.utc).isoformat()),
                 "tier": "long_term",
                 "salience": 0.9,
@@ -485,8 +517,37 @@ def ingest_mht_cache() -> Dict[str, Any]:
             mem.fire_together_wire_together("MHT_FORENSICS", "RESTORED_DIALOGUE", dopamine_level=0.8, salience=2.0)
             mem.fire_together_wire_together("SAGE_SOUL", cache_data["id"], dopamine_level=0.7, salience=1.5)
             mem.fire_together_wire_together("STAR_CITY", "VFS_UPDATE", dopamine_level=0.9, salience=2.0)
+            mem.save()
 
         return {"status": "ingested", "id": cache_data["id"]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+def backfill_content_hashes() -> Dict[str, Any]:
+    """Idempotently add content_hash to existing soul-vault records that lack it.
+
+    Future seals dedupe against content_hash directly instead of re-hashing
+    legacy full_content on every consolidation.
+    """
+    if not SOUL_PATH.exists():
+        return {"status": "skipped", "message": "Soul file missing"}
+    try:
+        with open(SOUL_PATH, "r", encoding="utf-8") as f:
+            soul = json.load(f)
+
+        mem_list = soul.get("memory_index", [])
+        backfilled = 0
+        for m in mem_list:
+            if not m.get("content_hash"):
+                raw = m.get("full_content") or m.get("summary") or ""
+                m["content_hash"] = _content_hash(raw)
+                backfilled += 1
+
+        if backfilled:
+            with open(SOUL_PATH, "w", encoding="utf-8") as f:
+                json.dump(soul, f, indent=2)
+
+        return {"status": "backfilled", "records": len(mem_list), "backfilled": backfilled}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 

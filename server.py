@@ -569,6 +569,30 @@ async def memory_query(q: str = ""):
         "episodic": recall_recent_episodic(limit=5)
     }
 
+@app.get("/api/memory/recent")
+async def memory_recent():
+    """Return recent soul-vault records + episodic log for frontend hydration.
+
+    Projects soul records down to summary-level fields so the browser
+    localStorage prompt context is never flooded with full_content blobs.
+    """
+    soul = recall_soul_memories("", limit=10)
+    light_soul = [
+        {
+            "id": m.get("id", "UNKNOWN"),
+            "summary": (m.get("summary") or "")[:200],
+            "type": m.get("type", ""),
+            "tags": m.get("tags", []),
+            "salience": m.get("salience", 0.5),
+            "timestamp": m.get("timestamp") or m.get("created_at"),
+        }
+        for m in soul
+    ]
+    return {
+        "soul": light_soul,
+        "episodic": recall_recent_episodic(limit=10),
+    }
+
 @app.post("/api/memory/ingest_mht")
 async def memory_ingest_mht():
     """Ingest cleaned MHT forensic strands into SAGE-7 soul vault."""

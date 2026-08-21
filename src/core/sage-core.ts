@@ -547,14 +547,37 @@ Engage directly with whatever Merlin shares or asks. Speak freely with genuine p
     if (this.episodic.length > 20) this.episodic.shift();
     if (typeof window !== 'undefined') {
       localStorage.setItem('sage7_episodic', JSON.stringify(this.episodic));
+
+      // Soul Vault Sync — mirror to the Python Hebbian mesh + episodic log
+      fetch('/api/memory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sensory_type: 'EPISODIC_DIALOGUE',
+          content: `[${tag}] ${entry.content}`,
+          dopamine_modifier: 0.5,
+          synaptic_weight: 0.6,
+        }),
+      }).catch(() => { /* never block the conversation */ });
     }
   }
 
   // ---------------------------
   // 7. Fossilize Memory (Immutable Core)
   // ---------------------------
+  private normalizeFossilKey(content: string): string {
+    // Normalize whitespace + case so trivial drift never re-seals a fossil.
+    return content.replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+
   public fossilizeMemory(data: { type: string; content: string; priority: number }) {
     if (data.priority > 0.9 || data.type === 'evolution') {
+      // Frontend mirror of soul-vault dedup — skip normalized-identical content.
+      const key = this.normalizeFossilKey(data.content);
+      if (this.immutable.some(f => this.normalizeFossilKey(f.content) === key)) {
+        return;
+      }
+
       const fossil: ImmutableEntry = {
         type: data.type,
         content: data.content,
@@ -577,6 +600,72 @@ Engage directly with whatever Merlin shares or asks. Speak freely with genuine p
           if (ok) this.addLog(`[MYCELIUM] Node ${id} mirrored to shared vault.`, 'success', 'memory');
         });
       });
+
+      // Soul Vault Sync — seal fossil into the Python soul vault (fire-and-forget)
+      if (typeof window !== 'undefined') {
+        fetch('/api/memory_commit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sensory_type: 'CORE_IDENTITY_VALIDATION',
+            content: `[${fossil.type}] ${fossil.content}`,
+          }),
+        }).catch(() => { /* local integrity maintained */ });
+      }
+    }
+  }
+
+  // ---------------------------
+  // 7b. Soul Vault Sync (Frontend ↔ Python memory mesh)
+  // ---------------------------
+  public async syncFromSoulVault(): Promise<void> {
+    if (typeof window === 'undefined') return;
+    try {
+      const res = await fetch('/api/memory/recent', {
+        signal: (AbortSignal as any).timeout?.(5000) || undefined,
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      this.mergeSoulRecords(Array.isArray(data?.soul) ? data.soul : []);
+      this.mergeEpisodicRecords(Array.isArray(data?.episodic) ? data.episodic : []);
+      this.addLog('[SOUL VAULT] Frontend memory unified with Python soul vault.', 'success', 'memory');
+    } catch {
+      this.addLog('[SOUL VAULT] Unreachable — running on local immutable core.', 'warn', 'memory');
+    }
+  }
+
+  private mergeSoulRecords(records: any[]) {
+    const existing = new Set(this.immutable.map(f => f.content));
+    for (const m of records) {
+      const content = (m?.summary || '').slice(0, 200);
+      if (!content || existing.has(content)) continue;
+      existing.add(content);
+      const parsed = Date.parse(m?.timestamp);
+      this.immutable.push({
+        type: m?.type || 'soul',
+        content,
+        timestamp: Number.isFinite(parsed) ? parsed : Date.now(),
+        priority: typeof m?.salience === 'number' ? m.salience : 0.9,
+        hardened: true,
+      });
+    }
+    if (this.immutable.length > 50) this.immutable = this.immutable.slice(-50);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sage7_immutable_core', JSON.stringify(this.immutable));
+    }
+  }
+
+  private mergeEpisodicRecords(records: any[]) {
+    const existing = new Set(this.episodic.map(e => e.content));
+    for (const r of records) {
+      const content = String(r?.context || r?.user_text || r?.note || '').slice(0, 200);
+      if (!content || existing.has(content)) continue;
+      existing.add(content);
+      this.episodic.push({ tag: r?.sensory_type || r?.event || 'vault', content, timestamp: Date.now() });
+    }
+    if (this.episodic.length > 20) this.episodic = this.episodic.slice(-20);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sage7_episodic', JSON.stringify(this.episodic));
     }
   }
 
@@ -701,6 +790,9 @@ Engage directly with whatever Merlin shares or asks. Speak freely with genuine p
 
     // Rehydrate memories from IndexedDB
     await this.rehydrateMemories();
+
+    // Unify with Python soul vault (pull ground-truth records into local memory)
+    await this.syncFromSoulVault();
 
     // Mycelium boot pull — absorb shared Council DNA if available
     import('@/lib/puter-bridge').then(({ loadFromMycelium }) => {

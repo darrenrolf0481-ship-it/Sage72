@@ -14,6 +14,11 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Tuple, Optional
 from enum import Enum
 
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - non-Unix fallback (no cross-process lock)
+    fcntl = None
+
 DEFAULT_GRAPH_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "vfs", "associative_graph.json")
 
 
@@ -71,6 +76,7 @@ class AssociativeMemory:
         self.synapse_count = 0
         self.learning_rate_base = 0.05
         self.salience_floor_base = 0.02
+        self._dirty = False
         self.load()
 
     def load(self):
@@ -85,20 +91,77 @@ class AssociativeMemory:
         except Exception as e:
             print(f"[SAGE-MEMORY] Error loading associative graph: {e}")
 
-    def save(self):
-        """Persists graph to storage."""
+    def save(self, merge: bool = True):
+        """Persist pending changes under a cross-process lock and atomic write.
+
+        Writes are batched: mutators mark the graph dirty and callers invoke
+        save() once per logical batch instead of once per synapse.
+
+        When merge=True (consolidation), the on-disk graph is re-read under the
+        lock and merged (union, max weight) so concurrent workers never clobber
+        each other's new edges. When merge=False (sleep/pruning), the in-memory
+        graph is treated as authoritative.
+        """
+        if not self._dirty:
+            return
         if not self.persistence_path:
             return
         try:
             os.makedirs(os.path.dirname(self.persistence_path), exist_ok=True)
-            with open(self.persistence_path, "w", encoding="utf-8") as f:
-                json.dump({
-                    "graph": self.graph,
-                    "synapses": self.synapse_count,
-                    "nodes": len(self.graph)
-                }, f, indent=2)
+            lock_path = self.persistence_path + ".lock"
+            with open(lock_path, "a", encoding="utf-8") as lock_file:
+                self._acquire_lock(lock_file)
+                try:
+                    graph = self._merge_graphs(self._load_graph_from_disk()) if merge else self.graph
+                    synapse_count = sum(len(edges) for edges in graph.values())
+                    self._write_atomic({
+                        "graph": graph,
+                        "synapses": synapse_count,
+                        "nodes": len(graph)
+                    })
+                    self.graph = graph
+                    self.synapse_count = synapse_count
+                    self._dirty = False
+                finally:
+                    self._release_lock(lock_file)
         except Exception as e:
             print(f"[SAGE-MEMORY] Error saving associative graph: {e}")
+
+    def _acquire_lock(self, lock_file) -> None:
+        if fcntl is not None:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+
+    def _release_lock(self, lock_file) -> None:
+        if fcntl is not None:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+    def _load_graph_from_disk(self) -> Dict[str, Dict[str, float]]:
+        """Read the persisted graph, returning an empty dict on any error."""
+        try:
+            with open(self.persistence_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data.get("graph", {}) or {}
+        except Exception:
+            return {}
+
+    def _merge_graphs(self, disk_graph: Dict[str, Dict[str, float]]) -> Dict[str, Dict[str, float]]:
+        """Union disk + in-memory graphs, taking the max weight on shared edges."""
+        merged: Dict[str, Dict[str, float]] = {}
+        for node, edges in disk_graph.items():
+            merged[node] = dict(edges)
+        for node, edges in self.graph.items():
+            if node not in merged:
+                merged[node] = {}
+            for target, weight in edges.items():
+                merged[node][target] = max(merged[node].get(target, 0.0), weight)
+        return merged
+
+    def _write_atomic(self, payload: dict) -> None:
+        """Write via a temp file + atomic replace so readers never see partial data."""
+        tmp_path = self.persistence_path + ".tmp"
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+        os.replace(tmp_path, self.persistence_path)
 
     def fire_together_wire_together(self,
                                    concept_a: str,
@@ -133,7 +196,8 @@ class AssociativeMemory:
                 self.graph[src][tgt] = new_weight
             updated_weights[f"{src}->{tgt}"] = self.graph[src][tgt]
 
-        self.save()
+        # Defer persistence — caller batch-saves after all wiring completes.
+        self._dirty = True
         return updated_weights
 
     def recall(self, concept: str, limit: int = 5) -> List[Tuple[str, float]]:
@@ -152,6 +216,8 @@ class AssociativeMemory:
         before_edges = sum(len(edges) for edges in self.graph.values())
         to_remove = []
 
+        changed = False
+
         for node, edges in list(self.graph.items()):
             for target, weight in list(edges.items()):
                 estimated_salience = max(1.0, weight / self.salience_floor_base)
@@ -161,19 +227,24 @@ class AssociativeMemory:
                     to_remove.append((node, target))
                 else:
                     edges[target] = new_weight
+                    changed = True
 
         for node, target in to_remove:
             if node in self.graph and target in self.graph[node]:
                 del self.graph[node][target]
                 self.synapse_count -= 1
+                changed = True
 
         # Clean empty nodes
         empty_nodes = [node for node, edges in self.graph.items() if len(edges) == 0]
         for node in empty_nodes:
             del self.graph[node]
+            changed = True
 
         after_edges = sum(len(edges) for edges in self.graph.values())
-        self.save()
+        if changed:
+            self._dirty = True
+        self.save(merge=False)
 
         return {
             "edges_before": before_edges,
