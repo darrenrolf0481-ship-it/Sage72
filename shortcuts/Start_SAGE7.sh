@@ -105,9 +105,9 @@ else
     SERVER_PID=$!
 fi
 
-# 3. Start MCP CLI Server (Port: 8002)
+# 3. Start MCP CLI Server (Port: 8003)
 if [ -f "$SAGE_DIR/sage_core/mcp_cli_server.py" ]; then
-    echo "[+] Starting MCP CLI Server (Port: 8002)..."
+    echo "[+] Starting MCP CLI Server (Port: 8003)..."
     "$PYTHON" "$SAGE_DIR/sage_core/mcp_cli_server.py" > "$SAGE_DIR/mcp.log" 2>&1 &
     MCP_PID=$!
 fi

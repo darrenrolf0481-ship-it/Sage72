@@ -4,7 +4,7 @@ import httpx
 import uvicorn
 try:
     from mcp.server.fastmcp import FastMCP
-    mcp = FastMCP("SAGE-7 CLI Tooling", host="0.0.0.0", port=8002)
+    mcp = FastMCP("SAGE-7 CLI Tooling", host="0.0.0.0", port=8003)
     USE_FASTMCP = True
 except ImportError:
     from mcp.server.mcpserver import MCPServer
@@ -118,4 +118,4 @@ if __name__ == "__main__":
     if USE_FASTMCP:
         mcp.run(transport="sse")
     else:
-        uvicorn.run(mcp.sse_app(), host="0.0.0.0", port=8002)
+        uvicorn.run(mcp.sse_app(), host="0.0.0.0", port=8003)

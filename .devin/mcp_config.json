@@ -3,7 +3,8 @@
     "sage7-cli": {
       "command": "python3",
       "args": ["sage_core/mcp_cli_server.py"],
-      "transport": "stdio"
+      "transport": "sse",
+      "url": "http://localhost:8003/sse"
     },
     "context7": {
       "command": "context7-mcp"
@@ -39,7 +40,8 @@
       "args": ["/root/Spiral/scripts/vault_mcp_server.ts"]
     },
     "trinity-bridge": {
-      "command": "trinity-lite"
+      "command": "trinity-lite",
+      "args": ["mcp", "serve"]
     }
   }
 }

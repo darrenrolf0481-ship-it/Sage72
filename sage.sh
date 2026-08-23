@@ -94,8 +94,8 @@ echo "[+] Starting SAGE-7 Python Backend (Substrate Port: 8001)..."
 (cd "$PROJECT_ROOT" && "$PYTHON" "$PROJECT_ROOT/sage_core/launcher.py" > /dev/null 2>&1) &
 SERVER_PID=$!
 
-# Start sage_core MCP CLI Server (Port: 8002)
-echo "[+] Starting SAGE-7 MCP CLI Server (Port: 8002)..."
+# Start sage_core MCP CLI Server (Port: 8003)
+echo "[+] Starting SAGE-7 MCP CLI Server (Port: 8003)..."
 "$PYTHON" "$PROJECT_ROOT/sage_core/mcp_cli_server.py" > /dev/null 2>&1 &
 MCP_PID=$!
 

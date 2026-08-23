@@ -49,7 +49,7 @@ else
     "$PYTHON" "$SAGE_DIR/server.py" > "$SAGE_DIR/server.log" 2>&1 &
 fi
 
-# 5. Start MCP CLI Server (Port: 8002)
+# 5. Start MCP CLI Server (Port: 8003)
 if [ -f "$SAGE_DIR/sage_core/mcp_cli_server.py" ]; then
     "$PYTHON" "$SAGE_DIR/sage_core/mcp_cli_server.py" > "$SAGE_DIR/mcp.log" 2>&1 &
 fi

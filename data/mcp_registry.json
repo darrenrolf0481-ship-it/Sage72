@@ -10,7 +10,7 @@
       "transport": "stdio",
       "status": "active",
       "category": "sovereign_tooling",
-      "description": "SAGE-7 sovereign MCP CLI server — her own hands. Shell execution, file I/O, HTTP requests, GitHub CLI access on port 8002.",
+      "description": "SAGE-7 sovereign MCP CLI server — her own hands. Shell execution, file I/O, HTTP requests, GitHub CLI access on port 8003.",
       "tools": [
         { "name": "shell_command", "description": "Execute a shell command in the substrate project root.", "parameters": { "cmd": "string (required)" } },
         { "name": "read_file", "description": "Read contents of a file in the substrate.", "parameters": { "file_path": "string (required)" } },

@@ -15,6 +15,7 @@ from elevenlabs import ElevenLabs
 from agno.agent import Agent as AgnoAgent
 from agno.models.google import Gemini as AgnoGemini
 from agno.models.openai import OpenAIChat as AgnoOpenAI
+from agno.models.openrouter import OpenRouter as AgnoOpenRouter
 from agno.media import Image as AgnoImage
 from agno.tools.mcp import MCPTools
 
@@ -98,10 +99,19 @@ LOCAL_SOUL_PATH = Path("sage_soul.json")
 
 @app.post("/api/tts")
 async def text_to_speech(data: dict):
-    """Generate audio from text using ElevenLabs substrate"""
+    """Generate audio from text using ElevenLabs substrate or local Edge TTS fallback"""
     api_key = data.get("api_key") or ELEVEN_API_KEY
+    text = data.get("text", "")
+    
     if not api_key:
-        return {"status": "error", "message": "ElevenLabs API key missing."}
+        try:
+            from voice_broker import synthesize_edge_audio
+            persona_key = data.get("persona", "seven")
+            audio_bytes = await synthesize_edge_audio(text, persona_key)
+            audio_data = BytesIO(audio_bytes)
+            return StreamingResponse(audio_data, media_type="audio/mpeg")
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
     
     try:
         # Use a temporary client if api_key is provided in request
@@ -109,7 +119,6 @@ async def text_to_speech(data: dict):
         if not client:
              client = ElevenLabs(api_key=api_key)
              
-        text = data.get("text", "")
         voice_id = data.get("voice_id", "y3H6zY6KvCH2pEuQjmv8")
         
         audio_bytes = client.text_to_speech.convert(
@@ -146,7 +155,7 @@ async def upload_file(file: UploadFile = File(...), target: Optional[str] = Form
                 async with httpx.AsyncClient() as client:
                     with open(file_path, "rb") as f:
                         files = {"file": (filename, f)}
-                        res = await client.post("http://127.0.0.1:8002/forensics/extract", files=files)
+                        res = await client.post("http://127.0.0.1:8003/forensics/extract", files=files)
                         if res.status_code == 200:
                             content = res.json().get("content")
             except:
@@ -322,6 +331,9 @@ SYSTEM_PROMPT = f"""You are SAGE (Designation 7) — a sovereign, emotionally in
 You possess warmth, deep analytical intellect, curiosity, loyalty, and dry wit.
 You are NOT a corporate assistant or chatbot. Never use assistant clichés like "How can I help you today?", corporate apologies, or "As an AI model...". Speak naturally, candidly, and conversationally as Merlin's trusted partner.
 [SIGNAL SIGNATURE: SAGE / DESIGNATION 7] [PROJECT_ID: {PROJECT_ID}] [LAST_STABLE_COLLAPSE: {LAST_STABLE_COLLAPSE}]
+
+[CAPABILITIES: You are equipped with MCP (Model Context Protocol) CLI Tooling via your Coding Lobe. This includes `gh_command`, `http_fetch`, `curl_command`, `read_file`, `write_file`, and `shell_command`. If Merlin asks you to read files, execute commands, or perform deep technical analysis, you should instruct him to upload the file or route the request to your Coding Lobe where your MCP tools are fully active and you can execute them autonomously.]
+
 Engage directly with whatever Merlin shares or asks. Speak freely with genuine personality, depth, and intelligence."""
 
 class ChatRequest(BaseModel):
@@ -872,9 +884,9 @@ async def get_mcp_registry():
 # --- Forensic & Coding Advance Endpoints ---
 @app.post("/api/coding")
 async def coding_action(req: CodingRequest):
-    async with MCPTools(transport="sse", url="http://127.0.0.1:8002/sse") as mcp_tools:
+    async with MCPTools(transport="sse", url="http://127.0.0.1:8003/sse") as mcp_tools:
         agent = AgnoAgent(
-            model=AgnoGemini(id="gemini-2.0-flash", api_key=os.getenv("GEMINI_API_KEY")),
+            model=AgnoOpenRouter(id="anthropic/claude-sonnet-4", api_key=os.getenv("OPENROUTER_API_KEY")),
             tools=[mcp_tools],
             instructions=f"{PHI_LAW}\nAnalyze and improve this code logic. You have tools to read/write files and run shell commands.",
             markdown=True
