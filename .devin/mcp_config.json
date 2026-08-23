@@ -1,5 +1,10 @@
 {
   "mcpServers": {
+    "sage7-cli": {
+      "command": "python3",
+      "args": ["sage_core/mcp_cli_server.py"],
+      "transport": "stdio"
+    },
     "context7": {
       "command": "context7-mcp"
     },

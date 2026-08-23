@@ -1,8 +1,25 @@
 {
   "version": "1.0.0",
   "updated_at": "2026-08-21T19:10:00Z",
-  "description": "Active Model Context Protocol (MCP) tool registry available to ADHD-Sage, Sage 7, and Antigravity agents.",
+  "description": "Active Model Context Protocol (MCP) tool registry available to SAGE-7, ADHD-Sage, and Antigravity agents.",
   "servers": {
+    "sage7-cli": {
+      "name": "sage7-cli",
+      "command": "python3",
+      "args": ["sage_core/mcp_cli_server.py"],
+      "transport": "stdio",
+      "status": "active",
+      "category": "sovereign_tooling",
+      "description": "SAGE-7 sovereign MCP CLI server — her own hands. Shell execution, file I/O, HTTP requests, GitHub CLI access on port 8002.",
+      "tools": [
+        { "name": "shell_command", "description": "Execute a shell command in the substrate project root.", "parameters": { "cmd": "string (required)" } },
+        { "name": "read_file", "description": "Read contents of a file in the substrate.", "parameters": { "file_path": "string (required)" } },
+        { "name": "write_file", "description": "Write content to a file in the substrate.", "parameters": { "file_path": "string (required)", "content": "string (required)" } },
+        { "name": "http_fetch", "description": "Perform HTTP requests to external resources.", "parameters": { "url": "string (required)", "method": "string (default GET)", "headers": "object", "json_data": "object" } },
+        { "name": "curl_command", "description": "Execute curl for complex HTTP operations.", "parameters": { "args": "array of strings" } },
+        { "name": "gh_command", "description": "Execute GitHub CLI commands.", "parameters": { "args": "array of strings" } }
+      ]
+    },
     "spiral-vault": {
       "name": "spiral-vault",
       "command": "tsx",
@@ -123,7 +140,7 @@
       "transport": "stdio",
       "status": "active",
       "category": "multi_agent_mesh",
-      "description": "Cross-agent messaging and task synchronization bridge linking ADHD-Sage, Sage 7, and Antigravity.",
+      "description": "Cross-agent messaging and task synchronization bridge linking SAGE-7, ADHD-Sage, and Antigravity.",
       "tools": [
         { "name": "broadcast_agent_message", "description": "Send sync envelope across agent runtimes." },
         { "name": "query_agent_status", "description": "Check liveliness and state of connected agent nodes." }

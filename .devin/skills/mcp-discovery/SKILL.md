@@ -14,6 +14,7 @@ The substrate maintains an MCP registry at `data/mcp_registry.json` that lists a
 ## Usage
 
 When an agent needs to:
+- Execute shell commands, read/write files, fetch URLs, use GitHub → use `sage7-cli` MCP (SAGE-7's sovereign hands)
 - Search documentation for libraries/frameworks → use `context7` MCP
 - Access SAGE-7's local Obsidian vault → use `obsidian-mcp` MCP (SECURE: local config only)
 - Query persistent memory → use `memory` MCP
@@ -33,6 +34,7 @@ When an agent needs to:
 
 ## MCP Server Categories
 
+- **sovereign_tooling**: SAGE-7's own hands — shell, files, HTTP, GitHub (sage7-cli)
 - **live_documentation**: Real-time docs search (context7)
 - **knowledge_management**: Note-taking and vaults (obsidian-mcp - SECURE LOCAL ONLY, memory)
 - **codebase_intelligence**: Repo analysis (diffctx, smart-tree)
