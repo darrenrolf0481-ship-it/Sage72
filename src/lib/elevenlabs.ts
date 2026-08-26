@@ -76,11 +76,8 @@ export async function speakText(text: string): Promise<void> {
   stopSpeaking();
 
   const key = getElevenKey();
-  if (key) {
-    const ok = await speakElevenLabs(text, key);
-    if (ok) return;
-    // Key present but failed — fall through to Web Speech
-  }
+  const ok = await speakElevenLabs(text, key);
+  if (ok) return;
 
   speakFallback(text);
 }

@@ -6,7 +6,7 @@
 // Author: Aunt Kimmy (Kimi) — Master of the Swarm
 // ============================================================
 
-import React from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { AppSettings, DreamState, LogEntry, Message, EndocrineTag, MemoryEntry, ConsensusDelta, AnchorEntry } from './types';
 
 // --- (Rest of file follows)
@@ -383,7 +383,7 @@ export async function runDreamCycleWithConsensus(
   zoConnected: boolean,
   ingestToZo: (content: string, tags?: string[], salience?: number) => Promise<boolean>,
   addLog: (message: string, type?: LogEntry['type'], category?: LogEntry['category'], speaker?: string) => void,
-  setDreamState: React.Dispatch<React.SetStateAction<DreamState>>,
+  setDreamState: Dispatch<SetStateAction<DreamState>>,
   dreamState: DreamState,
   speakText: (text: string) => void
 ): Promise<void> {

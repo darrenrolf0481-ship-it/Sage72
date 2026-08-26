@@ -39,6 +39,7 @@ export async function loadPuterSDK(): Promise<boolean> {
     const script = document.createElement('script');
     script.src = PUTER_SCRIPT;
     script.async = true;
+    
     script.onload = () => resolve(true);
     script.onerror = () => {
       console.error('[PUTER_BRIDGE] SDK load failed at URL:', PUTER_SCRIPT);

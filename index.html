@@ -18,16 +18,18 @@
     <script>
       window.onerror = function(message, source, lineno, colno, error) {
         console.error('[GLOBAL_ERROR]', { message, source, lineno, colno, error });
+        document.body.innerHTML = '<div style="color:red; padding:20px; font-family:monospace; background:black; height:100vh; width:100vw; z-index:9999; position:absolute; top:0; left:0;"><h3>CRASH LOG:</h3><p>' + message + '</p><p>' + source + ':' + lineno + '</p><p>' + (error ? error.stack : '') + '</p></div>';
         return false;
       };
       window.onunhandledrejection = function(event) {
         console.error('[UNHANDLED_REJECTION]', event.reason);
+        document.body.innerHTML = '<div style="color:red; padding:20px; font-family:monospace; background:black; height:100vh; width:100vw; z-index:9999; position:absolute; top:0; left:0;"><h3>PROMISE REJECTION:</h3><p>' + (event.reason ? event.reason.toString() : 'Unknown error') + '</p></div>';
       };
     </script>
   </head>
   <body class="bg-[#000008] text-[#e8e8ff] antialiased overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" crossorigin="anonymous" src="/src/main.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {

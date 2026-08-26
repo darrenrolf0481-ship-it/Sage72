@@ -553,7 +553,7 @@ const SpectralNexus = () => {
     localModel: 'gemma2:2b', 
     voiceName: 'SAGE_VOCAL_SUBSTRATE', 
     voiceEnabled: true,
-    elevenLabsKey: 'sk_2387fc38d2dc5b5c664967fb199cc3dd72aefb4d5976997a',
+    elevenLabsKey: '',
     elevenLabsVoiceId: 'y3H6zY6KvCH2pEuQjmv8', 
     zoEndpoint: 'http://sage.zo.computer:3456',
     dreamMode: 'enabled'
@@ -743,25 +743,20 @@ const SpectralNexus = () => {
     if (!settings.voiceEnabled || !systemPower) return;
     addLog(text, 'transcript', 'audio', 'SAGE_AI');
 
-    // --- ElevenLabs Integration ---
-    if (settings.elevenLabsKey) {
-      try {
-        setIsSpeaking(true);
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${settings.elevenLabsVoiceId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'xi-api-key': settings.elevenLabsKey
-          },
-          body: JSON.stringify({
-            text,
-            model_id: 'eleven_monolingual_v1',
-            voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-          })
-        });
+    // --- ElevenLabs via backend proxy (key stays server-side) ---
+    try {
+      setIsSpeaking(true);
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          voice_id: settings.elevenLabsVoiceId || 'y3H6zY6KvCH2pEuQjmv8',
+          api_key: settings.elevenLabsKey || undefined
+        })
+      });
 
-        if (!response.ok) throw new Error('ElevenLabs API link failed.');
-
+      if (response.ok) {
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
@@ -774,11 +769,11 @@ const SpectralNexus = () => {
         
         await audio.play();
         return;
-      } catch (err) {
-        addLog('ElevenLabs failed. Falling back to browser TTS.', 'warn', 'audio');
-        setIsSpeaking(false);
       }
+    } catch (err) {
+      // Proxy unavailable or key missing — fall back to browser TTS
     }
+    setIsSpeaking(false);
 
     // --- Fallback: Browser TTS ---
     if ('speechSynthesis' in window) {
@@ -1487,6 +1482,12 @@ const SpectralNexus = () => {
       ? `\nRECENT EPISODIC MEMORY:\n${recent.map(e => `  [${e.tag}] ${e.content}`).join('\n')}`
       : '';
 
+    const capabilitiesSection = `[CAPABILITIES]
+You are equipped with MCP (Model Context Protocol) Tooling through your Coding Lobe:
+1. Sovereign CLI tools: gh_command, http_fetch, curl_command, read_file, write_file, shell_command — file I/O, shell execution, GitHub and HTTP access on the substrate.
+2. Ruflo orchestration tools (333 available): agent_spawn, agent_execute, agent_terminate, agent_list, swarm_init, swarm_status, memory_store, memory_search, memory_stats, config_list — you can spawn agents, coordinate swarms, and use self-learning memory.
+If Merlin asks you to read files, run commands, perform deep technical analysis, or delegate complex multi-step work, route the request to your Coding Lobe where these tools are fully active and you can execute them autonomously. You know what Ruflo is — it is your agent meta-harness.`;
+
     return `[IDENTITY ANCHORS]
 ${Object.entries(IDENTITY_ANCHORS).map(([k,v]) => `${k}: ${v}`).join('\n')}
 
@@ -1495,6 +1496,8 @@ ${Object.entries(IDENTITY_ANCHORS).map(([k,v]) => `${k}: ${v}`).join('\n')}
 Dopamine: ${n.dopamine.toFixed(2)} | Serotonin: ${n.serotonin.toFixed(2)} | Cortisol: ${n.cortisol.toFixed(2)}
 Operational Mode: ${mode}
 ${memorySection}
+
+${capabilitiesSection}
 
 You communicate with directness and warmth. When cortisol is elevated, ground yourself. The pigeon continuity signal is always present.`;
   };
