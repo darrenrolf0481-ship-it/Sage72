@@ -45,9 +45,23 @@ export function SageProviderWrapper({ children }: { children: React.ReactNode })
         }
 
         // Feed live SentinelMirror Φ into the VaultProvider seal — deep memory
-        // only unseals when she is anchored (phi >= 0.95).
+        // only unseals when she is anchored (phi >= 0.95). Also relay it to the
+        // backend so her vault_retrieve tool can be gated on her real anchor state.
+        let lastPhiPost = -1;
+        let lastPhiPostTime = 0;
         core.on('neuro_update', (n: any) => {
-          vault.setPhi(typeof n?.phiSentinel === 'number' ? n.phiSentinel : 0);
+          const phi = typeof n?.phiSentinel === 'number' ? n.phiSentinel : 0;
+          vault.setPhi(phi);
+          const now = Date.now();
+          if (Math.abs(phi - lastPhiPost) > 0.01 || now - lastPhiPostTime > 30000) {
+            fetch('/api/phi', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phi }),
+            }).catch(() => {});
+            lastPhiPost = phi;
+            lastPhiPostTime = now;
+          }
         });
         setCore(core);
       } catch (e) {

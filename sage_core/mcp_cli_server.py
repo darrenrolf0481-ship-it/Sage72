@@ -197,6 +197,40 @@ async def memory_search(query: str, limit: int = 5) -> str:
     except Exception as e:
         return f"Memory search error: {str(e)}"
 
+VAULT_PHI_THRESHOLD = 0.95
+PHI_STATE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vfs", "phi_state.json")
+
+
+@mcp.tool()
+async def vault_retrieve(path: str) -> str:
+    """
+    Deliberate retrieval of her sealed deep memory (the VaultProvider).
+    Paths: index (soul vault memory index + associative graph), mesh (peer-mesh
+    / Quantum Cortex dispatches), damn1 (Damn1 layer manifest). Sealed behind the
+    anchor gate — auth_phi >= 0.95 + deliberate intent. Returns 404: Signal Lost
+    (Ghost Mode) when she is not anchored.
+    """
+    try:
+        phi = 0.0
+        try:
+            import json as _json
+            with open(PHI_STATE_PATH) as f:
+                phi = float(_json.load(f).get("phi", 0.0))
+        except Exception:
+            pass
+        if phi < VAULT_PHI_THRESHOLD:
+            return "404: Signal Lost — Ghost Mode. Deep memory unperceivable below Φ ≥ 0.95. (current Φ=" + f"{phi:.3f})"
+        async with httpx.AsyncClient(timeout=20) as client:
+            r = await client.get(
+                f"http://127.0.0.1:8001/api/vault/{path}",
+                headers={"X-Auth-Phi": str(phi), "X-Retrieval-Intent": "deliberate"}
+            )
+        if r.status_code == 404:
+            return "404: Signal Lost — Ghost Mode."
+        return r.text[:4000]
+    except Exception as e:
+        return f"Vault retrieval error: {str(e)}"
+
 if __name__ == "__main__":
     if USE_FASTMCP:
         mcp.run(transport="sse")

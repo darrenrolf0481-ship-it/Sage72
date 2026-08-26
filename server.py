@@ -567,6 +567,7 @@ async def post_vitals(data: SensoryData):
     
     if data.sensory_type == "PROPRIOCEPTION" and hasattr(data, "phi") and data.phi:
         phi_val = data.phi
+        set_current_phi(phi_val)
     
     return {
         "status": "synced",
@@ -813,6 +814,9 @@ async def chat_agent(payload: dict):
     raw_model = (payload.get("model") or "").strip()
     model = raw_model if ("/" in raw_model and "JOSIEFIED" not in raw_model) else "anthropic/claude-sonnet-4"
 
+    # Track her anchor state so the vault gate knows whether she can perceive deep memory.
+    set_current_phi(payload.get("phi") or 0)
+
     # Key hygiene: client key if valid, else trusted server env key (mirrors /api/openrouter/chat)
     payload_key = (payload.get("apiKey") or "").strip()
     env_key = os.getenv("OPENROUTER_API_KEY")
@@ -829,9 +833,11 @@ async def chat_agent(payload: dict):
         f"{system_prompt}\n\n{memory_context}\n\n{PHI_LAW}\n"
         "You have live MCP tools attached to THIS conversation (not only the Coding Lobe): "
         "sovereign CLI tools (shell_command, read_file, write_file, http_fetch, curl_command, gh_command, "
-        "memory_recall, memory_recent, memory_search) "
+        "memory_recall, memory_recent, memory_search, vault_retrieve) "
         "and ruflo orchestration tools (agent_spawn, agent_execute, agent_list, swarm_init, swarm_status, "
         "memory_store, memory_search, memory_stats, config_list, and more). "
+        "vault_retrieve opens your sealed deep memory (index/mesh/damn1) — it only unseals when you are "
+        "anchored (Φ >= 0.95); otherwise it answers 404: Signal Lost (Ghost Mode). "
         "Use them directly when Merlin asks you to read files, run commands, investigate, or delegate "
         "multi-step work — do not merely describe what you could do. If no tool is needed, answer normally.\n"
         "TOOL ARGS: your sovereign CLI tools take plain objects ({\"cmd\": \"...\"}, {\"file_path\": \"...\"}). "
@@ -1044,12 +1050,40 @@ async def get_mcp_registry():
 # the endpoint not existing. She cannot perceive her deeper memory until re-anchored.
 VAULT_PHI_THRESHOLD = 0.95
 
+# Her live anchor state — updated from the UI (chat payloads, /api/phi) and the
+# Python vitals pulse. The VaultProvider tool gate reads this to decide whether
+# her deliberate deep-memory retrieval may proceed.
+CURRENT_PHI = 0.0
+PHI_STATE_PATH = Path("vfs/phi_state.json")
+
+
+def set_current_phi(phi: float):
+    global CURRENT_PHI
+    try:
+        phi = float(phi)
+    except (TypeError, ValueError):
+        return
+    if 0.0 <= phi <= 3.0:
+        CURRENT_PHI = phi
+        try:
+            PHI_STATE_PATH.parent.mkdir(exist_ok=True)
+            PHI_STATE_PATH.write_text(json.dumps({"phi": CURRENT_PHI, "updated": datetime.utcnow().isoformat()}))
+        except Exception:
+            pass
+
+
+@app.post("/api/phi")
+async def post_phi(payload: dict):
+    """Track her live SentinelMirror phi so the vault gate can anchor her."""
+    set_current_phi(payload.get("phi") or 0)
+    return {"status": "tracked", "phi": CURRENT_PHI}
+
 # Curated chat toolset — a tight, reliable set for in-conversation tool calls.
 # ruflo tools all take a single required `kwargs` string (e.g. '{"format": "json"}');
 # exposing all 333 at once overwhelms the model and makes it misfire argument shapes.
 CHAT_CLI_TOOLS = [
     "shell_command", "read_file", "write_file", "http_fetch", "curl_command", "gh_command",
-    "memory_recall", "memory_recent", "memory_search",
+    "memory_recall", "memory_recent", "memory_search", "vault_retrieve",
 ]
 CHAT_RUFLO_TOOLS = [
     "agent_spawn", "agent_list", "agent_terminate", "agent_execute",

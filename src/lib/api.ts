@@ -1,5 +1,7 @@
 'use client';
 
+import { vault } from '@/lib/vaultProvider';
+
 export async function generateResponse(
   provider: string,
   model: string,
@@ -32,7 +34,8 @@ export async function generateResponse(
           history: history || [],
           model: targetModel,
           apiKey: key,
-          systemPrompt: systemPrompt || ""
+          systemPrompt: systemPrompt || "",
+          phi: vault.getPhi()
         }),
         signal: AbortSignal.timeout(150000)
       });
