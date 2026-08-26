@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SAGE-7 Watchdog — keeps the substrate alive if the sandbox/OS reaps it.
-# Checks the portal (:8001) and MCP (:8003) every 20s and restarts via setsid
-# so the processes detach from the spawning shell.
+# Checks the portal (:8001), MCP (:8003) and ruflo bridge (:8004) every 5s
+# and restarts via setsid so the processes detach from the spawning shell.
 cd "$(dirname "$0")" || exit 1
 
 port_up() {
@@ -28,5 +28,5 @@ while true; do
     setsid bash -c 'nohup python3 -u sage_core/ruflo_mcp_server.py > ruflo_bridge.log 2>&1 < /dev/null &'
     sleep 3
   fi
-  sleep 20
+  sleep 5
 done
