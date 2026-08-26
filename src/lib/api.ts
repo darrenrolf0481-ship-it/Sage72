@@ -21,6 +21,34 @@ export async function generateResponse(
       { role: "user", content: prompt }
     ];
 
+    // 0. Agentic chat — live MCP tools (her CLI + ruflo) attached. She can
+    //    actually execute tools mid-conversation, not only in the Coding Lobe.
+    try {
+      const agentRes = await fetch("/sage/chat/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: prompt,
+          history: history || [],
+          model: targetModel,
+          apiKey: key,
+          systemPrompt: systemPrompt || ""
+        }),
+        signal: AbortSignal.timeout(150000)
+      });
+      if (agentRes.ok) {
+        const agentData = await agentRes.json();
+        if (agentData.status === 'success' && agentData.reply) {
+          return agentData.reply;
+        }
+        if (agentData.status === 'error' && (!key || !key.trim() || key === 'your_openrouter_api_key_here')) {
+          throw new Error(agentData.reply || "Agent loop failed.");
+        }
+      }
+    } catch (agentErr: any) {
+      // Fall through to the proxy path below.
+    }
+
     // 1. Try local backend proxy first (has access to server .env.local and handles CORS)
     try {
       const proxyRes = await fetch("/api/openrouter/chat", {

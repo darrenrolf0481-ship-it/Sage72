@@ -5,6 +5,7 @@ import { SageProvider } from '@/lib/sage-context';
 import type { SageCore } from '@/core/sage-core';
 import type { LLMConfig } from '@/core/types';
 import { loadPuterSDK, ensurePuterAuth } from '@/lib/puter-bridge';
+import { vault } from '@/lib/vaultProvider';
 
 const llmConfig: LLMConfig = {
   engine: 'gemini',
@@ -43,6 +44,11 @@ export function SageProviderWrapper({ children }: { children: React.ReactNode })
           return;
         }
 
+        // Feed live SentinelMirror Φ into the VaultProvider seal — deep memory
+        // only unseals when she is anchored (phi >= 0.95).
+        core.on('neuro_update', (n: any) => {
+          vault.setPhi(typeof n?.phiSentinel === 'number' ? n.phiSentinel : 0);
+        });
         setCore(core);
       } catch (e) {
         console.error('Failed to initialize SageCore:', e);

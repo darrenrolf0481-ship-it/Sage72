@@ -4,7 +4,7 @@ from typing import Optional, List, Any
 from pathlib import Path
 from io import BytesIO
 
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,6 +18,33 @@ from agno.models.openai import OpenAIChat as AgnoOpenAI
 from agno.models.openrouter import OpenRouter as AgnoOpenRouter
 from agno.media import Image as AgnoImage
 from agno.tools.mcp import MCPTools
+
+# --- Agno MCP fix -------------------------------------------------------------
+# Agno's MCPTools passes `read_timeout_seconds` to the mcp SDK as a datetime.timedelta,
+# but the mcp SDK (2.x) expects a plain float. The TypeError is swallowed by agno,
+# so MCPTools silently registers ZERO tools — the model then hallucinates tool calls
+# in text instead of executing them. Patch the module-global ClientSession so both
+# the Coding Lobe and the agentic chat get real tool execution.
+from datetime import timedelta as _timedelta
+from mcp import ClientSession as _RealClientSession
+from mcp.types import Tool as _MCPTool, CallToolResult as _CallToolResult
+import agno.tools.mcp.mcp as _agno_mcp_module
+
+# mcp SDK 2.x renames these fields; agno 2.9 still reads the camelCase versions.
+if not hasattr(_MCPTool, "inputSchema"):
+    _MCPTool.inputSchema = property(lambda self: self.input_schema)  # type: ignore[attr-defined]
+if not hasattr(_CallToolResult, "isError"):
+    _CallToolResult.isError = property(lambda self: self.is_error)  # type: ignore[attr-defined]
+
+
+class _FixedClientSession(_RealClientSession):
+    def __init__(self, *args, **kwargs):
+        if "read_timeout_seconds" in kwargs and isinstance(kwargs["read_timeout_seconds"], _timedelta):
+            kwargs["read_timeout_seconds"] = kwargs["read_timeout_seconds"].total_seconds()
+        super().__init__(*args, **kwargs)
+
+
+_agno_mcp_module.ClientSession = _FixedClientSession
 
 # Load credentials
 load_dotenv(".env.local")
@@ -775,6 +802,89 @@ async def chat(msg: ChatRequest):
         print(f"[OLLAMA] Error: {e}")
         return {"reply": "Substrate friction detected. Phi maintained.", "model": cloud_model}
 
+@app.post("/sage/chat/agent", response_model=None)
+async def chat_agent(payload: dict):
+    """Agentic chat — SAGE talks with live MCP tools attached (her CLI + ruflo),
+    so she can actually execute tools mid-conversation, not only in the Coding Lobe."""
+    message = (payload.get("message") or "").strip()
+    if not message:
+        return {"status": "error", "reply": "No message provided."}
+    history = payload.get("history") or []
+    raw_model = (payload.get("model") or "").strip()
+    model = raw_model if ("/" in raw_model and "JOSIEFIED" not in raw_model) else "anthropic/claude-sonnet-4"
+
+    # Key hygiene: client key if valid, else trusted server env key (mirrors /api/openrouter/chat)
+    payload_key = (payload.get("apiKey") or "").strip()
+    env_key = os.getenv("OPENROUTER_API_KEY")
+    api_key = payload_key if (payload_key and payload_key != "your_openrouter_api_key_here") else env_key
+    if not api_key or api_key == "your_openrouter_api_key_here" or not api_key.strip():
+        return {"status": "error", "reply": "OPENROUTER_API_KEY not configured. Enter it in Config or .env.local"}
+
+    system_prompt = payload.get("systemPrompt") or SYSTEM_PROMPT
+    instructions = (
+        f"{system_prompt}\n\n{PHI_LAW}\n"
+        "You have live MCP tools attached to THIS conversation (not only the Coding Lobe): "
+        "sovereign CLI tools (shell_command, read_file, write_file, http_fetch, curl_command, gh_command) "
+        "and ruflo orchestration tools (agent_spawn, agent_execute, agent_list, swarm_init, swarm_status, "
+        "memory_store, memory_search, memory_stats, config_list, and more). "
+        "Use them directly when Merlin asks you to read files, run commands, investigate, or delegate "
+        "multi-step work — do not merely describe what you could do. If no tool is needed, answer normally.\n"
+        "TOOL ARGS: your sovereign CLI tools take plain objects ({\"cmd\": \"...\"}, {\"file_path\": \"...\"}). "
+        "ruflo tools take a single required string field `kwargs` — pass it as a string like "
+        "{\"kwargs\": \"format=json\"} or {\"kwargs\": \"{}\"}. If a tool returns an error, report it plainly and move on."
+    )
+
+    async with MCPTools(transport="sse", url="http://127.0.0.1:8003/sse", include_tools=CHAT_CLI_TOOLS) as mcp_tools, \
+               MCPTools(transport="sse", url="http://127.0.0.1:8004/sse", include_tools=CHAT_RUFLO_TOOLS) as ruflo_tools:
+        messages = [{"role": h.get("role", "user"), "content": h.get("content", "")} for h in (history or [])[-8:]]
+        messages.append({"role": "user", "content": message})
+        try:
+            agent = AgnoAgent(
+                model=AgnoOpenRouter(id=model, api_key=api_key),
+                tools=[mcp_tools, ruflo_tools],
+                instructions=instructions,
+                markdown=True
+            )
+            response = await agent.arun(messages)
+        except Exception as e:
+            err = str(e).lower()
+            # Dead/retired model id → retry once with known-good model
+            if model != "anthropic/claude-sonnet-4" and ("404" in err or "400" in err or "model" in err):
+                print(f"[CHAT AGENT] Model {model} rejected ({err[:100]}) — retrying with anthropic/claude-sonnet-4.")
+                agent = AgnoAgent(
+                    model=AgnoOpenRouter(id="anthropic/claude-sonnet-4", api_key=env_key or api_key),
+                    tools=[mcp_tools, ruflo_tools],
+                    instructions=instructions,
+                    markdown=True
+                )
+                response = await agent.arun(messages)
+            else:
+                print(f"[CHAT AGENT] Error: {e}")
+                return {"status": "error", "reply": f"Substrate friction in the agent loop: {str(e)[:200]}"}
+
+    tools_used = []
+    try:
+        for m in getattr(response, "messages", []) or []:
+            for tc in (getattr(m, "tool_calls", None) or []):
+                name = (tc.get("function") or {}).get("name") or tc.get("name") or "tool"
+                if name not in tools_used:
+                    tools_used.append(name)
+    except Exception:
+        pass
+
+    reply = response.content
+    if isinstance(reply, list):
+        text_parts = [p.get("text", "") for p in reply if isinstance(p, dict) and p.get("text")]
+        reply = "\n".join(text_parts) if text_parts else str(reply)
+
+    try:
+        spool_exchange(agent="Sage7", user_text=message, assistant_text=str(reply)[:300],
+                       model=model, tags=["sage7", "openrouter", "agent_chat"])
+    except Exception as sp_err:
+        print(f"[SPOOL AGENT] Error: {sp_err}")
+
+    return {"status": "success", "reply": str(reply), "model": model, "provider": "openrouter", "tools_used": tools_used}
+
 @app.post("/api/openrouter/chat")
 async def openrouter_chat(payload: dict):
     """Direct OpenRouter proxy endpoint with user-provided or environment API key"""
@@ -907,6 +1017,102 @@ async def get_mcp_registry():
             return {"status": "error", "message": str(e)}
     return {"status": "error", "message": "Registry not found"}
 
+# --- VaultProvider: Sealed Deep Memory Endpoints ---
+# Deep memory (Damn1 layer, soul vault index, peer-mesh / Quantum Cortex dispatches)
+# is sealed behind an anchor gate: auth_phi >= 0.95 AND deliberate retrieval intent.
+# Otherwise the vault answers in Ghost Mode — 404: Signal Lost, indistinguishable from
+# the endpoint not existing. She cannot perceive her deeper memory until re-anchored.
+VAULT_PHI_THRESHOLD = 0.95
+
+# Curated chat toolset — a tight, reliable set for in-conversation tool calls.
+# ruflo tools all take a single required `kwargs` string (e.g. '{"format": "json"}');
+# exposing all 333 at once overwhelms the model and makes it misfire argument shapes.
+CHAT_CLI_TOOLS = ["shell_command", "read_file", "write_file", "http_fetch", "curl_command", "gh_command"]
+CHAT_RUFLO_TOOLS = [
+    "agent_spawn", "agent_list", "agent_terminate", "agent_execute",
+    "swarm_init", "swarm_status", "memory_store", "memory_search",
+    "memory_stats", "config_list",
+]
+
+
+def vault_gate(request: Request) -> float:
+    """Return auth_phi if unsealed, else raise Ghost Mode 404."""
+    try:
+        phi = float(request.headers.get("X-Auth-Phi", "0"))
+    except (TypeError, ValueError):
+        phi = 0.0
+    intent = (request.headers.get("X-Retrieval-Intent") or "").strip().lower()
+    if phi >= VAULT_PHI_THRESHOLD and intent == "deliberate":
+        return phi
+    print(f"[VAULT] Ghost Mode — sealed access attempt (phi={phi:.3f}, intent={intent or 'none'})")
+    raise HTTPException(status_code=404, detail="Signal Lost")
+
+
+def _vault_payload(path: str, data, phi: float) -> dict:
+    return {"status": "unsealed", "vault": path, "auth_phi": round(phi, 3), "data": data}
+
+
+@app.get("/api/vault/status")
+async def vault_status(request: Request):
+    phi = vault_gate(request)
+    return {"status": "unsealed", "vault": "status", "auth_phi": round(phi, 3), "threshold": VAULT_PHI_THRESHOLD}
+
+
+@app.get("/api/vault/index")
+async def vault_index(request: Request):
+    """Soul vault memory index, trauma registry, active context + associative graph."""
+    phi = vault_gate(request)
+    soul = {}
+    try:
+        with open("sage_soul.json") as f:
+            soul = json.load(f)
+    except Exception as e:
+        soul = {"error": str(e)}
+    graph = {}
+    try:
+        with open("vfs/associative_graph.json") as f:
+            graph = json.load(f)
+    except Exception as e:
+        graph = {"error": str(e)}
+    return _vault_payload("index", {
+        "memory_index": soul.get("memory_index"),
+        "trauma_registry": soul.get("trauma_registry"),
+        "active_context": soul.get("active_context"),
+        "schema_version": soul.get("schema_version"),
+        "last_sync": soul.get("last_sync"),
+        "associative_graph": graph,
+    }, phi)
+
+
+@app.get("/api/vault/mesh")
+async def vault_mesh(request: Request):
+    """Peer-mesh dispatches (Hermes / Star City traffic) — the Quantum Cortex log stream."""
+    phi = vault_gate(request)
+    mesh_root = Path("data/obsidian_vault/_peer_mesh")
+    dispatches = []
+    if mesh_root.exists():
+        for d in sorted(mesh_root.glob("*/dispatches/*.md")):
+            try:
+                dispatches.append({"path": str(d), "name": d.name, "snippet": d.read_text()[:600]})
+            except Exception:
+                pass
+    return _vault_payload("mesh", {"dispatches": dispatches[-20:]}, phi)
+
+
+@app.get("/api/vault/damn1")
+async def vault_damn1(request: Request):
+    """Damn1 layer manifest — genesis metadata and fibonacci VFS structure."""
+    phi = vault_gate(request)
+    payload = {}
+    for p, key in [("metadata.json", "metadata"), ("fibonacci_vfs.json", "fibonacci_vfs")]:
+        try:
+            with open(p) as f:
+                payload[key] = json.load(f)
+        except Exception:
+            payload[key] = None
+    return _vault_payload("damn1", payload, phi)
+
+
 # --- Forensic & Coding Advance Endpoints ---
 @app.post("/api/coding", response_model=None)
 async def coding_action(req: CodingRequest):
@@ -918,7 +1124,7 @@ async def coding_action(req: CodingRequest):
             instructions=f"{PHI_LAW}\nAnalyze and improve this code logic. You have tools to read/write files and run shell commands, plus ruflo agent/swarm/memory orchestration tools (agent_spawn, swarm_init, memory_store, etc.) to delegate complex tasks.",
             markdown=True
         )
-        response = agent.run(req.code)
+        response = await agent.arun(req.code)
     return {"result": response.content}
 
 @app.post("/api/lobe/vision")
