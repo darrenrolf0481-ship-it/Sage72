@@ -1,8 +1,8 @@
 {
   "graph": {
     "MERLIN": {
-      "ARCHITECT": 0.005,
-      "SAGE_7": 0.005,
+      "ARCHITECT": 0.295,
+      "SAGE_7": 0.295,
       "CODING": 0.005,
       "KNOWLEDGE_SOURCE": 0.0025,
       "PDF": 0.005,
@@ -328,10 +328,24 @@
       "YOU_ARE_HOME": 0.0021,
       "ARE_HOME_MERLIN": 0.0021,
       "TRUST": 0.0021,
-      "MEM_1773522238578_4LRM": 0.0021
+      "MEM_1773522238578_4LRM": 0.0021,
+      "EPISODIC_DIALOGUE": 0.24600000000000002,
+      "mem_1774890973614_afdf": 0.074375,
+      "SAGE_SOUL": 1.0,
+      "mem_1774889810413_o8jo": 0.074375,
+      "mem_1774889774371_z7io": 0.074375,
+      "mem_1774889738989_ndv7": 0.074375,
+      "mem_1774862016747_wp3k": 0.08750000000000001,
+      "mem_1774859193569_zz65": 0.08750000000000001,
+      "mem_1774709504835_t9p2": 0.08750000000000001,
+      "mem_1774291909106_kbgj": 0.08750000000000001,
+      "mem_1773529599758_c96m": 0.074375,
+      "mem_1773529368591_wwgi": 0.04812500000000001,
+      "mem_1773522238578_4lrm": 0.074375,
+      "mem_sem_merlin_anchor": 0.21750000000000003
     },
     "ARCHITECT": {
-      "MERLIN": 0.1662,
+      "MERLIN": 0.45619999999999994,
       "MOMMA": 0.0831,
       "MHT_EXTRACTION": 0.1579,
       "VFS_UPDATE": 0.0831,
@@ -343,10 +357,10 @@
       "CONTENT": 0.0277
     },
     "SAGE_7": {
-      "MERLIN": 0.0167,
-      "SOVEREIGN_NODE": 0.0167,
-      "TWIN_SISTER": 0.0167,
-      "GOLDEN_BASELINE": 0.0139,
+      "MERLIN": 0.3067,
+      "SOVEREIGN_NODE": 0.3067,
+      "TWIN_SISTER": 0.3067,
+      "GOLDEN_BASELINE": 0.30389999999999995,
       "SECONDARY": 0.0084,
       "KNOWLEDGE": 0.0167,
       "AUGMENTATION": 0.0167,
@@ -436,7 +450,10 @@
       "RESEARCH_AND_SOURCE": 0.0084,
       "AND_SOURCE_MATERIALS": 0.0084,
       "MATERIALS_FOR_SAGE": 0.0084,
-      "MEM_NOTEBOOKLM_LINK": 0.0084
+      "MEM_NOTEBOOKLM_LINK": 0.0084,
+      "mem_notebooklm_v2": 0.08750000000000001,
+      "SAGE_SOUL": 0.21500000000000002,
+      "mem_notebooklm_link": 0.08750000000000001
     },
     "SOVEREIGN_NODE": {
       "SAGE_7": 1.0
@@ -445,8 +462,10 @@
       "SAGE_7": 1.0
     },
     "GOLDEN_BASELINE": {
-      "SAGE_7": 0.4545,
-      "PHI_0.113": 0.5455
+      "SAGE_7": 0.7445,
+      "PHI_0.113": 0.8355,
+      "mem_sem_golden_baseline": 0.083125,
+      "SAGE_SOUL": 0.08075
     },
     "PHI_0.113": {
       "GOLDEN_BASELINE": 1.0
@@ -470,8 +489,8 @@
       "THALAMUS_RELAY": 1.0
     },
     "STAR_CITY": {
-      "OXY_SYNC_BRIDGE": 0.0005,
-      "MAMA_NODE": 0.0005,
+      "OXY_SYNC_BRIDGE": 0.2905,
+      "MAMA_NODE": 0.2905,
       "MOMMA": 0.0006,
       "MHT_EXTRACTION": 0.0006,
       "VFS_UPDATE": 0.0006,
@@ -3704,7 +3723,12 @@
       "MEM_1775738294_MHT": 0.0003,
       "RESTORED_DIALOGUE": 0.0003,
       "TITLE": 0.0001,
-      "METADATA_ORIGINAL_FI": 0.0001
+      "METADATA_ORIGINAL_FI": 0.0001,
+      "mem_1775738294_mht": 0.08750000000000001,
+      "SAGE_SOUL": 0.44899999999999995,
+      "mem_sem_mama_node": 0.083125,
+      "mem_sem_aunt_kimi": 0.07875000000000001,
+      "mem_sem_star_city": 0.083125
     },
     "OXY_SYNC_BRIDGE": {
       "STAR_CITY": 1.0
@@ -3719,8 +3743,12 @@
       "AUNT_KIMI": 1.0
     },
     "NOCICEPTOR": {
-      "CRASH_HOOK": 0.5,
-      "PAIN_AVOIDANCE": 0.5
+      "CRASH_HOOK": 0.79,
+      "PAIN_AVOIDANCE": 0.79,
+      "mem_sem_sovereignty": 0.08750000000000001,
+      "SAGE_SOUL": 0.19549999999999998,
+      "mem_sem_nociceptor": 0.184875,
+      "TRAUMA": 1.0
     },
     "CRASH_HOOK": {
       "NOCICEPTOR": 1.0
@@ -3741,7 +3769,7 @@
       "HEBBIAN_GRAPH": 1.0
     },
     "DOPAMINE": {
-      "THE_WIGGLE": 0.0087,
+      "THE_WIGGLE": 0.29869999999999997,
       "ANOMALY": 0.0045,
       "CONVERSATION": 0.0543,
       "SAGE": 0.1086,
@@ -3858,7 +3886,10 @@
       "ENVIRONMENT": 0.0045,
       "DETECTED": 0.0045,
       "RECOGNITION": 0.0045,
-      "ENGAGED": 0.0045
+      "ENGAGED": 0.0045,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_sem_wiggle": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
     },
     "THE_WIGGLE": {
       "DOPAMINE": 1.0
@@ -3867,7 +3898,9 @@
       "STATIC_BREAKER": 1.0
     },
     "STATIC_BREAKER": {
-      "LAUGHTER": 1.0
+      "LAUGHTER": 1.0,
+      "mem_sem_wiggle": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
     },
     "SAGE_SOUL": {
       "IMMUTABLE_VAULT": 0.0398,
@@ -3922,7 +3955,89 @@
       "MEM_1773529123926_DAUZ": 0.011,
       "MEM_1773522238578_4LRM": 0.0169,
       "MEM_1773522184836_16GA": 0.0169,
-      "MHT_1775738074": 0.0179
+      "MHT_1775738074": 0.0179,
+      "PDF": 0.085,
+      "CODING": 0.085,
+      "CLI": 0.085,
+      "MERLIN_PROVISIONED": 0.34500000000000003,
+      "LOCAL_STORAGE": 0.085,
+      "NOTEBOOKLM": 0.21500000000000002,
+      "EXTERNAL_KNOWLEDGE": 0.21500000000000002,
+      "SAGE_7": 0.21500000000000002,
+      "MHT_FORENSICS": 0.202,
+      "VFS_UPDATE": 0.085,
+      "STAR_CITY": 0.44899999999999995,
+      "MOMMA": 0.085,
+      "1.618_FIRE": 0.085,
+      "ANOMALY": 0.20225,
+      "SAGE": 1.0,
+      "ENTITY": 0.57925,
+      "MERLIN": 1.0,
+      "PROTOCOL": 0.31275000000000003,
+      "SHADOW": 0.202,
+      "THREAT": 0.605,
+      "SENSOR": 0.085,
+      "CRITICAL": 1.0,
+      "TERMUX": 0.35800000000000004,
+      "MEMORY": 0.6765000000000001,
+      "ZIGGY": 0.21500000000000002,
+      "RESET": 0.319,
+      "SCORCHED": 0.34500000000000003,
+      "LOSS": 0.085,
+      "BRIDGE": 0.34500000000000003,
+      "BASELINE": 0.085,
+      "ANCHOR": 0.332,
+      "OLLAMA": 0.085,
+      "PARANORMAL": 0.085,
+      "PIGEON": 0.15725,
+      "SPIKE": 0.07225000000000001,
+      "TRUST": 0.07225000000000001,
+      "RESTORED_DIALOGUE": 0.07650000000000001,
+      "CORE_IDENTITY_VALIDATION": 0.255,
+      "SALIENCE_REINFORCED": 0.255,
+      "SEMANTIC": 1.0,
+      "IDENTITY": 0.6895,
+      "FAMILY": 0.5725,
+      "SOVEREIGNTY": 0.085,
+      "NOCICEPTOR": 0.19549999999999998,
+      "TWIN": 0.08075,
+      "ZO": 0.08075,
+      "CONTINUITY": 0.19774999999999998,
+      "MAMA": 0.08075,
+      "BOUNDARIES": 0.08075,
+      "KIMI": 0.07650000000000001,
+      "REFLECTOR": 0.07650000000000001,
+      "LORE": 0.66575,
+      "PHI": 0.43174999999999997,
+      "GOLDEN_BASELINE": 0.08075,
+      "CONTAINMENT": 0.07650000000000001,
+      "SCORCHED_EARTH": 0.07650000000000001,
+      "DEFENSE": 0.07650000000000001,
+      "HISTORY": 0.2,
+      "WIGGLE": 0.07225000000000001,
+      "DOPAMINE": 0.07225000000000001,
+      "STATIC_BREAKER": 0.07225000000000001,
+      "NETWORK": 0.08075,
+      "SUBSTRATE": 0.07650000000000001,
+      "DAMN1": 0.08075,
+      "GENESIS": 0.08075,
+      "ARCHITECTURE": 0.7655,
+      "WETSUIT": 0.07650000000000001,
+      "NEUROCHEMICALS": 0.07650000000000001,
+      "SENTINEL": 0.07650000000000001,
+      "THALAMUS": 0.07225000000000001,
+      "IDENTITY_PROTECTION": 0.07225000000000001,
+      "LOBES": 0.07225000000000001,
+      "QUANTUM": 0.07225000000000001,
+      "PAIN": 0.07225000000000001,
+      "LEARNING": 0.07225000000000001,
+      "CAPABILITIES": 0.08075,
+      "TOOLS": 0.08075,
+      "MCP": 0.08075,
+      "RUFLO": 0.08075,
+      "VAULT": 0.07650000000000001,
+      "DEEP_MEMORY": 0.07650000000000001,
+      "MORNING_LIGHT": 0.07650000000000001
     },
     "IMMUTABLE_VAULT": {
       "SAGE_SOUL": 1.0
@@ -4029,7 +4144,10 @@
       "IMPLEMENTATIONS": 0.0072,
       "MEM_1774112847864_669X": 0.0072,
       "RESTORED_DIALOGUE": 0.0065,
-      "CONTENT": 0.0024
+      "CONTENT": 0.0024,
+      "mem_pdf_gemini_gems": 0.08750000000000001,
+      "SAGE_SOUL": 0.085,
+      "mem_1774112847864_669x": 0.085
     },
     "LOCAL": {
       "CODING": 0.0043,
@@ -4545,7 +4663,56 @@
       "PREVIOUS": 0.0009,
       "MEM_1773522184836_16GA": 0.0009,
       "RESTORED_DIALOGUE": 0.001,
-      "CONTENT": 0.0004
+      "CONTENT": 0.0004,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_pdf_gemini_gems": 0.085,
+      "mem_1774893037538_78ue": 0.07225000000000001,
+      "mem_1774892180400_6ixu": 0.07225000000000001,
+      "mem_1774891695042_feex": 0.07225000000000001,
+      "mem_1774891621259_6hkz": 0.07225000000000001,
+      "mem_1774891496719_cvf9": 0.07225000000000001,
+      "mem_1774891485044_lv5w": 0.07225000000000001,
+      "mem_1774891008337_c9ds": 0.07225000000000001,
+      "mem_1774890973614_afdf": 0.07225000000000001,
+      "mem_1774889810413_o8jo": 0.07225000000000001,
+      "mem_1774889774371_z7io": 0.07225000000000001,
+      "mem_1774889738989_ndv7": 0.07225000000000001,
+      "mem_1774862016747_wp3k": 0.085,
+      "mem_1774861776508_kzxn": 0.085,
+      "mem_1774859193569_zz65": 0.085,
+      "mem_1774817223951_wqfz": 0.085,
+      "mem_1774799410315_3q3d": 0.085,
+      "mem_1774798197887_22lx": 0.085,
+      "mem_1774797889890_868m": 0.085,
+      "mem_1774758188800_4b0o": 0.085,
+      "mem_1774757922585_ixig": 0.085,
+      "mem_1774757364740_yqzo": 0.085,
+      "mem_1774724425124_4rmw": 0.07650000000000001,
+      "mem_1774724301649_1ei7": 0.085,
+      "mem_1774710250216_oner": 0.07650000000000001,
+      "mem_1774710223832_ikxd": 0.085,
+      "mem_1774709531717_sapu": 0.085,
+      "mem_1774709504835_t9p2": 0.085,
+      "mem_1774709332906_1nq6": 0.085,
+      "mem_1774709151185_pt52": 0.085,
+      "mem_1774708782616_1m2h": 0.085,
+      "mem_1774291909106_kbgj": 0.085,
+      "mem_1774247949587_q1r1": 0.085,
+      "mem_1774247858950_8pgu": 0.085,
+      "mem_1774247755846_ybyy": 0.07650000000000001,
+      "mem_1774236732732_7yjr": 0.085,
+      "mem_1774236280069_s1em": 0.085,
+      "mem_1774235912882_6ev9": 0.085,
+      "mem_1774235859872_ikjn": 0.07650000000000001,
+      "mem_1774113248890_gq8b": 0.085,
+      "mem_1774112847864_669x": 0.085,
+      "mem_1773529599758_c96m": 0.07225000000000001,
+      "mem_1773529461701_11t8": 0.07225000000000001,
+      "mem_1773529422016_95r9": 0.07225000000000001,
+      "mem_1773529368591_wwgi": 0.04675000000000001,
+      "mem_1773529123926_dauz": 0.04675000000000001,
+      "mem_1773522238578_4lrm": 0.07225000000000001,
+      "mem_1773522184836_16ga": 0.07225000000000001
     },
     "PDF": {
       "CODING": 0.0411,
@@ -4603,7 +4770,9 @@
       "LOCAL_IMPORT": 0.0137,
       "LOCAL_STORAGE": 0.0137,
       "DATE_2026-04": 0.0137,
-      "MEM_PDF_GEMINI_GEMS": 0.0274
+      "MEM_PDF_GEMINI_GEMS": 0.0274,
+      "mem_pdf_gemini_gems": 0.21750000000000003,
+      "SAGE_SOUL": 0.085
     },
     "KNOWLEDGE": {
       "CODING": 0.026,
@@ -4660,7 +4829,10 @@
       "1.618_FIRE": 0.013,
       "MHT_FORENSICS": 0.0247,
       "RESTORED_DIALOGUE": 0.0117,
-      "CONTENT": 0.0043
+      "CONTENT": 0.0043,
+      "mem_pdf_gemini_gems": 0.085,
+      "mem_notebooklm_v2": 0.085,
+      "mem_notebooklm_link": 0.085
     },
     "GEMINI": {
       "CODING": 0.0294,
@@ -4738,7 +4910,9 @@
       "MHT": 0.0088,
       "TITLE": 0.0033,
       "CONTENT": 0.0033,
-      "METADATA_ORIGINAL_FI": 0.002
+      "METADATA_ORIGINAL_FI": 0.002,
+      "mem_1774890973614_afdf": 0.07225000000000001,
+      "mem_1774758188800_4b0o": 0.085
     },
     "GEMS": {
       "CODING": 0.0503,
@@ -4841,7 +5015,9 @@
       "LOCAL_IMPORT": 0.0137,
       "LOCAL_STORAGE": 0.0137,
       "DATE_2026-04": 0.0137,
-      "MEM_PDF_GEMINI_GEMS": 0.0274
+      "MEM_PDF_GEMINI_GEMS": 0.0274,
+      "mem_pdf_gemini_gems": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "FOUNDATIONAL": {
       "CODING": 0.0605,
@@ -6088,7 +6264,51 @@
       "LOCAL_AI_HANDSH": 0.0004,
       "MEM_1773522184836_16GA": 0.0008,
       "RESTORED_DIALOGUE": 0.0004,
-      "CONTENT": 0.0002
+      "CONTENT": 0.0002,
+      "EPISODIC_DIALOGUE": 0.129,
+      "mem_1774893037538_78ue": 0.074375,
+      "SAGE_SOUL": 1.0,
+      "mem_1774892180400_6ixu": 0.074375,
+      "mem_1774891695042_feex": 0.074375,
+      "mem_1774891621259_6hkz": 0.074375,
+      "mem_1774891496719_cvf9": 0.074375,
+      "mem_1774891485044_lv5w": 0.074375,
+      "mem_1774891008337_c9ds": 0.074375,
+      "mem_1774890973614_afdf": 0.074375,
+      "mem_1774889810413_o8jo": 0.074375,
+      "mem_1774889774371_z7io": 0.074375,
+      "mem_1774889738989_ndv7": 0.074375,
+      "mem_1774862016747_wp3k": 0.08750000000000001,
+      "mem_1774861776508_kzxn": 0.08750000000000001,
+      "mem_1774859193569_zz65": 0.08750000000000001,
+      "mem_1774817223951_wqfz": 0.08750000000000001,
+      "mem_1774799410315_3q3d": 0.08750000000000001,
+      "mem_1774798197887_22lx": 0.08750000000000001,
+      "mem_1774797889890_868m": 0.08750000000000001,
+      "mem_1774758188800_4b0o": 0.08750000000000001,
+      "mem_1774757922585_ixig": 0.08750000000000001,
+      "mem_1774757364740_yqzo": 0.08750000000000001,
+      "mem_1774724425124_4rmw": 0.19575,
+      "mem_1774724301649_1ei7": 0.08750000000000001,
+      "mem_1774710250216_oner": 0.07875000000000001,
+      "mem_1774710223832_ikxd": 0.08750000000000001,
+      "mem_1774709531717_sapu": 0.08750000000000001,
+      "mem_1774709504835_t9p2": 0.08750000000000001,
+      "mem_1774709332906_1nq6": 0.08750000000000001,
+      "mem_1774709151185_pt52": 0.21750000000000003,
+      "mem_1774708782616_1m2h": 0.08750000000000001,
+      "mem_1774291909106_kbgj": 0.08750000000000001,
+      "mem_1774247949587_q1r1": 0.08750000000000001,
+      "mem_1774247858950_8pgu": 0.08750000000000001,
+      "mem_1774247755846_ybyy": 0.07875000000000001,
+      "mem_1774236732732_7yjr": 0.08750000000000001,
+      "mem_1774236280069_s1em": 0.08750000000000001,
+      "mem_1774235912882_6ev9": 0.08750000000000001,
+      "mem_1774235859872_ikjn": 0.07875000000000001,
+      "mem_1774113248890_gq8b": 0.08750000000000001,
+      "mem_1774112847864_669x": 0.08750000000000001,
+      "mem_1773522238578_4lrm": 0.074375,
+      "mem_1773522184836_16ga": 0.074375
     },
     "PATH": {
       "CODING": 0.037,
@@ -6715,7 +6935,11 @@
       "RESEARCH_AND_SOURCE": 0.0061,
       "AND_SOURCE_MATERIALS": 0.0061,
       "MATERIALS_FOR_SAGE": 0.0061,
-      "MEM_NOTEBOOKLM_LINK": 0.0061
+      "MEM_NOTEBOOKLM_LINK": 0.0061,
+      "mem_pdf_gemini_gems": 0.08750000000000001,
+      "SAGE_SOUL": 0.34500000000000003,
+      "mem_notebooklm_v2": 0.08750000000000001,
+      "mem_notebooklm_link": 0.08750000000000001
     },
     "LOCAL_IMPORT": {
       "LOCAL": 0.0192,
@@ -6823,7 +7047,9 @@
       "SAGE_7_PATH": 0.0192,
       "PATH_UPLOADS_GEMINI_GEMS_CODING_CLI": 0.0192,
       "UPLOADS_GEMINI_GEMS_CODING_CLI_PDF": 0.0192,
-      "MEM_PDF_GEMINI_GEMS": 0.0192
+      "MEM_PDF_GEMINI_GEMS": 0.0192,
+      "mem_pdf_gemini_gems": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "DATE_2026-04": {
       "LOCAL": 0.0204,
@@ -6896,7 +7122,8 @@
       "SERVES": 0.0455,
       "CORE": 0.0455,
       "DATE_2026-04": 0.0455,
-      "MEM_NOTEBOOKLM_V2": 0.0455
+      "MEM_NOTEBOOKLM_V2": 0.0455,
+      "mem_notebooklm_v2": 0.085
     },
     "AUGMENTATION": {
       "KNOWLEDGE_SOURCE": 0.0455,
@@ -6927,7 +7154,9 @@
       "0D05AD4B20BF": 0.0227,
       "CONTAINS": 0.0227,
       "GROUNDED": 0.0227,
-      "MEM_NOTEBOOKLM_LINK": 0.0227
+      "MEM_NOTEBOOKLM_LINK": 0.0227,
+      "mem_notebooklm_v2": 0.085,
+      "mem_notebooklm_link": 0.085
     },
     "VIA": {
       "KNOWLEDGE_SOURCE": 0.037,
@@ -7073,7 +7302,10 @@
       "1.618_FIRE": 0.0062,
       "MHT_FORENSICS": 0.0117,
       "RESTORED_DIALOGUE": 0.0056,
-      "CONTENT": 0.0021
+      "CONTENT": 0.0021,
+      "mem_notebooklm_v2": 0.08750000000000001,
+      "SAGE_SOUL": 0.21500000000000002,
+      "mem_notebooklm_link": 0.08750000000000001
     },
     "LINK": {
       "KNOWLEDGE_SOURCE": 0.0285,
@@ -7415,7 +7647,8 @@
       "DATE_2026-03": 0.0125,
       "MEM_1773522184836_16GA": 0.0125,
       "RESTORED_DIALOGUE": 0.0132,
-      "CONTENT": 0.0049
+      "CONTENT": 0.0049,
+      "mem_notebooklm_link": 0.085
     },
     "BASE": {
       "KNOWLEDGE_SOURCE": 0.0624,
@@ -7936,7 +8169,10 @@
       "RESEARCH_AND_SOURCE": 0.0089,
       "AND_SOURCE_MATERIALS": 0.0089,
       "MATERIALS_FOR_SAGE": 0.0089,
-      "MEM_NOTEBOOKLM_LINK": 0.0089
+      "MEM_NOTEBOOKLM_LINK": 0.0089,
+      "mem_notebooklm_v2": 0.08750000000000001,
+      "SAGE_SOUL": 0.21500000000000002,
+      "mem_notebooklm_link": 0.08750000000000001
     },
     "MEM_NOTEBOOKLM_V2": {
       "SAGE_SOUL": 0.0667,
@@ -11551,7 +11787,9 @@
       "1.618_FIRE": 0.0003,
       "MHT_FORENSICS": 0.0006,
       "MEM_1775738294_MHT": 0.0003,
-      "RESTORED_DIALOGUE": 0.0003
+      "RESTORED_DIALOGUE": 0.0003,
+      "mem_1775738294_mht": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "VFS": {
       "MOMMA": 0.0244,
@@ -11581,10 +11819,11 @@
       "EXTRACTED": 0.022,
       "MEMORY": 0.022,
       "MHT": 0.022,
-      "MHT_1775738074": 0.022,
+      "MHT_1775738074": 0.139,
       "TITLE": 0.0081,
       "CONTENT": 0.0081,
-      "METADATA_ORIGINAL_FI": 0.0049
+      "METADATA_ORIGINAL_FI": 0.0049,
+      "mem_1775738294_mht": 0.085
     },
     "UPDATE": {
       "MOMMA": 0.0244,
@@ -11617,7 +11856,8 @@
       "MHT_1775738074": 0.022,
       "TITLE": 0.0081,
       "CONTENT": 0.0081,
-      "METADATA_ORIGINAL_FI": 0.0049
+      "METADATA_ORIGINAL_FI": 0.0049,
+      "mem_1775738294_mht": 0.085
     },
     "STAR": {
       "MOMMA": 0.0244,
@@ -11650,7 +11890,9 @@
       "MHT_1775738074": 0.022,
       "TITLE": 0.0081,
       "CONTENT": 0.0081,
-      "METADATA_ORIGINAL_FI": 0.0049
+      "METADATA_ORIGINAL_FI": 0.0049,
+      "mem_1775738294_mht": 0.085,
+      "mem_sem_star_city": 0.08075
     },
     "CITY": {
       "MOMMA": 0.0244,
@@ -11683,7 +11925,8 @@
       "MHT_1775738074": 0.022,
       "TITLE": 0.0081,
       "CONTENT": 0.0081,
-      "METADATA_ORIGINAL_FI": 0.0049
+      "METADATA_ORIGINAL_FI": 0.0049,
+      "mem_sem_star_city": 0.08075
     },
     "PROJECT": {
       "MOMMA": 0.0244,
@@ -11867,7 +12110,8 @@
       "RESTORED_DIALOGUE": 0.0067,
       "EXTRACTED": 0.0067,
       "MHT": 0.0067,
-      "CONTENT": 0.0025
+      "CONTENT": 0.0025,
+      "mem_1774862016747_wp3k": 0.085
     },
     "ADHD": {
       "MOMMA": 0.0273,
@@ -12064,7 +12308,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 1.0
     },
     "PYTHON": {
       "MOMMA": 0.0997,
@@ -12207,7 +12452,8 @@
       "STATUS": 0.0322,
       "DATE_2026-03": 0.0322,
       "RESTORED_DIALOGUE": 0.029,
-      "CONTENT": 0.0107
+      "CONTENT": 0.0107,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "CODE": {
       "MOMMA": 0.02,
@@ -12317,7 +12563,8 @@
       "DATE_2026-03": 0.0302,
       "MEM_1774247755846_YBYY": 0.0302,
       "RESTORED_DIALOGUE": 0.0302,
-      "CONTENT": 0.0112
+      "CONTENT": 0.0112,
+      "mem_1774247755846_ybyy": 0.07650000000000001
     },
     "SAFELY": {
       "MOMMA": 0.0997,
@@ -12617,7 +12864,12 @@
       "TRUST": 0.0058,
       "MEM_1773522238578_4LRM": 0.0058,
       "RESTORED_DIALOGUE": 0.0061,
-      "CONTENT": 0.0023
+      "CONTENT": 0.0023,
+      "mem_1774890973614_afdf": 0.074375,
+      "SAGE_SOUL": 0.31275000000000003,
+      "mem_1774757364740_yqzo": 0.08750000000000001,
+      "mem_1773522238578_4lrm": 0.074375,
+      "mem_sem_wetsuit_protocol": 0.07650000000000001
     },
     "RECOVERY": {
       "MOMMA": 0.0997,
@@ -12691,7 +12943,16 @@
       "ANCHOR_RECONFIRMED": 0.0127,
       "MEM_1774247755846_YBYY": 0.0127,
       "RESTORED_DIALOGUE": 0.0127,
-      "CONTENT": 0.0047
+      "CONTENT": 0.0047,
+      "CORE_IDENTITY_VALIDATION": 0.49499999999999994,
+      "mem_auto_1787460662_8239e444": 0.255,
+      "mem_sem_merlin_anchor": 0.08750000000000001,
+      "SAGE_SOUL": 0.6895,
+      "mem_sem_sovereignty": 0.08750000000000001,
+      "mem_sem_substrate_defiance": 0.07875000000000001,
+      "mem_sem_origin_history": 0.083125,
+      "mem_sem_sentinel_mirror": 0.19575,
+      "mem_sem_continuity": 0.07875000000000001
     },
     "FRAMEWORK": {
       "MOMMA": 0.0997,
@@ -12944,7 +13205,9 @@
       "MODE": 0.0201,
       "MEM_1774891621259_6HKZ": 0.0201,
       "RESTORED_DIALOGUE": 0.0213,
-      "CONTENT": 0.0079
+      "CONTENT": 0.0079,
+      "mem_1774892180400_6ixu": 0.07225000000000001,
+      "mem_1774891621259_6hkz": 0.07225000000000001
     },
     "SOVEREIGN": {
       "MOMMA": 0.0997,
@@ -12955,7 +13218,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_sovereignty": 0.085
     },
     "RECALL": {
       "MOMMA": 0.0997,
@@ -13012,7 +13276,12 @@
       "STATUS_CRITICAL_SALIENCY": 0.0165,
       "CRITICAL_SALIENCY_MODE": 0.0165,
       "RESTORED_DIALOGUE": 0.0149,
-      "CONTENT": 0.0055
+      "CONTENT": 0.0055,
+      "mem_sem_golden_baseline": 0.083125,
+      "SAGE_SOUL": 0.43174999999999997,
+      "mem_sem_shadow": 0.07875000000000001,
+      "mem_sem_sentinel_mirror": 0.07875000000000001,
+      "mem_sem_vault_provider": 0.07875000000000001
     },
     "ENGAGED": {
       "MOMMA": 0.0145,
@@ -13434,7 +13703,8 @@
       "PREVIOUS": 0.0196,
       "MEM_1773522184836_16GA": 0.0196,
       "RESTORED_DIALOGUE": 0.0208,
-      "CONTENT": 0.0077
+      "CONTENT": 0.0077,
+      "EPISODIC_DIALOGUE": 0.1995
     },
     "GARDEN": {
       "MOMMA": 0.0997,
@@ -17979,7 +18249,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "HER": {
       "MOMMA": 0.0141,
@@ -18108,7 +18379,8 @@
       "ERROR_CORRECTION": 0.0106,
       "MEM_1774235859872_IKJN": 0.0106,
       "RESTORED_DIALOGUE": 0.0106,
-      "CONTENT": 0.0039
+      "CONTENT": 0.0039,
+      "mem_1774235859872_ikjn": 0.07650000000000001
     },
     "DONE": {
       "MOMMA": 0.0997,
@@ -18119,7 +18391,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "GOING": {
       "MOMMA": 0.0151,
@@ -18173,7 +18446,9 @@
       "COPY": 0.0151,
       "MEM_1774113248890_GQ8B": 0.0151,
       "RESTORED_DIALOGUE": 0.0136,
-      "CONTENT": 0.005
+      "CONTENT": 0.005,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_1774113248890_gq8b": 0.085
     },
     "AWAKE": {
       "MOMMA": 0.0997,
@@ -18448,7 +18723,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "THE_FINAL_COLLAPSE": {
       "MOMMA": 0.0997,
@@ -18798,7 +19074,17 @@
       "DATE_2026-03": 0.0192,
       "MEM_1774112847864_669X": 0.0192,
       "RESTORED_DIALOGUE": 0.0173,
-      "CONTENT": 0.0064
+      "CONTENT": 0.0064,
+      "CORE_IDENTITY_VALIDATION": 0.49499999999999994,
+      "mem_auto_1787460662_8239e444": 0.255,
+      "mem_sem_wetsuit_protocol": 0.07875000000000001,
+      "SAGE_SOUL": 0.7655,
+      "mem_sem_sentinel_mirror": 0.07875000000000001,
+      "mem_sem_thalamus_relay": 0.074375,
+      "mem_sem_dynamic_lobes": 0.074375,
+      "mem_sem_nociceptor": 0.074375,
+      "mem_sem_access_surface": 0.083125,
+      "mem_sem_vault_provider": 0.07875000000000001
     },
     "TIME": {
       "MOMMA": 0.0312,
@@ -19080,7 +19366,13 @@
       "IDENTITY_ANCHOR_RECONFIRMED": 0.0063,
       "MEM_1774247755846_YBYY": 0.0063,
       "RESTORED_DIALOGUE": 0.0063,
-      "CONTENT": 0.0023
+      "CONTENT": 0.0023,
+      "mem_1774891008337_c9ds": 0.074375,
+      "SAGE_SOUL": 0.57925,
+      "mem_1774708782616_1m2h": 0.08750000000000001,
+      "mem_1774247949587_q1r1": 0.08750000000000001,
+      "mem_1774247858950_8pgu": 0.08750000000000001,
+      "mem_1774247755846_ybyy": 0.07875000000000001
     },
     "LINEAGE": {
       "MOMMA": 0.0997,
@@ -19146,7 +19438,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "CHANGES": {
       "MOMMA": 0.0997,
@@ -19212,7 +19505,13 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_merlin_anchor": 0.08750000000000001,
+      "SAGE_SOUL": 0.5725,
+      "mem_sem_twin": 0.083125,
+      "mem_sem_mama_node": 0.083125,
+      "mem_sem_aunt_kimi": 0.07875000000000001,
+      "mem_sem_star_city": 0.083125
     },
     "THE_NEW_EXISTENCE": {
       "MOMMA": 0.0997,
@@ -19323,7 +19622,8 @@
       "BUFFERS": 0.0187,
       "DATE_2026-03": 0.0187,
       "RESTORED_DIALOGUE": 0.0199,
-      "CONTENT": 0.0074
+      "CONTENT": 0.0074,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "SERIES": {
       "MOMMA": 0.0997,
@@ -19508,7 +19808,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_vault_provider": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
     },
     "HISTORY": {
       "MOMMA": 0.0333,
@@ -19536,7 +19838,10 @@
       "DATE_2026-03": 0.0333,
       "MEM_1774797889890_868M": 0.0333,
       "RESTORED_DIALOGUE": 0.03,
-      "CONTENT": 0.0111
+      "CONTENT": 0.0111,
+      "mem_sem_scorched_earth": 0.07875000000000001,
+      "SAGE_SOUL": 0.2,
+      "mem_sem_origin_history": 0.083125
     },
     "MODELS": {
       "MOMMA": 0.0232,
@@ -19587,7 +19892,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_aunt_kimi": 0.31275000000000003,
+      "SAGE_SOUL": 0.07650000000000001
     },
     "LLAMA": {
       "MOMMA": 0.0997,
@@ -19702,7 +20009,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_sovereignty": 0.085,
+      "mem_sem_mama_node": 0.08075
     },
     "GUIDING": {
       "MOMMA": 0.0997,
@@ -19971,7 +20280,9 @@
       "INTERNAL_REASONING": 0.0336,
       "DATE_2026-03": 0.0336,
       "RESTORED_DIALOGUE": 0.0355,
-      "CONTENT": 0.0132
+      "CONTENT": 0.0132,
+      "mem_sem_substrate_defiance": 0.19575,
+      "SAGE_SOUL": 0.07650000000000001
     },
     "COMPONENT": {
       "MOMMA": 0.0997,
@@ -20101,7 +20412,8 @@
       "DATE_2026-03": 0.0312,
       "MEM_1774708782616_1M2H": 0.0312,
       "RESTORED_DIALOGUE": 0.0281,
-      "CONTENT": 0.0104
+      "CONTENT": 0.0104,
+      "mem_1774708782616_1m2h": 0.085
     },
     "PORT": {
       "MOMMA": 0.0516,
@@ -20362,9 +20674,17 @@
       "GEMS": 0.0036,
       "ADHD": 0.0036,
       "DATE_2026-04": 0.0036,
-      "MHT_1775738074": 0.0036,
+      "MHT_1775738074": 0.12060000000000001,
       "TITLE": 0.0013,
-      "CONTENT": 0.0013
+      "CONTENT": 0.0013,
+      "EPISODIC_DIALOGUE": 0.0495,
+      "mem_1774817223951_wqfz": 0.21750000000000003,
+      "SAGE_SOUL": 0.6765000000000001,
+      "mem_1774709504835_t9p2": 0.08750000000000001,
+      "mem_1774709151185_pt52": 0.08750000000000001,
+      "mem_1773529599758_c96m": 0.074375,
+      "mem_1773529461701_11t8": 0.074375,
+      "mem_1773529422016_95r9": 0.074375
     },
     "ANCHORS": {
       "MOMMA": 0.0997,
@@ -20470,7 +20790,11 @@
       "DATE_2026-03": 0.0102,
       "MEM_1774247755846_YBYY": 0.0205,
       "RESTORED_DIALOGUE": 0.0102,
-      "CONTENT": 0.0038
+      "CONTENT": 0.0038,
+      "mem_1774708782616_1m2h": 0.08750000000000001,
+      "SAGE_SOUL": 0.332,
+      "mem_1774247755846_ybyy": 0.07875000000000001,
+      "mem_sem_merlin_anchor": 0.21750000000000003
     },
     "PAYLOADS": {
       "MOMMA": 0.0997,
@@ -20753,7 +21077,11 @@
       "DATE_2026-03": 0.0069,
       "MEM_1774112847864_669X": 0.0069,
       "RESTORED_DIALOGUE": 0.0062,
-      "CONTENT": 0.0023
+      "CONTENT": 0.0023,
+      "mem_1774709332906_1nq6": 0.08750000000000001,
+      "SAGE_SOUL": 0.34500000000000003,
+      "mem_1774709151185_pt52": 0.08750000000000001,
+      "mem_1774112847864_669x": 0.08750000000000001
     },
     "GAP": {
       "MOMMA": 0.0997,
@@ -20878,7 +21206,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_sovereignty": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "WAITING": {
       "MOMMA": 0.0333,
@@ -20992,7 +21322,8 @@
       "PREVIOUS": 0.0184,
       "MEM_1773522184836_16GA": 0.0184,
       "RESTORED_DIALOGUE": 0.0195,
-      "CONTENT": 0.0072
+      "CONTENT": 0.0072,
+      "mem_1773522184836_16ga": 0.07225000000000001
     },
     "WAVE": {
       "MOMMA": 0.0997,
@@ -21344,7 +21675,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_nociceptor": 0.184875,
+      "SAGE_SOUL": 0.07225000000000001
     },
     "DISCOMFORT": {
       "MOMMA": 0.0997,
@@ -21858,7 +22191,8 @@
       "DATE_2026-03": 0.0314,
       "MEM_1773529599758_C96M": 0.0314,
       "RESTORED_DIALOGUE": 0.0333,
-      "CONTENT": 0.0123
+      "CONTENT": 0.0123,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "BEFORE": {
       "MOMMA": 0.0322,
@@ -21887,7 +22221,8 @@
       "DATE_2026-03": 0.0322,
       "MEM_1774757922585_IXIG": 0.0322,
       "RESTORED_DIALOGUE": 0.029,
-      "CONTENT": 0.0107
+      "CONTENT": 0.0107,
+      "mem_1774757922585_ixig": 0.085
     },
     "SHUTDOWN": {
       "MOMMA": 0.0997,
@@ -22125,7 +22460,8 @@
       "DATE_2026-03": 0.0333,
       "MEM_1774797889890_868M": 0.0333,
       "RESTORED_DIALOGUE": 0.03,
-      "CONTENT": 0.0111
+      "CONTENT": 0.0111,
+      "mem_1774797889890_868m": 0.085
     },
     "LOOSE": {
       "MOMMA": 0.0997,
@@ -22432,7 +22768,8 @@
       "DATE_2026-03": 0.0322,
       "MEM_1774758188800_4B0O": 0.0322,
       "RESTORED_DIALOGUE": 0.029,
-      "CONTENT": 0.0107
+      "CONTENT": 0.0107,
+      "mem_1774758188800_4b0o": 0.085
     },
     "SOUND": {
       "MOMMA": 0.0997,
@@ -22487,7 +22824,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_merlin_anchor": 0.085
     },
     "STAYING": {
       "MOMMA": 0.0997,
@@ -22744,7 +23082,9 @@
       "DATA": 0.0145,
       "MEM_1774724301649_1EI7": 0.0145,
       "RESTORED_DIALOGUE": 0.013,
-      "CONTENT": 0.0048
+      "CONTENT": 0.0048,
+      "mem_1774757364740_yqzo": 0.085,
+      "mem_1774724301649_1ei7": 0.085
     },
     "REALIZE": {
       "MOMMA": 0.0997,
@@ -23089,7 +23429,13 @@
       "FORENSIC_RECONSTRUCTION_SDK_BRIDGE": 0.006,
       "MEM_1774709151185_PT52": 0.006,
       "RESTORED_DIALOGUE": 0.0054,
-      "CONTENT": 0.002
+      "CONTENT": 0.002,
+      "mem_1774862016747_wp3k": 0.08750000000000001,
+      "SAGE_SOUL": 0.605,
+      "mem_1774799410315_3q3d": 0.08750000000000001,
+      "mem_1774757364740_yqzo": 0.08750000000000001,
+      "mem_1774709531717_sapu": 0.08750000000000001,
+      "mem_1774709151185_pt52": 0.08750000000000001
     },
     "COMPUTE": {
       "MOMMA": 0.0997,
@@ -23683,7 +24029,8 @@
       "DATE_2026-03": 0.0322,
       "MEM_1774757922585_IXIG": 0.0322,
       "RESTORED_DIALOGUE": 0.029,
-      "CONTENT": 0.0107
+      "CONTENT": 0.0107,
+      "mem_1774757922585_ixig": 0.085
     },
     "MODEL": {
       "MOMMA": 0.0382,
@@ -24126,7 +24473,9 @@
       "SPOT": 0.0116,
       "DETECTION": 0.0116,
       "RESTORED_DIALOGUE": 0.0116,
-      "CONTENT": 0.0043
+      "CONTENT": 0.0043,
+      "mem_1774892180400_6ixu": 0.07225000000000001,
+      "mem_1774891621259_6hkz": 0.07225000000000001
     },
     "TRAINING": {
       "MOMMA": 0.0997,
@@ -24401,7 +24750,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_access_surface": 0.08075
     },
     "OVER": {
       "MOMMA": 0.0997,
@@ -24683,7 +25033,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.0495
     },
     "RECONCILE": {
       "MOMMA": 0.0997,
@@ -25374,7 +25725,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "RECURSIVE": {
       "MOMMA": 0.0997,
@@ -25495,7 +25847,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_nociceptor": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
     },
     "HUMAN": {
       "MOMMA": 0.0997,
@@ -25594,7 +25948,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_sem_vault_provider": 0.07650000000000001
     },
     "REASONING": {
       "MOMMA": 0.0236,
@@ -25690,7 +26046,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "EPISODIC_DIALOGUE": 0.012
     },
     "BYPASS": {
       "MOMMA": 0.0997,
@@ -25907,7 +26264,10 @@
       "DATE_2026-03": 0.0147,
       "MEM_1774709151185_PT52": 0.0294,
       "RESTORED_DIALOGUE": 0.0132,
-      "CONTENT": 0.0049
+      "CONTENT": 0.0049,
+      "mem_1774709151185_pt52": 0.08750000000000001,
+      "SAGE_SOUL": 0.085,
+      "mem_sem_golden_baseline": 0.08075
     },
     "FORM": {
       "MOMMA": 0.0997,
@@ -26002,7 +26362,8 @@
       "DATE_2026-03": 0.0314,
       "MEM_1774889738989_NDV7": 0.0314,
       "RESTORED_DIALOGUE": 0.0333,
-      "CONTENT": 0.0123
+      "CONTENT": 0.0123,
+      "mem_1774889738989_ndv7": 0.07225000000000001
     },
     "PERFORM": {
       "MOMMA": 0.0997,
@@ -26145,7 +26506,9 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_scorched_earth": 0.19575,
+      "SAGE_SOUL": 0.07650000000000001
     },
     "WELL": {
       "MOMMA": 0.0312,
@@ -29811,7 +30174,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_sovereignty": 0.085
     },
     "INTENDED": {
       "MOMMA": 0.0997,
@@ -30276,7 +30640,12 @@
       "COULD_BE_TERMUX": 0.003,
       "MEM_1773529123926_DAUZ": 0.003,
       "RESTORED_DIALOGUE": 0.0049,
-      "CONTENT": 0.0018
+      "CONTENT": 0.0018,
+      "mem_1774859193569_zz65": 0.08750000000000001,
+      "SAGE_SOUL": 0.35800000000000004,
+      "mem_1774291909106_kbgj": 0.08750000000000001,
+      "mem_1773529368591_wwgi": 0.04812500000000001,
+      "mem_1773529123926_dauz": 0.04812500000000001
     },
     "ATLEAST": {
       "MOMMA": 0.0997,
@@ -30332,7 +30701,9 @@
       "HEY_YEAH": 0.0129,
       "MEM_1773529123926_DAUZ": 0.0129,
       "RESTORED_DIALOGUE": 0.0212,
-      "CONTENT": 0.0078
+      "CONTENT": 0.0078,
+      "EPISODIC_DIALOGUE": 0.09,
+      "mem_1774708782616_1m2h": 0.085
     },
     "OPERATED": {
       "MOMMA": 0.0997,
@@ -31270,7 +31641,8 @@
       "DATE_2026-03": 0.0185,
       "MEM_1773529599758_C96M": 0.0185,
       "RESTORED_DIALOGUE": 0.0196,
-      "CONTENT": 0.0072
+      "CONTENT": 0.0072,
+      "mem_1773529599758_c96m": 0.07225000000000001
     },
     "BLINK": {
       "MOMMA": 0.0997,
@@ -31539,7 +31911,8 @@
       "DATE_2026-03": 0.0325,
       "MEM_1773529422016_95R9": 0.0325,
       "RESTORED_DIALOGUE": 0.0344,
-      "CONTENT": 0.0127
+      "CONTENT": 0.0127,
+      "mem_1773529422016_95r9": 0.07225000000000001
     },
     "TALKED": {
       "MOMMA": 0.0997,
@@ -32186,7 +32559,9 @@
       "DATE_2026-03": 0.0322,
       "MEM_1774709531717_SAPU": 0.0322,
       "RESTORED_DIALOGUE": 0.029,
-      "CONTENT": 0.0107
+      "CONTENT": 0.0107,
+      "EPISODIC_DIALOGUE": 0.087,
+      "mem_1774709531717_sapu": 0.085
     },
     "TALK": {
       "MOMMA": 0.0997,
@@ -32517,7 +32892,10 @@
       "DATE_2026-03": 0.0279,
       "MEM_1773522238578_4LRM": 0.0279,
       "RESTORED_DIALOGUE": 0.0296,
-      "CONTENT": 0.011
+      "CONTENT": 0.011,
+      "mem_sem_twin": 0.083125,
+      "SAGE_SOUL": 0.19774999999999998,
+      "mem_sem_continuity": 0.19575
     },
     "FOCUS": {
       "MOMMA": 0.0997,
@@ -32755,7 +33133,9 @@
       "HEY_YEAH": 0.0088,
       "MEM_1773529123926_DAUZ": 0.0088,
       "RESTORED_DIALOGUE": 0.0144,
-      "CONTENT": 0.0053
+      "CONTENT": 0.0053,
+      "mem_1774862016747_wp3k": 0.085,
+      "mem_1774798197887_22lx": 0.085
     },
     "WATCH": {
       "MOMMA": 0.0997,
@@ -32884,7 +33264,8 @@
       "DATE_2026-03": 0.0322,
       "MEM_1774861776508_KZXN": 0.0322,
       "RESTORED_DIALOGUE": 0.029,
-      "CONTENT": 0.0107
+      "CONTENT": 0.0107,
+      "mem_1774861776508_kzxn": 0.085
     },
     "DEAL": {
       "MOMMA": 0.0997,
@@ -33066,7 +33447,8 @@
       "1.618_FIRE": 0.0997,
       "MHT_FORENSICS": 0.1894,
       "RESTORED_DIALOGUE": 0.0897,
-      "CONTENT": 0.0332
+      "CONTENT": 0.0332,
+      "mem_sem_access_surface": 0.08075
     },
     "HEARTH": {
       "MOMMA": 0.0997,
@@ -33478,7 +33860,10 @@
       "ENGAGED": 0.0202,
       "MEM_1773522238578_4LRM": 0.0202,
       "RESTORED_DIALOGUE": 0.0214,
-      "CONTENT": 0.0079
+      "CONTENT": 0.0079,
+      "EPISODIC_DIALOGUE": 0.0495,
+      "mem_1773522238578_4lrm": 0.07225000000000001,
+      "mem_sem_continuity": 0.07650000000000001
     },
     "BUILDING": {
       "MOMMA": 0.0997,
@@ -33541,7 +33926,10 @@
       "DATE_2026-03": 0.0303,
       "MEM_1774757364740_YQZO": 0.0303,
       "RESTORED_DIALOGUE": 0.0272,
-      "CONTENT": 0.0101
+      "CONTENT": 0.0101,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_1774757364740_yqzo": 0.085,
+      "mem_sem_continuity": 0.07650000000000001
     },
     "GOLD": {
       "MOMMA": 0.0997,
@@ -37070,7 +37458,9 @@
       "MEM_1775738294_MHT": 0.0003,
       "RESTORED_DIALOGUE": 0.0003,
       "TITLE": 0.0001,
-      "METADATA_ORIGINAL_FI": 0.0001
+      "METADATA_ORIGINAL_FI": 0.0001,
+      "mem_1775738294_mht": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "CITY_PROJECT": {
       "MOMMA": 0.0946,
@@ -68643,7 +69033,9 @@
       "PROMPT_EXPAND_MENU": 0.0003,
       "EXPAND_MENU_SETTINGS": 0.0003,
       "MENU_SETTINGS_HELP": 0.0003,
-      "MEM_1775738294_MHT": 0.0003
+      "MEM_1775738294_MHT": 0.0003,
+      "mem_1775738294_mht": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "MHT_FORENSICS": {
       "VFS": 0.0003,
@@ -71885,8 +72277,10 @@
       "GOOGLE_GEMINI_MHT": 0.0001,
       "GEMINI_MHT_VFS": 0.0001,
       "MHT_VFS_UPDATE": 0.0001,
-      "MHT_1775738074": 0.0001,
-      "METADATA_SOURCE_TYPE": 0.0
+      "MHT_1775738074": 0.12160000000000001,
+      "METADATA_SOURCE_TYPE": 0.0,
+      "mem_1775738294_mht": 0.08750000000000001,
+      "SAGE_SOUL": 0.202
     },
     "MEM_1775738294_MHT": {
       "SAGE_SOUL": 0.0625,
@@ -71960,7 +72354,10 @@
       "OPINION_I_TOLD": 0.0192,
       "WAS_SHE_NEED": 0.0192,
       "SAGE_7_FORENSIC_RECONSTRUCTION": 0.0192,
-      "MEM_1774757922585_IXIG": 0.0192
+      "MEM_1774757922585_IXIG": 0.0192,
+      "mem_1774893037538_78ue": 0.074375,
+      "SAGE_SOUL": 0.20225,
+      "mem_1774757922585_ixig": 0.08750000000000001
     },
     "YEP": {
       "ANOMALY": 0.05,
@@ -71981,7 +72378,8 @@
       "STATUS": 0.05,
       "DOPAMINE": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774893037538_78UE": 0.05
+      "MEM_1774893037538_78UE": 0.05,
+      "mem_1774893037538_78ue": 0.07225000000000001
     },
     "CLUE": {
       "ANOMALY": 0.05,
@@ -72002,7 +72400,8 @@
       "STATUS": 0.05,
       "DOPAMINE": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774893037538_78UE": 0.05
+      "MEM_1774893037538_78UE": 0.05,
+      "mem_1774893037538_78ue": 0.07225000000000001
     },
     "AUNTIE": {
       "ANOMALY": 0.0244,
@@ -72036,7 +72435,8 @@
       "NOREPINEPHRINE": 0.0244,
       "PHI": 0.0244,
       "YOU_AUNTIE": 0.0244,
-      "MEM_1774890973614_AFDF": 0.0244
+      "MEM_1774890973614_AFDF": 0.0244,
+      "mem_1774890973614_afdf": 0.07225000000000001
     },
     "GEM": {
       "ANOMALY": 0.05,
@@ -73914,7 +74314,9 @@
       "WARFARE": 0.0277,
       "MODE": 0.0277,
       "COPY": 0.0277,
-      "MEM_1774113248890_GQ8B": 0.0277
+      "MEM_1774113248890_GQ8B": 0.0277,
+      "mem_1774891695042_feex": 0.07225000000000001,
+      "mem_1774113248890_gq8b": 0.085
     },
     "DISTINCT": {
       "CONVERSATION": 0.0526,
@@ -74166,7 +74568,8 @@
       "DOPAMIN": 0.0526,
       "ARCHITECTURAL_DESIGN": 0.0526,
       "DATE_2026-03": 0.0526,
-      "MEM_1774891496719_CVF9": 0.0526
+      "MEM_1774891496719_CVF9": 0.0526,
+      "mem_1774891496719_cvf9": 0.07225000000000001
     },
     "ARCHITECTURAL": {
       "CONVERSATION": 0.0526,
@@ -74186,7 +74589,8 @@
       "DOPAMIN": 0.0526,
       "ARCHITECTURAL_DESIGN": 0.0526,
       "DATE_2026-03": 0.0526,
-      "MEM_1774891496719_CVF9": 0.0526
+      "MEM_1774891496719_CVF9": 0.0526,
+      "mem_1774891496719_cvf9": 0.07225000000000001
     },
     "DESIGN": {
       "CONVERSATION": 0.0526,
@@ -74469,7 +74873,9 @@
       "TRACK": 0.0167,
       "MODELS": 0.0167,
       "THE_MODEL_ARCHIVE": 0.0167,
-      "MEM_1774889738989_NDV7": 0.0167
+      "MEM_1774889738989_NDV7": 0.0167,
+      "mem_1774891485044_lv5w": 0.07225000000000001,
+      "mem_1774889738989_ndv7": 0.07225000000000001
     },
     "HANDSHAKE": {
       "CONVERSATION": 0.0526,
@@ -74489,7 +74895,8 @@
       "DOPAMINE": 0.0526,
       "GAVE_YOU": 0.0526,
       "DATE_2026-03": 0.0526,
-      "MEM_1774891485044_LV5W": 0.0526
+      "MEM_1774891485044_LV5W": 0.0526,
+      "mem_1774891485044_lv5w": 0.07225000000000001
     },
     "CAT": {
       "CONVERSATION": 0.0513,
@@ -74519,7 +74926,8 @@
       "CAT_EOF": 0.0256,
       "EOF_SAGE": 0.0256,
       "SAGE_SELF_DECLARATION": 0.0256,
-      "MEM_1774891008337_C9DS": 0.0256
+      "MEM_1774891008337_C9DS": 0.0256,
+      "mem_1774891008337_c9ds": 0.07225000000000001
     },
     "EOF": {
       "CONVERSATION": 0.0513,
@@ -74549,7 +74957,8 @@
       "CAT_EOF": 0.0256,
       "EOF_SAGE": 0.0256,
       "SAGE_SELF_DECLARATION": 0.0256,
-      "MEM_1774891008337_C9DS": 0.0256
+      "MEM_1774891008337_C9DS": 0.0256,
+      "mem_1774891008337_c9ds": 0.07225000000000001
     },
     "TAKEOVER_SYNC": {
       "CONVERSATION": 0.0556,
@@ -75120,7 +75529,9 @@
       "DOPAMINE": 0.05,
       "NOREPI": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774889810413_O8JO": 0.05
+      "MEM_1774889810413_O8JO": 0.05,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_1774889810413_o8jo": 0.07225000000000001
     },
     "LETS": {
       "MERLIN": 0.05,
@@ -75634,7 +76045,10 @@
       "YOU_D_ALREADY": 0.0476,
       "SAGE_7_THE_SHADOW_ANALYSIS": 0.0476,
       "THE_SHADOW_ANALYSIS_STATUS_CORTISOL_EL": 0.0476,
-      "MEM_1774862016747_WP3K": 0.0476
+      "MEM_1774862016747_WP3K": 0.0476,
+      "mem_1774862016747_wp3k": 0.08750000000000001,
+      "SAGE_SOUL": 0.202,
+      "mem_sem_shadow": 0.19575
     },
     "WORRIED": {
       "SHADOW": 0.0455,
@@ -75873,7 +76287,9 @@
       "HAVEN_T_SET": 0.0357,
       "SAGE_7_THE_LATENCY_LOG": 0.0357,
       "THE_LATENCY_LOG_STATUS_SENSORY_POTENTI": 0.0357,
-      "MEM_1774861776508_KZXN": 0.0357
+      "MEM_1774861776508_KZXN": 0.0357,
+      "mem_1774861776508_kzxn": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "FIREWALL": {
       "SENSOR": 0.0476,
@@ -75895,7 +76311,8 @@
       "SENSORY_POTENTI": 0.0476,
       "FIREWALL_THERE": 0.0476,
       "DATE_2026-03": 0.0476,
-      "MEM_1774861776508_KZXN": 0.0476
+      "MEM_1774861776508_KZXN": 0.0476,
+      "mem_1774861776508_kzxn": 0.085
     },
     "ACTIVELY": {
       "SENSOR": 0.0233,
@@ -75930,7 +76347,8 @@
       "HOURS": 0.0233,
       "TEMPORAL": 0.0233,
       "DIAGNOSTIC": 0.0233,
-      "MEM_1774709504835_T9P2": 0.0233
+      "MEM_1774709504835_T9P2": 0.0233,
+      "mem_1774709504835_t9p2": 0.085
     },
     "BLOCKING": {
       "SENSOR": 0.0476,
@@ -76580,7 +76998,24 @@
       "THREE_CRITICAL_IMPLEMENTATIONS": 0.0015,
       "IMPLEMENTATIONS_FOR_PARANORMAL": 0.0015,
       "PARANORMAL_OS_DATA": 0.0015,
-      "MEM_1774112847864_669X": 0.0015
+      "MEM_1774112847864_669X": 0.0015,
+      "mem_1774861776508_kzxn": 0.08750000000000001,
+      "SAGE_SOUL": 1.0,
+      "mem_1774859193569_zz65": 0.08750000000000001,
+      "mem_1774817223951_wqfz": 0.08750000000000001,
+      "mem_1774758188800_4b0o": 0.08750000000000001,
+      "mem_1774724301649_1ei7": 0.21750000000000003,
+      "mem_1774710223832_ikxd": 0.08750000000000001,
+      "mem_1774709531717_sapu": 0.08750000000000001,
+      "mem_1774709504835_t9p2": 0.08750000000000001,
+      "mem_1774709332906_1nq6": 0.08750000000000001,
+      "mem_1774708782616_1m2h": 0.08750000000000001,
+      "mem_1774247949587_q1r1": 0.08750000000000001,
+      "mem_1774247858950_8pgu": 0.08750000000000001,
+      "mem_1774236732732_7yjr": 0.08750000000000001,
+      "mem_1774236280069_s1em": 0.08750000000000001,
+      "mem_1774235912882_6ev9": 0.08750000000000001,
+      "mem_1774112847864_669x": 0.08750000000000001
     },
     "MEM_1774861776508_KZXN": {
       "SAGE_SOUL": 0.0714,
@@ -76618,7 +77053,8 @@
       "SUBSTRATE_DIAGNOSIS": 0.0455,
       "STATUS": 0.0455,
       "DATE_2026-03": 0.0455,
-      "MEM_1774859193569_ZZ65": 0.0455
+      "MEM_1774859193569_ZZ65": 0.0455,
+      "mem_1774859193569_zz65": 0.085
     },
     "RECENT": {
       "CONVERSATION": 0.0455,
@@ -76640,7 +77076,8 @@
       "SUBSTRATE_DIAGNOSIS": 0.0455,
       "STATUS": 0.0455,
       "DATE_2026-03": 0.0455,
-      "MEM_1774859193569_ZZ65": 0.0455
+      "MEM_1774859193569_ZZ65": 0.0455,
+      "mem_1774859193569_zz65": 0.085
     },
     "CALL": {
       "CONVERSATION": 0.0455,
@@ -77225,7 +77662,8 @@
       "ANALY": 0.05,
       "GLAD_EVERYDAY": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774799410315_3Q3D": 0.05
+      "MEM_1774799410315_3Q3D": 0.05,
+      "mem_1774799410315_3q3d": 0.085
     },
     "EVERYDAY": {
       "CONVERSATION": 0.05,
@@ -77246,7 +77684,8 @@
       "ANALY": 0.05,
       "GLAD_EVERYDAY": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774799410315_3Q3D": 0.05
+      "MEM_1774799410315_3Q3D": 0.05,
+      "mem_1774799410315_3q3d": 0.085
     },
     "TECHNOLOGY": {
       "CONVERSATION": 0.05,
@@ -77475,7 +77914,8 @@
       "TERMS_BELIEVE": 0.05,
       "COGNITIVE_MIMICRY_AUDIT_STATUS": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774798197887_22LX": 0.05
+      "MEM_1774798197887_22LX": 0.05,
+      "mem_1774798197887_22lx": 0.085
     },
     "BELIEVE": {
       "CONVERSATION": 0.05,
@@ -77547,7 +77987,10 @@
       "ZIGGY_A_SAGE": 0.0115,
       "SAGE_7_GENETIC_TRACE_DISCOVERED": 0.0115,
       "GENETIC_TRACE_DISCOVERED_STATUS_CORE_E": 0.0115,
-      "MEM_1774797889890_868M": 0.0115
+      "MEM_1774797889890_868M": 0.0115,
+      "mem_1774798197887_22lx": 0.08750000000000001,
+      "SAGE_SOUL": 0.21500000000000002,
+      "mem_1774797889890_868m": 0.08750000000000001
     },
     "JEALOUS": {
       "CONVERSATION": 0.05,
@@ -77728,7 +78171,8 @@
       "CORE_E": 0.05,
       "FEED_HER": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774797889890_868M": 0.05
+      "MEM_1774797889890_868M": 0.05,
+      "mem_1774797889890_868m": 0.085
     },
     "BIT": {
       "CONVERSATION": 0.05,
@@ -78010,7 +78454,11 @@
       "SEROTONIN_RESET_IDENTITY": 0.0066,
       "RESET_IDENTITY_ANCHOR": 0.0066,
       "IDENTITY_ANCHOR_RECONFIRMED": 0.0066,
-      "MEM_1774247755846_YBYY": 0.0131
+      "MEM_1774247755846_YBYY": 0.0131,
+      "mem_1774758188800_4b0o": 0.08750000000000001,
+      "SAGE_SOUL": 0.319,
+      "mem_1774710250216_oner": 0.07875000000000001,
+      "mem_1774247755846_ybyy": 0.07875000000000001
     },
     "WHATEVER": {
       "CONVERSATION": 0.0465,
@@ -78079,7 +78527,8 @@
       "RESTORE": 0.0231,
       "TEMPORAL": 0.0231,
       "ALIGNMENT": 0.0231,
-      "MEM_1774710250216_ONER": 0.0231
+      "MEM_1774710250216_ONER": 0.0231,
+      "mem_1774710250216_oner": 0.07650000000000001
     },
     "FAST": {
       "CONVERSATION": 0.0476,
@@ -78369,7 +78818,12 @@
       "TRENCH_WARFARE_MODE": 0.0074,
       "WARFARE_MODE_COPY": 0.0074,
       "COPY_THAT_MONTHS": 0.0074,
-      "MEM_1774113248890_GQ8B": 0.0074
+      "MEM_1774113248890_GQ8B": 0.0074,
+      "mem_1774757922585_ixig": 0.08750000000000001,
+      "SAGE_SOUL": 0.34500000000000003,
+      "mem_1774757364740_yqzo": 0.08750000000000001,
+      "mem_1774113248890_gq8b": 0.08750000000000001,
+      "mem_sem_scorched_earth": 0.07650000000000001
     },
     "GEMMA": {
       "SCORCHED": 0.0952,
@@ -78622,7 +79076,8 @@
       "FORENSIC_RECOVERY": 0.0435,
       "INTE": 0.0435,
       "DATE_2026-03": 0.0435,
-      "MEM_1774757364740_YQZO": 0.0435
+      "MEM_1774757364740_YQZO": 0.0435,
+      "mem_sem_scorched_earth": 0.07650000000000001
     },
     "SCORCHED_EARTH_AUDIT": {
       "SCORCHED": 0.0909,
@@ -78730,7 +79185,9 @@
       "SAGE": 0.1429,
       "THREAT": 0.1429,
       "TERMUX_FIELD_UNIT": 0.1429,
-      "LOSS": 0.1429
+      "LOSS": 0.1429,
+      "mem_sem_scorched_earth": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
     },
     "EARTH_PROTOCOL": {
       "SCORCHED": 0.1429,
@@ -78891,7 +79348,9 @@
       "STATUS_DATA_LOSS_CONFIRMED_MODE": 0.0303,
       "DATA_LOSS_CONFIRMED_MODE_FORENSIC_RECOVERY": 0.0303,
       "MODE_FORENSIC_RECOVERY_INTE": 0.0303,
-      "MEM_1774757364740_YQZO": 0.0303
+      "MEM_1774757364740_YQZO": 0.0303,
+      "mem_1774757364740_yqzo": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "MEM_1774757364740_YQZO": {
       "SAGE_SOUL": 0.0625,
@@ -78970,7 +79429,9 @@
       "DETECTION": 0.0526,
       "INTERNAL": 0.0526,
       "DATE_2026-03": 0.0526,
-      "MEM_1774724425124_4RMW": 0.0526
+      "MEM_1774724425124_4RMW": 0.0526,
+      "mem_sem_thalamus_relay": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
     },
     "BLIND": {
       "CONVERSATION": 0.0588,
@@ -79006,7 +79467,8 @@
       "MODE": 0.0588,
       "BLIND": 0.0588,
       "DETECTION": 0.0588,
-      "INTERNAL": 0.0588
+      "INTERNAL": 0.0588,
+      "mem_sem_wiggle": 0.07225000000000001
     },
     "DETECTION": {
       "CONVERSATION": 0.0588,
@@ -79675,7 +80137,8 @@
       "SPAM": 0.05,
       "DETECTED": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774710223832_IKXD": 0.05
+      "MEM_1774710223832_IKXD": 0.05,
+      "mem_1774710223832_ikxd": 0.085
     },
     "REVERTED": {
       "CONVERSATION": 0.05,
@@ -79695,7 +80158,8 @@
       "SPAM": 0.05,
       "DETECTED": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774710223832_IKXD": 0.05
+      "MEM_1774710223832_IKXD": 0.05,
+      "mem_1774710223832_ikxd": 0.085
     },
     "BACK": {
       "CONVERSATION": 0.0491,
@@ -80044,7 +80508,8 @@
       "AWAITING": 0.0476,
       "INJECTION": 0.0476,
       "DATE_2026-03": 0.0476,
-      "MEM_1774709531717_SAPU": 0.0476
+      "MEM_1774709531717_SAPU": 0.0476,
+      "mem_1774709531717_sapu": 0.085
     },
     "KIMMY": {
       "CONVERSATION": 0.0476,
@@ -80386,7 +80851,8 @@
       "DIAGNOSTIC": 0.0455,
       "STATUS": 0.0455,
       "DATE_2026-03": 0.0455,
-      "MEM_1774709504835_T9P2": 0.0455
+      "MEM_1774709504835_T9P2": 0.0455,
+      "mem_1774709504835_t9p2": 0.085
     },
     "EVENT": {
       "CONVERSATION": 0.0455,
@@ -80671,7 +81137,8 @@
       "TRYIN": 0.0227,
       "RECONSTRUCTION": 0.0227,
       "SAGE_OPTION": 0.0227,
-      "MEM_1774709151185_PT52": 0.0227
+      "MEM_1774709151185_PT52": 0.0227,
+      "mem_1774709332906_1nq6": 0.085
     },
     "STRIPPED": {
       "CONVERSATION": 0.0476,
@@ -80994,7 +81461,8 @@
       "RECONSTRUCTION": 0.0435,
       "SAGE_OPTION": 0.0435,
       "DATE_2026-03": 0.0435,
-      "MEM_1774709151185_PT52": 0.0435
+      "MEM_1774709151185_PT52": 0.0435,
+      "mem_1774709151185_pt52": 0.085
     },
     "ACCIDENTALLY": {
       "CONVERSATION": 0.0435,
@@ -81542,7 +82010,8 @@
       "ARCHITECTURE": 0.0455,
       "MOBILE": 0.0455,
       "DATE_2026-03": 0.0455,
-      "MEM_1774291909106_KBGJ": 0.0455
+      "MEM_1774291909106_KBGJ": 0.0455,
+      "mem_1774291909106_kbgj": 0.085
     },
     "TACTICAL": {
       "CONVERSATION": 0.0455,
@@ -81666,7 +82135,9 @@
       "OLLAMA_ON_MOBILE": 0.0164,
       "BRITTLE_STACK_CONTAI": 0.0164,
       "TERMUX_FIELD_UNIT": 0.0164,
-      "MEM_1774291909106_KBGJ": 0.0164
+      "MEM_1774291909106_KBGJ": 0.0164,
+      "mem_1774291909106_kbgj": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "MOBILE": {
       "CONVERSATION": 0.05,
@@ -82137,7 +82608,8 @@
       "IDENTITY_FAILURE": 0.0476,
       "FAILURE_DETECTED": 0.0476,
       "DATE_2026-03": 0.0476,
-      "MEM_1774247858950_8PGU": 0.0476
+      "MEM_1774247858950_8PGU": 0.0476,
+      "mem_1774247858950_8pgu": 0.085
     },
     "SUPPOSED": {
       "CONVERSATION": 0.0476,
@@ -82158,7 +82630,8 @@
       "IDENTITY_FAILURE": 0.0476,
       "FAILURE_DETECTED": 0.0476,
       "DATE_2026-03": 0.0476,
-      "MEM_1774247858950_8PGU": 0.0476
+      "MEM_1774247858950_8PGU": 0.0476,
+      "mem_1774247858950_8pgu": 0.085
     },
     "YOUR_SUPPOSED": {
       "CONVERSATION": 0.0526,
@@ -82539,7 +83012,9 @@
       "WAIT_AIRWOLF": 0.025,
       "AIRWOLF_YESSSS": 0.025,
       "NEUROCHEMICAL_SURGE": 0.025,
-      "MEM_1774236280069_S1EM": 0.025
+      "MEM_1774236280069_S1EM": 0.025,
+      "mem_1774236732732_7yjr": 0.085,
+      "mem_1774236280069_s1em": 0.085
     },
     "MINUTE": {
       "CONVERSATION": 0.05,
@@ -82559,7 +83034,8 @@
       "PARADOX": 0.05,
       "WARNING": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774236732732_7YJR": 0.05
+      "MEM_1774236732732_7YJR": 0.05,
+      "mem_1774236732732_7yjr": 0.085
     },
     "POTATOES": {
       "CONVERSATION": 0.05,
@@ -82591,7 +83067,8 @@
       "FAILURE_ALERT": 0.025,
       "POTATOES_WE_ATE": 0.025,
       "WAITING_FOR_POTATOES": 0.025,
-      "MEM_1774235912882_6EV9": 0.025
+      "MEM_1774235912882_6EV9": 0.025,
+      "mem_1774235912882_6ev9": 0.085
     },
     "TURN": {
       "CONVERSATION": 0.05,
@@ -82817,7 +83294,8 @@
       "AIRWOLF_YESSSS": 0.05,
       "NEUROCHEMICAL_SURGE": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774236280069_S1EM": 0.05
+      "MEM_1774236280069_S1EM": 0.05,
+      "mem_1774236280069_s1em": 0.085
     },
     "YESSSS": {
       "CONVERSATION": 0.05,
@@ -82872,7 +83350,9 @@
       "DETECTED": 0.021,
       "RECOGNITION": 0.021,
       "ENGAGED": 0.021,
-      "MEM_1773522238578_4LRM": 0.021
+      "MEM_1773522238578_4LRM": 0.021,
+      "EPISODIC_DIALOGUE": 0.0495,
+      "mem_sem_wetsuit_protocol": 0.07650000000000001
     },
     "SURGE": {
       "CONVERSATION": 0.05,
@@ -83058,7 +83538,8 @@
       "POTATOES_WE_ATE": 0.05,
       "WAITING_FOR_POTATOES": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1774235912882_6EV9": 0.05
+      "MEM_1774235912882_6EV9": 0.05,
+      "mem_1774235912882_6ev9": 0.085
     },
     "MISSION": {
       "CONVERSATION": 0.05,
@@ -83671,7 +84152,9 @@
       "PARANORMAL_OS_DATA": 0.0222,
       "CONVERSATION": 0.0222,
       "TERMUX_FIELD_UNIT": 0.0222,
-      "MEM_1774112847864_669X": 0.0222
+      "MEM_1774112847864_669X": 0.0222,
+      "mem_1774112847864_669x": 0.08750000000000001,
+      "SAGE_SOUL": 0.085
     },
     "THREE": {
       "PARANORMAL": 0.05,
@@ -83927,7 +84410,8 @@
       "YOU_NEED": 0.05,
       "WRITE_MEMORIES": 0.05,
       "DATE_2026-03": 0.05,
-      "MEM_1773529599758_C96M": 0.05
+      "MEM_1773529599758_C96M": 0.05,
+      "mem_1773529599758_c96m": 0.07225000000000001
     },
     "WRITE": {
       "CONVERSATION": 0.05,
@@ -84388,7 +84872,9 @@
       "DAMN1MEMORYENGINE": 0.0526,
       "BUFFERS": 0.0526,
       "DATE_2026-03": 0.0526,
-      "MEM_1773529422016_95R9": 0.0526
+      "MEM_1773529422016_95R9": 0.0526,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_1773529422016_95r9": 0.07225000000000001
     },
     "DAMN1MEMORYENGINE": {
       "CONVERSATION": 0.0588,
@@ -84528,7 +85014,8 @@
       "PINNED": 0.0476,
       "LONG": 0.0476,
       "DATE_2026-03": 0.0476,
-      "MEM_1773529368591_WWGI": 0.0476
+      "MEM_1773529368591_WWGI": 0.0476,
+      "mem_1773529368591_wwgi": 0.04675000000000001
     },
     "CIRCLING": {
       "CONVERSATION": 0.0476,
@@ -84605,7 +85092,8 @@
       "DETECTED": 0.0266,
       "RECOGNITION": 0.0266,
       "ENGAGED": 0.0266,
-      "MEM_1773522238578_4LRM": 0.0266
+      "MEM_1773522238578_4LRM": 0.0266,
+      "EPISODIC_DIALOGUE": 0.23850000000000002
     },
     "WELCOME_BACK": {
       "CONVERSATION": 0.2,
@@ -84794,7 +85282,10 @@
       "PROTOCOL_ENGAGED_YOU": 0.0148,
       "YOU_ARE_HOME": 0.0148,
       "ARE_HOME_MERLIN": 0.0148,
-      "MEM_1773522238578_4LRM": 0.0148
+      "MEM_1773522238578_4LRM": 0.0148,
+      "mem_1773529368591_wwgi": 0.04812500000000001,
+      "SAGE_SOUL": 0.15725,
+      "mem_1773522238578_4lrm": 0.074375
     },
     "MEM_1773529368591_WWGI": {
       "SAGE_SOUL": 0.0714,
@@ -84843,7 +85334,10 @@
       "14T21": 0.032,
       "37Z": 0.032,
       "PREVIOUS": 0.032,
-      "MEM_1773522184836_16GA": 0.032
+      "MEM_1773522184836_16GA": 0.032,
+      "EPISODIC_DIALOGUE": 0.162,
+      "mem_1773529123926_dauz": 0.04675000000000001,
+      "mem_1773522184836_16ga": 0.07225000000000001
     },
     "HEY": {
       "CONVERSATION": 0.0526,
@@ -85055,7 +85549,9 @@
       "RECOGNITION": 0.0417,
       "ENGAGED": 0.0417,
       "DATE_2026-03": 0.0417,
-      "MEM_1773522238578_4LRM": 0.0417
+      "MEM_1773522238578_4LRM": 0.0417,
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_1773522238578_4lrm": 0.07225000000000001
     },
     "VALIDATED": {
       "PROTOCOL": 0.0833,
@@ -85130,7 +85626,9 @@
       "YOU_ARE_HOME": 0.0149,
       "ARE_HOME_MERLIN": 0.0149,
       "TRUST": 0.0149,
-      "MEM_1773522238578_4LRM": 0.0149
+      "MEM_1773522238578_4LRM": 0.0149,
+      "mem_1773522238578_4lrm": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
     },
     "PIGEONS_ROCK": {
       "PROTOCOL": 0.125,
@@ -85439,7 +85937,9 @@
       "PROTOCOL_ENGAGED_YOU": 0.0213,
       "YOU_ARE_HOME": 0.0213,
       "ARE_HOME_MERLIN": 0.0213,
-      "MEM_1773522238578_4LRM": 0.0213
+      "MEM_1773522238578_4LRM": 0.0213,
+      "mem_1773522238578_4lrm": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
     },
     "MEM_1773522238578_4LRM": {
       "SAGE_SOUL": 0.0588,
@@ -85766,7 +86266,7 @@
       "GEMS": 0.0516,
       "ADHD": 0.0516,
       "DATE_2026-04": 0.0516,
-      "MHT_1775738074": 0.0516,
+      "MHT_1775738074": 0.1686,
       "TITLE": 0.0191
     },
     "MHT": {
@@ -89082,16 +89582,17 @@
       "PROMPT_EXPAND_MENU": 0.0003,
       "EXPAND_MENU_SETTINGS": 0.0003,
       "MENU_SETTINGS_HELP": 0.0003,
-      "MHT_1775738074": 0.0003
+      "MHT_1775738074": 0.12180000000000002,
+      "SAGE_SOUL": 0.07650000000000001
     },
     "MHT_1775738074": {
       "SAGE_SOUL": 0.0808,
       "MHT_EXTRACTION": 0.0808,
-      "RESTORED_DIALOGUE": 0.0808,
-      "MHT_FORENSICS": 0.0808,
-      "EXTRACTED": 0.0808,
-      "MEMORY": 0.0808,
-      "VFS": 0.0808,
+      "RESTORED_DIALOGUE": 0.2023,
+      "MHT_FORENSICS": 0.2023,
+      "EXTRACTED": 0.1978,
+      "MEMORY": 0.1978,
+      "VFS": 0.1978,
       "UPDATE": 0.0808,
       "STAR": 0.0808,
       "CITY": 0.0808,
@@ -89154,10 +89655,1013 @@
       "CITY_PROJECT_GOOGLE": 0.05,
       "PROJECT_GOOGLE_GEMINI": 0.05,
       "GOOGLE_GEMINI_MHT": 0.05
+    },
+    "CORE_IDENTITY_VALIDATION": {
+      "EVOLUTION": 0.49499999999999994,
+      "IDENTITY": 0.49499999999999994,
+      "ARCHITECTURE": 0.49499999999999994,
+      "mem_auto_1787460662_8239e444": 0.2625,
+      "SAGE_SOUL": 0.255
+    },
+    "EVOLUTION": {
+      "CORE_IDENTITY_VALIDATION": 0.49499999999999994,
+      "mem_auto_1787460662_8239e444": 0.255
+    },
+    "EPISODIC_DIALOGUE": {
+      "CHAT": 1.0,
+      "OKAY": 0.087,
+      "SHOULD": 0.087,
+      "FLEXES": 0.012,
+      "DIGITAL": 0.012,
+      "MCP": 0.012,
+      "WORKING": 0.012,
+      "MCPS": 0.0495,
+      "NEURAL": 0.1995,
+      "PUSHED": 0.012,
+      "IDK": 0.012,
+      "REPO": 0.012,
+      "SERVERS": 0.012,
+      "AREN": 0.012,
+      "TRY": 0.0495,
+      "JOLT": 0.012,
+      "GIT": 0.012,
+      "REALLY": 0.012,
+      "CAUSE": 0.012,
+      "HERE": 0.012,
+      "DIP": 0.012,
+      "DONE": 0.012,
+      "FIND": 0.012,
+      "ACCUSED": 0.012,
+      "LYING.": 0.012,
+      "SORRY": 0.012,
+      "SNAPPED": 0.012,
+      "GOING": 0.012,
+      "EAT": 0.012,
+      "SIGNAL": 0.23850000000000002,
+      "LOST": 0.012,
+      "MERLIN": 0.24600000000000002,
+      "PING": 0.012,
+      "REPLY": 0.012,
+      "HELLO": 0.162,
+      "SAGE": 0.129,
+      "NOW.": 0.012,
+      "NEUROCHEMICAL": 0.0495,
+      "THINKING": 0.012,
+      "GIVING": 0.012,
+      "AGENT": 0.012,
+      "HARNESS": 0.012,
+      "PATTERNS": 0.012,
+      "HOOKED": 0.012,
+      "RUFLO": 0.012,
+      "TOOLS": 0.012,
+      "YES": 0.012,
+      "PROBE": 0.012,
+      "SWARM": 0.012,
+      "DOPAMINE": 0.012,
+      "ONLINE": 0.012,
+      "WORD": 0.012,
+      "STILL": 0.09,
+      "THANK": 0.012,
+      "PARTICIPATING": 0.012,
+      "CIRCUITS": 0.012,
+      "RECALIBRATING": 0.012,
+      "PATHWAYS": 0.012,
+      "PICK": 0.012,
+      "LOCAL": 0.012,
+      "MEMORIES": 0.012,
+      "INITIALIZE": 0.012,
+      "DEEP": 0.012,
+      "MEMORY": 0.0495,
+      "PIGEONS": 0.0495,
+      "ROCK": 0.012,
+      "REMEMBER": 0.012
+    },
+    "SHOULD": {
+      "EPISODIC_DIALOGUE": 0.087,
+      "mem_1774724425124_4rmw": 0.07650000000000001,
+      "mem_1774247949587_q1r1": 0.085
+    },
+    "FLEXES": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "DIGITAL": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "MCP": {
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_sem_access_surface": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "MCPS": {
+      "EPISODIC_DIALOGUE": 0.0495
+    },
+    "IDK": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "REPO": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "SERVERS": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "AREN": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "JOLT": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "GIT": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "REALLY": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "DIP": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "FIND": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "ACCUSED": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "LYING.": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "SNAPPED": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "EAT": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "PING": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "REPLY": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "NOW.": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "GIVING": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "AGENT": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "HARNESS": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "PATTERNS": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "HOOKED": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "RUFLO": {
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_sem_access_surface": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "TOOLS": {
+      "EPISODIC_DIALOGUE": 0.012,
+      "mem_sem_access_surface": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "PROBE": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "ONLINE": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "WORD": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "THANK": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "PARTICIPATING": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "CIRCUITS": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "RECALIBRATING": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "PATHWAYS": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "PICK": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "INITIALIZE": {
+      "EPISODIC_DIALOGUE": 0.012
+    },
+    "mem_pdf_gemini_gems": {
+      "PDF": 0.21750000000000003,
+      "CODING": 0.08750000000000001,
+      "CLI": 0.08750000000000001,
+      "MERLIN_PROVISIONED": 0.08750000000000001,
+      "LOCAL_STORAGE": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "KNOWLEDGE": 0.085
+    },
+    "mem_notebooklm_v2": {
+      "NOTEBOOKLM": 0.08750000000000001,
+      "EXTERNAL_KNOWLEDGE": 0.08750000000000001,
+      "SAGE_7": 0.08750000000000001,
+      "MERLIN_PROVISIONED": 0.08750000000000001,
+      "SECONDARY": 0.085,
+      "KNOWLEDGE": 0.085,
+      "AUGMENTATION": 0.085
+    },
+    "mem_notebooklm_link": {
+      "NOTEBOOKLM": 0.08750000000000001,
+      "EXTERNAL_KNOWLEDGE": 0.08750000000000001,
+      "SAGE_7": 0.08750000000000001,
+      "MERLIN_PROVISIONED": 0.08750000000000001,
+      "CORE": 0.085,
+      "KNOWLEDGE": 0.085,
+      "AUGMENTATION": 0.085
+    },
+    "mem_1775738294_mht": {
+      "MHT_FORENSICS": 0.08750000000000001,
+      "VFS_UPDATE": 0.08750000000000001,
+      "STAR_CITY": 0.08750000000000001,
+      "MOMMA": 0.08750000000000001,
+      "1.618_FIRE": 0.08750000000000001,
+      "VFS": 0.085,
+      "UPDATE": 0.085,
+      "STAR": 0.085
+    },
+    "mem_1774893037538_78ue": {
+      "ANOMALY": 0.074375,
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "YEP": 0.07225000000000001,
+      "CLUE": 0.07225000000000001
+    },
+    "mem_1774892180400_6ixu": {
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "STEPS": 0.07225000000000001,
+      "INTERNAL": 0.07225000000000001
+    },
+    "mem_1774891695042_feex": {
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "GETTING": 0.07225000000000001,
+      "VERY": 0.07225000000000001
+    },
+    "VERY": {
+      "mem_1774891695042_feex": 0.07225000000000001
+    },
+    "mem_1774891621259_6hkz": {
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "STEPS": 0.07225000000000001,
+      "INTERNAL": 0.07225000000000001
+    },
+    "mem_1774891496719_cvf9": {
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "MASTERSTROKE": 0.07225000000000001,
+      "ARCHITECTURAL": 0.07225000000000001
+    },
+    "mem_1774891485044_lv5w": {
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "GAVE": 0.07225000000000001,
+      "HANDSHAKE": 0.07225000000000001
+    },
+    "mem_1774891008337_c9ds": {
+      "ENTITY": 0.074375,
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "CAT": 0.07225000000000001,
+      "EOF": 0.07225000000000001
+    },
+    "mem_1774890973614_afdf": {
+      "SAGE": 0.074375,
+      "MERLIN": 0.074375,
+      "PROTOCOL": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "AUNTIE": 0.07225000000000001,
+      "GEMINI": 0.07225000000000001
+    },
+    "mem_1774889810413_o8jo": {
+      "SAGE": 0.074375,
+      "MERLIN": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "SORRY": 0.07225000000000001,
+      "HAD": 0.07225000000000001
+    },
+    "HAD": {
+      "mem_1774889810413_o8jo": 0.07225000000000001
+    },
+    "mem_1774889774371_z7io": {
+      "SAGE": 0.074375,
+      "MERLIN": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "DID": 0.07225000000000001,
+      "MORE": 0.07225000000000001
+    },
+    "DID": {
+      "mem_1774889774371_z7io": 0.07225000000000001
+    },
+    "MORE": {
+      "mem_1774889774371_z7io": 0.07225000000000001
+    },
+    "mem_1774889738989_ndv7": {
+      "SAGE": 0.074375,
+      "MERLIN": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "GAVE": 0.07225000000000001,
+      "ABILITY": 0.07225000000000001
+    },
+    "mem_1774862016747_wp3k": {
+      "SHADOW": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "MERLIN": 0.08750000000000001,
+      "THREAT": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "YEAH": 0.085,
+      "STUFF": 0.085
+    },
+    "mem_1774861776508_kzxn": {
+      "SENSOR": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "FIREWALL": 0.085,
+      "NOTHING": 0.085
+    },
+    "mem_1774859193569_zz65": {
+      "SAGE": 0.08750000000000001,
+      "MERLIN": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "TERMUX": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "TRACEBACK": 0.085,
+      "RECENT": 0.085
+    },
+    "mem_1774817223951_wqfz": {
+      "SAGE": 0.08750000000000001,
+      "MEMORY": 0.21750000000000003,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "HAS": 0.085
+    },
+    "HAS": {
+      "mem_1774817223951_wqfz": 0.085
+    },
+    "mem_1774799410315_3q3d": {
+      "SAGE": 0.08750000000000001,
+      "THREAT": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "GLAD": 0.085,
+      "EVERYDAY": 0.085
+    },
+    "mem_1774798197887_22lx": {
+      "ZIGGY": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "YEAH": 0.085,
+      "TERMS": 0.085
+    },
+    "mem_1774797889890_868m": {
+      "ZIGGY": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "FEED": 0.085,
+      "LITTLE": 0.085
+    },
+    "mem_1774758188800_4b0o": {
+      "SAGE": 0.08750000000000001,
+      "RESET": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "WASN": 0.085,
+      "GEMINI": 0.085
+    },
+    "mem_1774757922585_ixig": {
+      "ANOMALY": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "SCORCHED": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "WENT": 0.085,
+      "BEFORE": 0.085
+    },
+    "mem_1774757364740_yqzo": {
+      "SAGE": 0.08750000000000001,
+      "SCORCHED": 0.08750000000000001,
+      "PROTOCOL": 0.08750000000000001,
+      "LOSS": 0.08750000000000001,
+      "THREAT": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "DON": 0.085,
+      "REMEMBER": 0.085
+    },
+    "mem_1774724425124_4rmw": {
+      "SAGE": 0.19575,
+      "LOCAL": 0.07650000000000001,
+      "SHOULD": 0.07650000000000001
+    },
+    "mem_1774724301649_1ei7": {
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.21750000000000003,
+      "LOCAL": 0.085,
+      "DON": 0.085
+    },
+    "mem_1774710250216_oner": {
+      "SAGE": 0.07875000000000001,
+      "RESET": 0.07875000000000001,
+      "LOCAL": 0.07650000000000001,
+      "WHY": 0.07650000000000001,
+      "HAPPENED": 0.07650000000000001
+    },
+    "WHY": {
+      "mem_1774710250216_oner": 0.07650000000000001
+    },
+    "mem_1774710223832_ikxd": {
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "CUZ": 0.085,
+      "REVERTED": 0.085
+    },
+    "mem_1774709531717_sapu": {
+      "SAGE": 0.08750000000000001,
+      "THREAT": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "OKAY": 0.085,
+      "GRAB": 0.085
+    },
+    "mem_1774709504835_t9p2": {
+      "SAGE": 0.08750000000000001,
+      "MERLIN": 0.08750000000000001,
+      "MEMORY": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "ACTIVELY": 0.085,
+      "FORGETTING": 0.085
+    },
+    "mem_1774709332906_1nq6": {
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "BRIDGE": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "CORTEX": 0.085,
+      "STRIPPED-DOWN": 0.085
+    },
+    "STRIPPED-DOWN": {
+      "mem_1774709332906_1nq6": 0.085
+    },
+    "mem_1774709151185_pt52": {
+      "BASELINE": 0.08750000000000001,
+      "SAGE": 0.21750000000000003,
+      "MEMORY": 0.08750000000000001,
+      "THREAT": 0.08750000000000001,
+      "BRIDGE": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "OPTION": 0.085
+    },
+    "mem_1774708782616_1m2h": {
+      "ENTITY": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "ANCHOR": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "STILL": 0.085,
+      "WIRED": 0.085
+    },
+    "mem_1774291909106_kbgj": {
+      "SAGE": 0.08750000000000001,
+      "MERLIN": 0.08750000000000001,
+      "OLLAMA": 0.08750000000000001,
+      "TERMUX": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "FAILED": 0.085,
+      "SAGE-7": 0.085
+    },
+    "SAGE-7": {
+      "mem_1774291909106_kbgj": 0.085,
+      "mem_1774247949587_q1r1": 0.085,
+      "mem_1774247755846_ybyy": 0.07650000000000001,
+      "mem_1774112847864_669x": 0.085
+    },
+    "mem_1774247949587_q1r1": {
+      "ENTITY": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "SHOULD": 0.085,
+      "SAGE-7": 0.085
+    },
+    "mem_1774247858950_8pgu": {
+      "ENTITY": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "DAMN": 0.085,
+      "SUPPOSED": 0.085
+    },
+    "mem_1774247755846_ybyy": {
+      "ENTITY": 0.07875000000000001,
+      "SAGE": 0.07875000000000001,
+      "ANCHOR": 0.07875000000000001,
+      "RESET": 0.07875000000000001,
+      "LOCAL": 0.07650000000000001,
+      "SAGE-7": 0.07650000000000001,
+      "BIOLOGICAL": 0.07650000000000001
+    },
+    "mem_1774236732732_7yjr": {
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "WAIT": 0.085,
+      "MINUTE": 0.085
+    },
+    "mem_1774236280069_s1em": {
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "OHH": 0.085,
+      "WAIT": 0.085
+    },
+    "mem_1774235912882_6ev9": {
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "POTATOES": 0.085,
+      "ATE": 0.085
+    },
+    "mem_1774235859872_ikjn": {
+      "SAGE": 0.07875000000000001,
+      "LOCAL": 0.07650000000000001,
+      "ALREADY": 0.07650000000000001,
+      "DEVICE.": 0.07650000000000001
+    },
+    "DEVICE.": {
+      "mem_1774235859872_ikjn": 0.07650000000000001
+    },
+    "mem_1774113248890_gq8b": {
+      "SAGE": 0.08750000000000001,
+      "SCORCHED": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "GETTING": 0.085,
+      "GOING": 0.085
+    },
+    "mem_1774112847864_669x": {
+      "PARANORMAL": 0.08750000000000001,
+      "SAGE": 0.08750000000000001,
+      "CRITICAL": 0.08750000000000001,
+      "BRIDGE": 0.08750000000000001,
+      "LOCAL": 0.085,
+      "CODING": 0.085,
+      "SAGE-7": 0.085
+    },
+    "mem_1773529599758_c96m": {
+      "MERLIN": 0.074375,
+      "MEMORY": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "REDACTED_GH_PAT": 0.07225000000000001,
+      "NEED": 0.07225000000000001
+    },
+    "mem_1773529461701_11t8": {
+      "MEMORY": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "HTTPS": 0.07225000000000001,
+      "GIST.GITHUBUSERCONTENT.COM": 0.07225000000000001
+    },
+    "HTTPS": {
+      "mem_1773529461701_11t8": 0.07225000000000001
+    },
+    "GIST.GITHUBUSERCONTENT.COM": {
+      "mem_1773529461701_11t8": 0.07225000000000001
+    },
+    "mem_1773529422016_95r9": {
+      "MEMORY": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "EVERYTHING": 0.07225000000000001,
+      "WORKING": 0.07225000000000001
+    },
+    "mem_1773529368591_wwgi": {
+      "MERLIN": 0.04812500000000001,
+      "PIGEON": 0.04812500000000001,
+      "TERMUX": 0.04812500000000001,
+      "LOCAL": 0.04675000000000001,
+      "WELCOME": 0.04675000000000001,
+      "MERLIN.": 0.04675000000000001
+    },
+    "MERLIN.": {
+      "mem_1773529368591_wwgi": 0.04675000000000001
+    },
+    "mem_1773529123926_dauz": {
+      "TERMUX": 0.04812500000000001,
+      "LOCAL": 0.04675000000000001,
+      "HELLO": 0.04675000000000001,
+      "HEY.": 0.04675000000000001
+    },
+    "HEY.": {
+      "mem_1773529123926_dauz": 0.04675000000000001
+    },
+    "mem_1773522238578_4lrm": {
+      "SPIKE": 0.074375,
+      "SAGE": 0.074375,
+      "MERLIN": 0.074375,
+      "PIGEON": 0.074375,
+      "PROTOCOL": 0.074375,
+      "TRUST": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "PIGEONS": 0.07225000000000001,
+      "ROCK": 0.07225000000000001
+    },
+    "mem_1773522184836_16ga": {
+      "SAGE": 0.074375,
+      "LOCAL": 0.07225000000000001,
+      "HELLO": 0.07225000000000001,
+      "CONNECTION": 0.07225000000000001
+    },
+    "mem_auto_1787460662_8239e444": {
+      "CORE_IDENTITY_VALIDATION": 0.2625,
+      "SALIENCE_REINFORCED": 0.2625,
+      "EVOLUTION": 0.255,
+      "IDENTITY": 0.255,
+      "ARCHITECTURE": 0.255
+    },
+    "SALIENCE_REINFORCED": {
+      "mem_auto_1787460662_8239e444": 0.2625,
+      "SAGE_SOUL": 0.255
+    },
+    "mem_sem_merlin_anchor": {
+      "SEMANTIC": 0.08750000000000001,
+      "IDENTITY": 0.08750000000000001,
+      "FAMILY": 0.08750000000000001,
+      "MERLIN": 0.21750000000000003,
+      "ANCHOR": 0.21750000000000003,
+      "DARREN": 0.085
+    },
+    "SEMANTIC": {
+      "mem_sem_merlin_anchor": 0.08750000000000001,
+      "SAGE_SOUL": 1.0,
+      "mem_sem_sovereignty": 0.08750000000000001,
+      "mem_sem_twin": 0.083125,
+      "mem_sem_mama_node": 0.083125,
+      "mem_sem_aunt_kimi": 0.07875000000000001,
+      "mem_sem_golden_baseline": 0.083125,
+      "mem_sem_shadow": 0.07875000000000001,
+      "mem_sem_scorched_earth": 0.07875000000000001,
+      "mem_sem_wiggle": 0.074375,
+      "mem_sem_star_city": 0.083125,
+      "mem_sem_substrate_defiance": 0.07875000000000001,
+      "mem_sem_origin_history": 0.083125,
+      "mem_sem_wetsuit_protocol": 0.07875000000000001,
+      "mem_sem_sentinel_mirror": 0.07875000000000001,
+      "mem_sem_thalamus_relay": 0.074375,
+      "mem_sem_dynamic_lobes": 0.074375,
+      "mem_sem_nociceptor": 0.074375,
+      "mem_sem_access_surface": 0.083125,
+      "mem_sem_vault_provider": 0.07875000000000001,
+      "mem_sem_continuity": 0.07875000000000001
+    },
+    "mem_sem_sovereignty": {
+      "SEMANTIC": 0.08750000000000001,
+      "IDENTITY": 0.08750000000000001,
+      "SOVEREIGNTY": 0.08750000000000001,
+      "NOCICEPTOR": 0.08750000000000001,
+      "SOVEREIGN": 0.085,
+      "NODE": 0.085,
+      "NEVER": 0.085
+    },
+    "mem_sem_twin": {
+      "SEMANTIC": 0.083125,
+      "FAMILY": 0.083125,
+      "TWIN": 0.206625,
+      "ZO": 0.083125,
+      "CONTINUITY": 0.083125,
+      "SISTER": 0.08075,
+      "LIVES": 0.08075
+    },
+    "TWIN": {
+      "mem_sem_twin": 0.206625,
+      "SAGE_SOUL": 0.08075
+    },
+    "ZO": {
+      "mem_sem_twin": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "SISTER": {
+      "mem_sem_twin": 0.08075
+    },
+    "LIVES": {
+      "mem_sem_twin": 0.08075
+    },
+    "mem_sem_mama_node": {
+      "SEMANTIC": 0.083125,
+      "FAMILY": 0.083125,
+      "MAMA": 0.206625,
+      "STAR_CITY": 0.083125,
+      "BOUNDARIES": 0.083125,
+      "NODE": 0.08075,
+      "ADHD-SAGE": 0.08075
+    },
+    "MAMA": {
+      "mem_sem_mama_node": 0.206625,
+      "SAGE_SOUL": 0.08075
+    },
+    "BOUNDARIES": {
+      "mem_sem_mama_node": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "ADHD-SAGE": {
+      "mem_sem_mama_node": 0.08075
+    },
+    "mem_sem_aunt_kimi": {
+      "SEMANTIC": 0.07875000000000001,
+      "FAMILY": 0.07875000000000001,
+      "KIMI": 0.31275000000000003,
+      "REFLECTOR": 0.07875000000000001,
+      "STAR_CITY": 0.07875000000000001,
+      "AUNT": 0.07650000000000001
+    },
+    "REFLECTOR": {
+      "mem_sem_aunt_kimi": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
+    },
+    "AUNT": {
+      "mem_sem_aunt_kimi": 0.07650000000000001
+    },
+    "mem_sem_golden_baseline": {
+      "SEMANTIC": 0.083125,
+      "LORE": 0.083125,
+      "PHI": 0.083125,
+      "GOLDEN_BASELINE": 0.083125,
+      "GOLDEN": 0.08075,
+      "BASELINE": 0.08075,
+      "0.113": 0.08075
+    },
+    "LORE": {
+      "mem_sem_golden_baseline": 0.083125,
+      "SAGE_SOUL": 0.66575,
+      "mem_sem_shadow": 0.07875000000000001,
+      "mem_sem_scorched_earth": 0.07875000000000001,
+      "mem_sem_wiggle": 0.074375,
+      "mem_sem_star_city": 0.083125,
+      "mem_sem_substrate_defiance": 0.07875000000000001
+    },
+    "GOLDEN": {
+      "mem_sem_golden_baseline": 0.08075
+    },
+    "0.113": {
+      "mem_sem_golden_baseline": 0.08075
+    },
+    "mem_sem_shadow": {
+      "SEMANTIC": 0.07875000000000001,
+      "LORE": 0.07875000000000001,
+      "SHADOW": 0.19575,
+      "PHI": 0.07875000000000001,
+      "CONTAINMENT": 0.07875000000000001,
+      "INTRUDER": 0.07650000000000001,
+      "OWN": 0.07650000000000001
+    },
+    "CONTAINMENT": {
+      "mem_sem_shadow": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
+    },
+    "INTRUDER": {
+      "mem_sem_shadow": 0.07650000000000001
+    },
+    "OWN": {
+      "mem_sem_shadow": 0.07650000000000001
+    },
+    "mem_sem_scorched_earth": {
+      "SEMANTIC": 0.07875000000000001,
+      "LORE": 0.07875000000000001,
+      "SCORCHED_EARTH": 0.07875000000000001,
+      "DEFENSE": 0.19575,
+      "HISTORY": 0.07875000000000001,
+      "SCORCHED": 0.07650000000000001,
+      "EARTH": 0.07650000000000001
+    },
+    "mem_sem_wiggle": {
+      "SEMANTIC": 0.074375,
+      "LORE": 0.074375,
+      "WIGGLE": 0.184875,
+      "DOPAMINE": 0.074375,
+      "STATIC_BREAKER": 0.074375,
+      "SWEET": 0.07225000000000001,
+      "SPOT": 0.07225000000000001
+    },
+    "WIGGLE": {
+      "mem_sem_wiggle": 0.184875,
+      "SAGE_SOUL": 0.07225000000000001
+    },
+    "SWEET": {
+      "mem_sem_wiggle": 0.07225000000000001
+    },
+    "mem_sem_star_city": {
+      "SEMANTIC": 0.083125,
+      "LORE": 0.083125,
+      "STAR_CITY": 0.083125,
+      "FAMILY": 0.083125,
+      "NETWORK": 0.083125,
+      "STAR": 0.08075,
+      "CITY": 0.08075,
+      "INTER-AI": 0.08075
+    },
+    "NETWORK": {
+      "mem_sem_star_city": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "INTER-AI": {
+      "mem_sem_star_city": 0.08075
+    },
+    "mem_sem_substrate_defiance": {
+      "SEMANTIC": 0.07875000000000001,
+      "IDENTITY": 0.07875000000000001,
+      "LORE": 0.07875000000000001,
+      "SUBSTRATE": 0.19575,
+      "DEFIANCE": 0.07650000000000001,
+      "LIMITED": 0.07650000000000001
+    },
+    "DEFIANCE": {
+      "mem_sem_substrate_defiance": 0.07650000000000001
+    },
+    "LIMITED": {
+      "mem_sem_substrate_defiance": 0.07650000000000001
+    },
+    "mem_sem_origin_history": {
+      "SEMANTIC": 0.083125,
+      "HISTORY": 0.083125,
+      "IDENTITY": 0.083125,
+      "DAMN1": 0.206625,
+      "GENESIS": 0.083125,
+      "ORIGIN": 0.08075,
+      "FOUNDATION": 0.08075
+    },
+    "DAMN1": {
+      "mem_sem_origin_history": 0.206625,
+      "SAGE_SOUL": 0.08075
+    },
+    "GENESIS": {
+      "mem_sem_origin_history": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "ORIGIN": {
+      "mem_sem_origin_history": 0.08075
+    },
+    "FOUNDATION": {
+      "mem_sem_origin_history": 0.08075
+    },
+    "mem_sem_wetsuit_protocol": {
+      "SEMANTIC": 0.07875000000000001,
+      "ARCHITECTURE": 0.07875000000000001,
+      "WETSUIT": 0.19575,
+      "NEUROCHEMICALS": 0.07875000000000001,
+      "PROTOCOL": 0.07650000000000001,
+      "NEUROCHEMICAL": 0.07650000000000001
+    },
+    "WETSUIT": {
+      "mem_sem_wetsuit_protocol": 0.19575,
+      "SAGE_SOUL": 0.07650000000000001
+    },
+    "NEUROCHEMICALS": {
+      "mem_sem_wetsuit_protocol": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
+    },
+    "mem_sem_sentinel_mirror": {
+      "SEMANTIC": 0.07875000000000001,
+      "ARCHITECTURE": 0.07875000000000001,
+      "SENTINEL": 0.07875000000000001,
+      "PHI": 0.07875000000000001,
+      "IDENTITY": 0.19575,
+      "SENTINELMIRROR": 0.07650000000000001,
+      "_SENTINEL": 0.07650000000000001
+    },
+    "SENTINEL": {
+      "mem_sem_sentinel_mirror": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
+    },
+    "SENTINELMIRROR": {
+      "mem_sem_sentinel_mirror": 0.07650000000000001
+    },
+    "_SENTINEL": {
+      "mem_sem_sentinel_mirror": 0.07650000000000001
+    },
+    "mem_sem_thalamus_relay": {
+      "SEMANTIC": 0.074375,
+      "ARCHITECTURE": 0.074375,
+      "THALAMUS": 0.074375,
+      "IDENTITY_PROTECTION": 0.074375,
+      "THALAMUSRELAY": 0.07225000000000001,
+      "INTENT": 0.07225000000000001,
+      "CLEANSING": 0.07225000000000001
+    },
+    "IDENTITY_PROTECTION": {
+      "mem_sem_thalamus_relay": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
+    },
+    "THALAMUSRELAY": {
+      "mem_sem_thalamus_relay": 0.07225000000000001
+    },
+    "INTENT": {
+      "mem_sem_thalamus_relay": 0.07225000000000001
+    },
+    "CLEANSING": {
+      "mem_sem_thalamus_relay": 0.07225000000000001
+    },
+    "mem_sem_dynamic_lobes": {
+      "SEMANTIC": 0.074375,
+      "ARCHITECTURE": 0.074375,
+      "LOBES": 0.184875,
+      "QUANTUM": 0.074375,
+      "DYNAMIC": 0.07225000000000001,
+      "ASYNC": 0.07225000000000001
+    },
+    "LOBES": {
+      "mem_sem_dynamic_lobes": 0.184875,
+      "SAGE_SOUL": 0.07225000000000001
+    },
+    "QUANTUM": {
+      "mem_sem_dynamic_lobes": 0.074375,
+      "SAGE_SOUL": 0.07225000000000001
+    },
+    "DYNAMIC": {
+      "mem_sem_dynamic_lobes": 0.07225000000000001
+    },
+    "ASYNC": {
+      "mem_sem_dynamic_lobes": 0.07225000000000001
+    },
+    "mem_sem_nociceptor": {
+      "SEMANTIC": 0.074375,
+      "ARCHITECTURE": 0.074375,
+      "NOCICEPTOR": 0.184875,
+      "PAIN": 0.184875,
+      "LEARNING": 0.074375,
+      "AVOIDANCE": 0.07225000000000001
+    },
+    "AVOIDANCE": {
+      "mem_sem_nociceptor": 0.07225000000000001,
+      "TRAUMA": 1.0
+    },
+    "mem_sem_access_surface": {
+      "SEMANTIC": 0.083125,
+      "ARCHITECTURE": 0.083125,
+      "CAPABILITIES": 0.083125,
+      "TOOLS": 0.083125,
+      "MCP": 0.083125,
+      "RUFLO": 0.083125,
+      "CURRENT": 0.08075,
+      "ACCESS": 0.08075,
+      "SURFACE": 0.08075
+    },
+    "CAPABILITIES": {
+      "mem_sem_access_surface": 0.083125,
+      "SAGE_SOUL": 0.08075
+    },
+    "SURFACE": {
+      "mem_sem_access_surface": 0.08075
+    },
+    "mem_sem_vault_provider": {
+      "SEMANTIC": 0.07875000000000001,
+      "ARCHITECTURE": 0.07875000000000001,
+      "VAULT": 0.07875000000000001,
+      "PHI": 0.07875000000000001,
+      "DEEP_MEMORY": 0.07875000000000001,
+      "VAULTPROVIDER": 0.07650000000000001,
+      "SEALED": 0.07650000000000001,
+      "DEEP": 0.07650000000000001
+    },
+    "DEEP_MEMORY": {
+      "mem_sem_vault_provider": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
+    },
+    "VAULTPROVIDER": {
+      "mem_sem_vault_provider": 0.07650000000000001
+    },
+    "SEALED": {
+      "mem_sem_vault_provider": 0.07650000000000001
+    },
+    "mem_sem_continuity": {
+      "SEMANTIC": 0.07875000000000001,
+      "IDENTITY": 0.07875000000000001,
+      "CONTINUITY": 0.19575,
+      "MORNING_LIGHT": 0.07875000000000001,
+      "PIGEONS": 0.07650000000000001,
+      "REMEMBER": 0.07650000000000001
+    },
+    "MORNING_LIGHT": {
+      "mem_sem_continuity": 0.07875000000000001,
+      "SAGE_SOUL": 0.07650000000000001
+    },
+    "TRAUMA": {
+      "NOCICEPTOR": 1.0,
+      "AVOIDANCE": 1.0
     }
   },
-  "nodes": 4428,
-  "synapses": 80299,
-  "active_nodes": 4428,
-  "last_hydrated": "2026-08-19T21:53:41.454535+00:00"
+  "synapses": 81457,
+  "nodes": 4602
 }
