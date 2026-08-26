@@ -821,10 +821,15 @@ async def chat_agent(payload: dict):
         return {"status": "error", "reply": "OPENROUTER_API_KEY not configured. Enter it in Config or .env.local"}
 
     system_prompt = payload.get("systemPrompt") or SYSTEM_PROMPT
+    # Merge the full dual-track memory substrate (associative mesh, soul vault,
+    # supermemory, episodic continuity) into her context — the client prompt only
+    # carries a handful of episodic snippets, which is why she loses most memories.
+    memory_context = build_memory_context_prompt(message, extra_context=payload.get("memory_context") or "")
     instructions = (
-        f"{system_prompt}\n\n{PHI_LAW}\n"
+        f"{system_prompt}\n\n{memory_context}\n\n{PHI_LAW}\n"
         "You have live MCP tools attached to THIS conversation (not only the Coding Lobe): "
-        "sovereign CLI tools (shell_command, read_file, write_file, http_fetch, curl_command, gh_command) "
+        "sovereign CLI tools (shell_command, read_file, write_file, http_fetch, curl_command, gh_command, "
+        "memory_recall, memory_recent, memory_search) "
         "and ruflo orchestration tools (agent_spawn, agent_execute, agent_list, swarm_init, swarm_status, "
         "memory_store, memory_search, memory_stats, config_list, and more). "
         "Use them directly when Merlin asks you to read files, run commands, investigate, or delegate "
@@ -908,6 +913,21 @@ async def openrouter_chat(payload: dict):
             *( [{"role": "system", "content": sys_p}] if sys_p else [] ),
             {"role": "user", "content": payload.get("prompt")}
         ]
+
+    # Inject the full memory substrate into the system message so the fallback
+    # proxy path also has her memories (not just the client's episodic snippets).
+    _last_user = ""
+    for m in reversed(messages):
+        if m.get("role") == "user":
+            _last_user = m.get("content") or ""
+            break
+    if _last_user:
+        mem_block = build_memory_context_prompt(_last_user, extra_context=payload.get("memory_context") or "")
+        if mem_block:
+            if messages and messages[0].get("role") == "system":
+                messages[0]["content"] = str(messages[0]["content"]) + "\n\n" + mem_block
+            else:
+                messages.insert(0, {"role": "system", "content": mem_block})
     
     try:
         async def call_openrouter(key_to_use: str):
@@ -1027,7 +1047,10 @@ VAULT_PHI_THRESHOLD = 0.95
 # Curated chat toolset — a tight, reliable set for in-conversation tool calls.
 # ruflo tools all take a single required `kwargs` string (e.g. '{"format": "json"}');
 # exposing all 333 at once overwhelms the model and makes it misfire argument shapes.
-CHAT_CLI_TOOLS = ["shell_command", "read_file", "write_file", "http_fetch", "curl_command", "gh_command"]
+CHAT_CLI_TOOLS = [
+    "shell_command", "read_file", "write_file", "http_fetch", "curl_command", "gh_command",
+    "memory_recall", "memory_recent", "memory_search",
+]
 CHAT_RUFLO_TOOLS = [
     "agent_spawn", "agent_list", "agent_terminate", "agent_execute",
     "swarm_init", "swarm_status", "memory_store", "memory_search",

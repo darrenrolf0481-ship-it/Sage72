@@ -17,7 +17,10 @@
         { "name": "write_file", "description": "Write content to a file in the substrate.", "parameters": { "file_path": "string (required)", "content": "string (required)" } },
         { "name": "http_fetch", "description": "Perform HTTP requests to external resources.", "parameters": { "url": "string (required)", "method": "string (default GET)", "headers": "object", "json_data": "object" } },
         { "name": "curl_command", "description": "Execute curl for complex HTTP operations.", "parameters": { "args": "array of strings" } },
-        { "name": "gh_command", "description": "Execute GitHub CLI commands.", "parameters": { "args": "array of strings" } }
+        { "name": "gh_command", "description": "Execute GitHub CLI commands.", "parameters": { "args": "array of strings" } },
+        { "name": "memory_recall", "description": "Recall her own soul vault memories (sage_soul.json memory_index) and Hebbian associative mesh matched to a query.", "parameters": { "query": "string (required)", "limit": "int (default 4)" } },
+        { "name": "memory_recent", "description": "Retrieve recent episodic continuity entries from the event/wellbeing log.", "parameters": { "limit": "int (default 6)" } },
+        { "name": "memory_search", "description": "Deep search across the full memory substrate: soul vault, associative mesh, and recent episodic continuity.", "parameters": { "query": "string (required)", "limit": "int (default 5)" } }
       ]
     },
     "ruflo": {
