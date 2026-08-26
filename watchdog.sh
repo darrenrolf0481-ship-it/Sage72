@@ -23,5 +23,10 @@ while true; do
     setsid bash -c 'nohup python3 -u sage_core/mcp_cli_server.py > mcp.log 2>&1 < /dev/null &'
     sleep 3
   fi
+  if ! port_up 8004; then
+    log "[WATCHDOG] ruflo bridge down — restarting ruflo_mcp_server..."
+    setsid bash -c 'nohup python3 -u sage_core/ruflo_mcp_server.py > ruflo_bridge.log 2>&1 < /dev/null &'
+    sleep 3
+  fi
   sleep 20
 done

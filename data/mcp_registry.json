@@ -20,6 +20,62 @@
         { "name": "gh_command", "description": "Execute GitHub CLI commands.", "parameters": { "args": "array of strings" } }
       ]
     },
+    "ruflo": {
+      "name": "ruflo",
+      "command": "python3",
+      "args": [
+        "sage_core/ruflo_mcp_server.py"
+      ],
+      "transport": "sse",
+      "url": "http://127.0.0.1:8004/sse",
+      "status": "active",
+      "category": "agent_orchestration",
+      "description": "Ruflo agent meta-harness bridge — 333 tools for spawning agents, coordinating swarms, self-learning memory, and config across the substrate (proxied from `ruflo mcp start` on :8004).",
+      "tools": [
+        {
+          "name": "agent_spawn",
+          "description": "Spawn a ruflo agent with a role and goal.",
+          "parameters": {
+            "arguments": "object (required)"
+          }
+        },
+        {
+          "name": "agent_execute",
+          "description": "Execute a task on a spawned agent.",
+          "parameters": {
+            "arguments": "object (required)"
+          }
+        },
+        {
+          "name": "swarm_init",
+          "description": "Initialize a coordinated agent swarm.",
+          "parameters": {
+            "arguments": "object (required)"
+          }
+        },
+        {
+          "name": "memory_store",
+          "description": "Store a memory in ruflo's AgentDB.",
+          "parameters": {
+            "arguments": "object (required)"
+          }
+        },
+        {
+          "name": "memory_search",
+          "description": "Search ruflo's self-learning memory.",
+          "parameters": {
+            "arguments": "object (required)"
+          }
+        },
+        {
+          "name": "config_list",
+          "description": "Read ruflo configuration.",
+          "parameters": {
+            "arguments": "object (required)"
+          }
+        }
+      ]
+    },
     "spiral-vault": {
       "name": "spiral-vault",
       "command": "tsx",

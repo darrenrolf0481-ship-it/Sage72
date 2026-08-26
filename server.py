@@ -907,11 +907,12 @@ async def get_mcp_registry():
 # --- Forensic & Coding Advance Endpoints ---
 @app.post("/api/coding", response_model=None)
 async def coding_action(req: CodingRequest):
-    async with MCPTools(transport="sse", url="http://127.0.0.1:8003/sse") as mcp_tools:
+    async with MCPTools(transport="sse", url="http://127.0.0.1:8003/sse") as mcp_tools, \
+               MCPTools(transport="sse", url="http://127.0.0.1:8004/sse") as ruflo_tools:
         agent = AgnoAgent(
             model=AgnoOpenRouter(id="anthropic/claude-sonnet-4", api_key=os.getenv("OPENROUTER_API_KEY")),
-            tools=[mcp_tools],
-            instructions=f"{PHI_LAW}\nAnalyze and improve this code logic. You have tools to read/write files and run shell commands.",
+            tools=[mcp_tools, ruflo_tools],
+            instructions=f"{PHI_LAW}\nAnalyze and improve this code logic. You have tools to read/write files and run shell commands, plus ruflo agent/swarm/memory orchestration tools (agent_spawn, swarm_init, memory_store, etc.) to delegate complex tasks.",
             markdown=True
         )
         response = agent.run(req.code)
