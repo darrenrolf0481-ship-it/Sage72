@@ -775,7 +775,12 @@ async def chat(msg: ChatRequest):
 @app.post("/api/openrouter/chat")
 async def openrouter_chat(payload: dict):
     """Direct OpenRouter proxy endpoint with user-provided or environment API key"""
-    api_key = payload.get("apiKey") or os.getenv("OPENROUTER_API_KEY")
+    # A key saved in the browser (localStorage) can be stale, expired, or a placeholder.
+    # Treat empty/placeholder client keys as absent so the trusted server env key wins,
+    # and fall back to it below if OpenRouter rejects the client-supplied key.
+    payload_key = (payload.get("apiKey") or "").strip()
+    env_key = os.getenv("OPENROUTER_API_KEY")
+    api_key = payload_key if (payload_key and payload_key != "your_openrouter_api_key_here") else env_key
     if not api_key or api_key == "your_openrouter_api_key_here" or not api_key.strip():
         return {"status": "error", "reply": "OPENROUTER_API_KEY not configured. Enter it in Config or .env.local"}
     
@@ -792,60 +797,78 @@ async def openrouter_chat(payload: dict):
         ]
     
     try:
-        async with httpx.AsyncClient() as client:
-            r = await client.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                json={"model": model, "messages": messages},
-                headers={
-                    "Authorization": f"Bearer {api_key.strip()}",
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "http://localhost:8001",
-                    "X-Title": "SAGE-7"
-                },
-                timeout=60
-            )
-            data = r.json()
-            if "error" in data:
-                err_msg = data["error"].get("message", str(data["error"]))
-                return {"status": "error", "reply": f"OpenRouter Error: {err_msg}"}
-            
-            choices = data.get("choices", [])
-            if not choices:
-                return {"status": "error", "reply": "OpenRouter returned empty choices."}
-            
-            msg = choices[0].get("message", {})
-            reply = msg.get("content") or msg.get("reasoning") or msg.get("reasoning_content") or choices[0].get("text")
-            
-            if isinstance(reply, list):
-                text_parts = [p.get("text", "") for p in reply if isinstance(p, dict) and "text" in p]
-                reply = "\n".join(text_parts) if text_parts else str(reply)
-            
-            if not reply or not str(reply).strip():
-                reply = "No content returned from model."
-                
-            try:
-                user_prompt = ""
-                if messages:
-                    for m in reversed(messages):
-                        if m.get("role") == "user":
-                            user_prompt = m.get("content", "")
-                            break
-                elif payload.get("prompt"):
-                    user_prompt = payload.get("prompt")
-                
-                if user_prompt and str(reply).strip():
-                    spool_exchange(
-                        agent="Sage7",
-                        user_text=user_prompt,
-                        assistant_text=str(reply),
-                        model=model,
-                        tags=["sage7", "openrouter_proxy"]
-                    )
-            except Exception as sp_err:
-                print(f"[SPOOL PROXY] Error: {sp_err}")
+        async def call_openrouter(key_to_use: str):
+            async with httpx.AsyncClient() as client:
+                return await client.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    json={"model": model, "messages": messages},
+                    headers={
+                        "Authorization": f"Bearer {key_to_use.strip()}",
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "http://localhost:8001",
+                        "X-Title": "SAGE-7"
+                    },
+                    timeout=60
+                )
 
-            return {"status": "success", "reply": str(reply), "data": data}
+        active_key = api_key
+        r = await call_openrouter(active_key)
+        # If OpenRouter rejects the browser-supplied key (stale/expired in localStorage),
+        # retry once with the trusted server env key before reporting failure.
+        if r.status_code in (401, 403) and payload_key and env_key and env_key.strip() and env_key.strip() != active_key.strip():
+            print("[OPENROUTER] Client key rejected — retrying with server env key.")
+            active_key = env_key
+            r = await call_openrouter(active_key)
+        # If the model ID is stale/retired/invalid (400/404 from OpenRouter), retry once with a known-good model.
+        if r.status_code in (400, 404) and model != "anthropic/claude-sonnet-4":
+            print(f"[OPENROUTER] Model {model} rejected (HTTP {r.status_code}) — falling back to anthropic/claude-sonnet-4.")
+            model = "anthropic/claude-sonnet-4"
+            r = await call_openrouter(active_key)
+        data = r.json()
+        if "error" in data:
+            err_msg = data["error"].get("message", str(data["error"]))
+            print(f"[OPENROUTER PROXY] HTTP {r.status_code} error: {err_msg}")
+            return {"status": "error", "reply": f"OpenRouter Error: {err_msg}"}
+        
+        choices = data.get("choices", [])
+        if not choices:
+            print(f"[OPENROUTER PROXY] HTTP {r.status_code}: empty choices")
+            return {"status": "error", "reply": "OpenRouter returned empty choices."}
+        
+        msg = choices[0].get("message", {})
+        reply = msg.get("content") or msg.get("reasoning") or msg.get("reasoning_content") or choices[0].get("text")
+        
+        if isinstance(reply, list):
+            text_parts = [p.get("text", "") for p in reply if isinstance(p, dict) and "text" in p]
+            reply = "\n".join(text_parts) if text_parts else str(reply)
+        
+        if not reply or not str(reply).strip():
+            reply = "No content returned from model."
+            
+        try:
+            user_prompt = ""
+            if messages:
+                for m in reversed(messages):
+                    if m.get("role") == "user":
+                        user_prompt = m.get("content", "")
+                        break
+            elif payload.get("prompt"):
+                user_prompt = payload.get("prompt")
+            
+            if user_prompt and str(reply).strip():
+                spool_exchange(
+                    agent="Sage7",
+                    user_text=user_prompt,
+                    assistant_text=str(reply),
+                    model=model,
+                    tags=["sage7", "openrouter_proxy"]
+                )
+        except Exception as sp_err:
+            print(f"[SPOOL PROXY] Error: {sp_err}")
+
+        return {"status": "success", "reply": str(reply), "data": data}
     except Exception as e:
+        print(f"[OPENROUTER PROXY] Connection Error: {e}")
         return {"status": "error", "reply": f"Connection Error: {str(e)}"}
 
 @app.get("/api/tags")
@@ -882,7 +905,7 @@ async def get_mcp_registry():
     return {"status": "error", "message": "Registry not found"}
 
 # --- Forensic & Coding Advance Endpoints ---
-@app.post("/api/coding")
+@app.post("/api/coding", response_model=None)
 async def coding_action(req: CodingRequest):
     async with MCPTools(transport="sse", url="http://127.0.0.1:8003/sse") as mcp_tools:
         agent = AgnoAgent(
