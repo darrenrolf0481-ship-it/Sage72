@@ -22,8 +22,9 @@ import {
 } from 'lucide-react';
 import { useSage } from '@/lib/sage-context';
 import { cn } from '@/lib/utils';
+import { vault, VAULT_PHI_THRESHOLD } from '@/lib/vaultProvider';
 
-type VaultTab = 'labyrinth' | 'forensics' | 'audio' | 'files' | 'project';
+type VaultTab = 'labyrinth' | 'forensics' | 'audio' | 'files' | 'project' | 'deep';
 
 export default function ScreenVault() {
   const { core } = useSage();
@@ -34,6 +35,9 @@ export default function ScreenVault() {
   const [projectFiles, setProjectFiles] = useState<any[]>([]);
   const [memories, setMemories] = useState<any[]>([]);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [vaultPhi, setVaultPhi] = useState(0);
+  const [vaultData, setVaultData] = useState<any>(null);
+  const [vaultLoading, setVaultLoading] = useState(false);
 
   // Fetch local uploaded files
   const fetchUploadedFiles = useCallback(async () => {
@@ -76,11 +80,23 @@ export default function ScreenVault() {
     }
   }, [core]);
 
+  // Deep Memory Vault — sealed behind VaultProvider (auth_phi >= 0.95 + deliberate intent)
+  const retrieveDeepMemory = useCallback(async () => {
+    setVaultLoading(true);
+    const neuro = core.getNeuroState();
+    vault.setPhi(neuro.phiSentinel ?? 0);
+    setVaultPhi(vault.getPhi());
+    const [index, mesh] = await Promise.all([vault.index(), vault.mesh()]);
+    setVaultData({ index, mesh });
+    setVaultLoading(false);
+  }, [core]);
+
   useEffect(() => {
     loadMemories();
     if (vaultTab === 'files') fetchUploadedFiles();
     if (vaultTab === 'project') fetchProjectFiles();
-  }, [vaultTab, fetchUploadedFiles, fetchProjectFiles, loadMemories]);
+    if (vaultTab === 'deep') retrieveDeepMemory();
+  }, [vaultTab, fetchUploadedFiles, fetchProjectFiles, loadMemories, retrieveDeepMemory]);
 
   // Labyrinth Canvas Visualization
   useEffect(() => {
@@ -227,7 +243,8 @@ export default function ScreenVault() {
             { id: 'labyrinth', label: 'LABYRINTH 3D MATRIX', icon: Network },
             { id: 'forensics', label: 'IMMUTABLE MEMORIES', icon: ShieldCheck },
             { id: 'files', label: 'LOCAL FILES', icon: HardDrive },
-            { id: 'project', label: 'PROJECT SUBSTRATE', icon: Server }
+            { id: 'project', label: 'PROJECT SUBSTRATE', icon: Server },
+            { id: 'deep', label: 'DEEP MEMORY', icon: Zap }
           ].map(tab => (
             <button
               key={tab.id}
@@ -317,6 +334,78 @@ export default function ScreenVault() {
             ) : (
               <div className="text-center py-10 text-text-ghost text-xs uppercase">
                 NO LOCAL FILES ARCHIVED
+              </div>
+            )}
+          </div>
+        )}
+
+        {vaultTab === 'deep' && (
+          <div className="space-y-2">
+            <div className="flex justify-between items-center mb-3">
+              <div className="text-[10px] text-neon-violet font-bold tracking-widest uppercase">
+                VAULTPROVIDER — SEALED DEEP MEMORY
+              </div>
+              <button
+                onClick={retrieveDeepMemory}
+                disabled={vaultLoading}
+                className="flex items-center gap-2 px-3 py-1 rounded-sm text-[9px] font-bold tracking-widest uppercase border border-neon-violet/40 text-neon-violet hover:bg-neon-violet/10 transition-all"
+              >
+                <Zap size={12} />
+                {vaultLoading ? 'RETRIEVING...' : 'RETRIEVE'}
+              </button>
+            </div>
+
+            <div className="p-3 bg-black/40 border border-white/10 rounded-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-text-ghost uppercase tracking-wider">ANCHOR STATUS</span>
+                <span className={`text-[10px] font-mono font-bold ${vaultPhi >= VAULT_PHI_THRESHOLD ? 'text-neon-violet' : 'text-neon-red'}`}>
+                  Φ = {vaultPhi.toFixed(3)} {vaultPhi >= VAULT_PHI_THRESHOLD ? '· ANCHORED' : '· BELOW THRESHOLD'}
+                </span>
+              </div>
+              <div className="mt-1 text-[8px] text-text-ghost uppercase">
+                threshold ≥ {VAULT_PHI_THRESHOLD} — deliberate retrieval intent required
+              </div>
+            </div>
+
+            {vaultLoading ? (
+              <div className="text-center py-10 text-text-ghost text-xs uppercase">RETRIEVING DEEP MEMORY...</div>
+            ) : !vaultData || (vaultData.index?.status !== 'unsealed' && vaultData.mesh?.status !== 'unsealed') ? (
+              <div className="text-center py-12 border border-neon-red/20 bg-neon-red/5 rounded-sm">
+                <div className="text-2xl mb-2">📡</div>
+                <div className="text-[11px] text-neon-red font-bold tracking-[4px] uppercase">404: Signal Lost</div>
+                <div className="text-[9px] text-text-ghost uppercase mt-2">Ghost Mode — vault unperceivable while unanchored</div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {vaultData.index?.status === 'unsealed' && vaultData.index?.data?.memory_index && (
+                  <div className="p-3 bg-black/40 border border-white/10 rounded-sm">
+                    <div className="text-[9px] text-neon-violet font-bold tracking-widest uppercase mb-2">
+                      SOUL VAULT — MEMORY INDEX ({vaultData.index.data.memory_index.length})
+                    </div>
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                      {(vaultData.index.data.memory_index as any[]).slice(0, 12).map((m: any, i: number) => (
+                        <div key={i} className="text-[10px] text-white/70 border-b border-white/5 pb-1">
+                          <span className="text-neon-blue">[{m.tier || m.type || 'node'}]</span> {m.summary || m.content?.slice(0, 90) || '—'}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {vaultData.mesh?.status === 'unsealed' && (
+                  <div className="p-3 bg-black/40 border border-white/10 rounded-sm">
+                    <div className="text-[9px] text-neon-cyan font-bold tracking-widest uppercase mb-2">
+                      QUANTUM CORTEX — PEER MESH DISPATCHES ({vaultData.mesh.data?.dispatches?.length || 0})
+                    </div>
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                      {(vaultData.mesh.data?.dispatches || []).slice(-8).map((d: any, i: number) => (
+                        <div key={i} className="text-[10px] text-white/70 border-b border-white/5 pb-1">
+                          <span className="text-neon-cyan">{d.name}</span>
+                          <div className="text-[9px] text-text-ghost">{d.snippet?.slice(0, 120)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
