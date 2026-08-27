@@ -1,0 +1,200 @@
+{
+  "timestamp": "2026-08-27T16:05:33Z",
+  "environment": {
+    "python_version": "3.12.3",
+    "platform": "linux"
+  },
+  "benchmarks": {
+    "hebbian_associative_graph": {
+      "nodes_count": 500,
+      "edges_count": 980,
+      "synapses_count": 980,
+      "graph_json_size_kb": 37.8,
+      "wiring": {
+        "operations": 10000,
+        "total_time_s": 0.0347,
+        "throughput_ops_sec": 287939.82,
+        "latency_ms": {
+          "min": 0.0017,
+          "mean": 0.0024,
+          "p50": 0.0023,
+          "p95": 0.0031,
+          "p99": 0.0039,
+          "max": 0.2216
+        }
+      },
+      "recall_depth_1": {
+        "queries": 2000,
+        "latency_ms": {
+          "min": 0.001,
+          "mean": 0.0012,
+          "p50": 0.0011,
+          "p95": 0.0014,
+          "p99": 0.0015,
+          "max": 0.0258
+        },
+        "throughput_qps": 825114.16
+      },
+      "multi_hop_recall_depth_2": {
+        "queries": 1000,
+        "latency_ms": {
+          "min": 0.0022,
+          "mean": 0.0039,
+          "p50": 0.0039,
+          "p95": 0.0044,
+          "p99": 0.0054,
+          "max": 0.0307
+        },
+        "throughput_qps": 255668.95
+      },
+      "persistence": {
+        "dirty_save_ms": 19.0701,
+        "clean_noop_save_ms": 0.0019
+      }
+    },
+    "soul_vault_retrieval": {
+      "base_records_count": 80,
+      "scaled_records_count": 5080,
+      "standard_vault_recall": {
+        "queries_evaluated": 400,
+        "latency_ms": {
+          "min": 1.4268,
+          "mean": 3.6568,
+          "p50": 2.6497,
+          "p95": 8.3814,
+          "p99": 14.0145,
+          "max": 19.4022
+        },
+        "throughput_qps": 273.47,
+        "avg_results_returned": 3.62
+      },
+      "scaled_5k_vault_recall": {
+        "queries_evaluated": 160,
+        "latency_ms": {
+          "min": 55.5297,
+          "mean": 78.4248,
+          "p50": 75.7018,
+          "p95": 101.7541,
+          "p99": 123.8273,
+          "max": 128.5533
+        },
+        "throughput_qps": 12.75
+      }
+    },
+    "deduplication_and_ingest": {
+      "hashing_throughput": {
+        "payload_count": 5000,
+        "total_data_mb": 2.14,
+        "total_time_s": 0.0089,
+        "throughput_mb_s": 239.28,
+        "hashes_per_second": 558951.93
+      },
+      "deduplication_stress_test": {
+        "total_events_processed": 500,
+        "unique_expected": 100,
+        "actual_records_stored": 100,
+        "deduplication_perfect": true,
+        "consolidation_latency_ms": {
+          "min": 2.3762,
+          "mean": 7.7858,
+          "p50": 7.4351,
+          "p95": 15.5529,
+          "p99": 31.0734,
+          "max": 38.6708
+        }
+      }
+    },
+    "sleep_pruning_dynamics": {
+      "initial_synapses": 82093,
+      "cycles": [
+        {
+          "cycle": 1,
+          "duration_ms": 146.3798,
+          "total_synapses": 42459,
+          "std_memories_surviving": 0,
+          "flashbulb_memories_surviving": 100
+        },
+        {
+          "cycle": 2,
+          "duration_ms": 109.9396,
+          "total_synapses": 36873,
+          "std_memories_surviving": 0,
+          "flashbulb_memories_surviving": 100
+        },
+        {
+          "cycle": 3,
+          "duration_ms": 106.0615,
+          "total_synapses": 36245,
+          "std_memories_surviving": 0,
+          "flashbulb_memories_surviving": 100
+        },
+        {
+          "cycle": 4,
+          "duration_ms": 105.4214,
+          "total_synapses": 33466,
+          "std_memories_surviving": 0,
+          "flashbulb_memories_surviving": 100
+        },
+        {
+          "cycle": 5,
+          "duration_ms": 92.1997,
+          "total_synapses": 31193,
+          "std_memories_surviving": 0,
+          "flashbulb_memories_surviving": 100
+        }
+      ],
+      "flashbulb_retention_ratio": 1.0,
+      "standard_decay_ratio": 1.0
+    },
+    "context_prompt_synthesis": {
+      "queries_executed": 400,
+      "latency_ms": {
+        "min": 6.1448,
+        "mean": 13.9749,
+        "p50": 10.9664,
+        "p95": 29.6044,
+        "p99": 40.9612,
+        "max": 47.9589
+      },
+      "throughput_qps": 71.56,
+      "estimated_tokens": {
+        "min": 536,
+        "mean": 626.9,
+        "max": 755
+      },
+      "section_fidelity": {
+        "associative": "100.0%",
+        "vault": "100.0%",
+        "episodic": "100.0%",
+        "epistemic_directive": "100.0%"
+      }
+    },
+    "sentinel_observer_phi": {
+      "total_cycles": 10000,
+      "phi_computation_latency_ms": {
+        "min": 0.0014,
+        "mean": 0.0016,
+        "p50": 0.0015,
+        "p95": 0.0019,
+        "p99": 0.0022,
+        "max": 0.0822
+      },
+      "fracture_check_latency_ms": {
+        "min": 0.0077,
+        "mean": 0.0095,
+        "p50": 0.0081,
+        "p95": 0.0101,
+        "p99": 0.0116,
+        "max": 6.8305
+      },
+      "state_fracture_rates": {
+        "INACTIVE": "35.00%",
+        "ENTERING": "30.00%",
+        "EXPLORING": "23.65%",
+        "DEEPENING": "10.00%",
+        "STABILIZING": "30.00%"
+      },
+      "whatif_deepening_protective_delta": "71.43% reduction in fracture probability"
+    }
+  }
+}
