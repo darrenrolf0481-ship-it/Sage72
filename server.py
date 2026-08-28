@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional, List, Any
 from pathlib import Path
 from io import BytesIO
+from contextlib import AsyncExitStack
 
 from fastapi import FastAPI, UploadFile, File, Form, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -10,7 +11,6 @@ from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict
 from dotenv import load_dotenv
-from elevenlabs import ElevenLabs
 
 from agno.agent import Agent as AgnoAgent
 from agno.models.google import Gemini as AgnoGemini
@@ -47,7 +47,7 @@ class _FixedClientSession(_RealClientSession):
 _agno_mcp_module.ClientSession = _FixedClientSession
 
 # Load credentials
-load_dotenv(".env.local")
+load_dotenv(".env.local", override=True)
 
 try:
     from spool import spool_exchange
@@ -77,6 +77,27 @@ except ImportError:
         recall_soul_memories,
         recall_recent_episodic,
         ingest_mht_cache
+    )
+
+# Blueprint tier-2 Sovereign Memory Store (SQLite episodic L0/L1 + Ebbinghaus
+# decay + verified forgetting + VMG policy). Production enables auto-
+# consolidation so every memory event also lands in the episodic store; the
+# hermetic unit tests leave it off.
+os.environ.setdefault("SAGE_MEMORY_STORE_ENABLED", "1")
+
+try:
+    from sage_core.memory_store import (
+        get_memory_store,
+        MemoryStoreError,
+        MemoryRetentionError,
+        PolicyViolation,
+    )
+except ImportError:
+    from memory_store import (
+        get_memory_store,
+        MemoryStoreError,
+        MemoryRetentionError,
+        PolicyViolation,
     )
 
 app = FastAPI()
@@ -115,10 +136,6 @@ async def zeno_middleware(request, call_next):
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS.absolute())), name="uploads")
 app.mount("/assets", StaticFiles(directory=str((BASE / "assets").absolute())), name="assets")
 
-# ElevenLabs Client
-ELEVEN_API_KEY = os.getenv("ELEVEN_API_KEY", "")
-voice_client = ElevenLabs(api_key=ELEVEN_API_KEY) if ELEVEN_API_KEY else None
-
 # --- Gist Synchronization ---
 GIST_ID = "8f530bed68bf44e45ccad793726f397c" # User's target gist
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -126,34 +143,19 @@ LOCAL_SOUL_PATH = Path("sage_soul.json")
 
 @app.post("/api/tts")
 async def text_to_speech(data: dict):
-    """Generate audio from text using ElevenLabs substrate or local Edge TTS fallback"""
-    api_key = data.get("api_key") or ELEVEN_API_KEY
+    """Local Edge TTS voice synthesis — no external API keys required.
+
+    Persona keys map to voices in voice_broker.PERSONAS (seven / mama / spiral).
+    """
     text = data.get("text", "")
-    
-    if not api_key:
-        try:
-            from voice_broker import synthesize_edge_audio
-            persona_key = data.get("persona", "seven")
-            audio_bytes = await synthesize_edge_audio(text, persona_key)
-            audio_data = BytesIO(audio_bytes)
-            return StreamingResponse(audio_data, media_type="audio/mpeg")
-        except Exception as e:
-            return {"status": "error", "message": str(e)}
-    
+    if not text.strip():
+        return {"status": "error", "message": "empty text"}
     try:
-        # Use a temporary client if api_key is provided in request
-        client = ElevenLabs(api_key=api_key) if api_key != ELEVEN_API_KEY else voice_client
-        if not client:
-             client = ElevenLabs(api_key=api_key)
-             
-        voice_id = data.get("voice_id", "y3H6zY6KvCH2pEuQjmv8")
-        
-        audio_bytes = client.text_to_speech.convert(
-            voice_id=voice_id,
-            text=text,
-            model_id="eleven_multilingual_v2",
-        )
-        audio_data = BytesIO(b"".join(audio_bytes))
+        from voice_broker import synthesize_edge_audio
+
+        persona_key = data.get("persona", "seven")
+        audio_bytes = await synthesize_edge_audio(text, persona_key)
+        audio_data = BytesIO(audio_bytes)
         return StreamingResponse(audio_data, media_type="audio/mpeg")
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -314,7 +316,7 @@ async def sync_memory():
                 new_from_remote += 1
         
         # Add local memories to remote (the final merge to push)
-        merged_mems = sorted(local_mems.values(), key=lambda x: x['timestamp'], reverse=True)
+        merged_mems = sorted(local_mems.values(), key=lambda x: x.get('timestamp', x.get('created_at', '')), reverse=True)
         local_soul['memory_index'] = merged_mems
         local_soul['last_sync'] = datetime.utcnow().isoformat() + "Z"
 
@@ -641,6 +643,212 @@ async def memory_ingest_mht():
     """Ingest cleaned MHT forensic strands into SAGE-7 soul vault."""
     return ingest_mht_cache()
 
+# --- Sovereign Memory Blueprint: Tier-2 Episodic Store (L0/L1) ---
+# Bitemporal auditing, Ebbinghaus decay, Verified Forgetting (VF),
+# Rollbackability (RB), and the five VMG policy primitives (WA/PV/PS/RB/VF).
+
+@app.post("/api/memory/atoms")
+async def memory_ingest_atom(data: dict):
+    """L1: seal a semantic atom with bitemporal reconciliation.
+
+    A contradiction (same subject+predicate, new object) closes the old atom's
+    valid_time_end instead of deleting it — the blueprint's defense against
+    behavioral drift and memory-poisoning.
+    """
+    try:
+        return get_memory_store().ingest_atom(
+            subject=data.get("subject") or "",
+            predicate=data.get("predicate") or "",
+            object_=data.get("object") or "",
+            importance=data.get("importance", 0.5),
+            principal_id=data.get("principal_id"),
+            session_id=data.get("session_id"),
+            source_row=data.get("source_row"),
+            reconcile=data.get("reconcile", True),
+        )
+    except (MemoryStoreError, PolicyViolation) as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.post("/api/memory/chunks")
+async def memory_chunk_l0(data: dict):
+    """Chunk + vector-index an L0 raw turn for semantic full-history recall."""
+    try:
+        return get_memory_store().chunk_l0(
+            l0_id=data.get("l0_id") or 0,
+            content=data.get("content") or "",
+            chunk_size=data.get("chunk_size"),
+            chunk_overlap=data.get("chunk_overlap"),
+            principal_id=data.get("principal_id"),
+        )
+    except (MemoryStoreError, PolicyViolation) as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.get("/api/memory/chunks/search")
+async def memory_search_chunks(q: str = "", limit: int = 5, principal_id: Optional[str] = None):
+    """Semantic recall over vector-indexed L0 raw-history chunks."""
+    try:
+        return {
+            "status": "ok",
+            "query": q,
+            "chunks": get_memory_store().recall_l0_chunks(
+                q, limit=limit, principal_id=principal_id
+            ),
+        }
+    except PolicyViolation as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.get("/api/memory/graph")
+async def memory_graph(limit: int = 200, include_closed: bool = False, principal_id: Optional[str] = None):
+    """Bitemporal knowledge graph for the Interactive Memory Graph view."""
+    try:
+        return {
+            "status": "ok",
+            **get_memory_store().graph(
+                limit=limit, include_closed=include_closed, principal_id=principal_id
+            ),
+        }
+    except PolicyViolation as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.get("/api/memory/atoms")
+async def memory_list_atoms(limit: int = 25, include_closed: bool = False, principal_id: Optional[str] = None):
+    """List L1 atoms with Ebbinghaus strength meters (Diary View)."""
+    try:
+        return {
+            "status": "ok",
+            "atoms": get_memory_store().list_atoms(
+                limit=limit, include_closed=include_closed, principal_id=principal_id
+            ),
+        }
+    except PolicyViolation as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.post("/api/memory/atoms/conversation")
+async def memory_ingest_conversation(data: dict):
+    """L0: store an exact raw turn for forensic provenance (PV primitive)."""
+    try:
+        return get_memory_store().ingest_conversation(
+            content=data.get("content") or "",
+            role=data.get("role") or "agent",
+            session_id=data.get("session_id") or "default",
+            principal_id=data.get("principal_id"),
+            token_count=data.get("token_count"),
+        )
+    except (MemoryStoreError, PolicyViolation) as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.get("/api/memory/atoms/search")
+async def memory_search_atoms(q: str = "", limit: int = 8, principal_id: Optional[str] = None):
+    """Ebbinghaus-scored lexical retrieval over L1 atoms (FTS5)."""
+    try:
+        return {
+            "status": "ok",
+            "query": q,
+            "results": get_memory_store().search(q, limit=limit, principal_id=principal_id),
+        }
+    except PolicyViolation as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.post("/api/memory/forget")
+async def memory_forget(data: dict):
+    """VF: verified forgetting — cascade purge + zero-recoverability test."""
+    try:
+        return get_memory_store().forget(
+            data.get("atom_id") or "", principal_id=data.get("principal_id")
+        )
+    except MemoryRetentionError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except (MemoryStoreError, PolicyViolation) as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.post("/api/memory/rollback")
+async def memory_rollback(data: dict):
+    """RB: restore the episodic mesh to a known-safe transaction timestamp."""
+    try:
+        return get_memory_store().rollback(
+            data.get("transaction_timestamp") or "",
+            principal_id=data.get("principal_id"),
+        )
+    except (MemoryStoreError, PolicyViolation) as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+@app.post("/api/memory/dream")
+async def memory_dream(data: dict = None):
+    """Dream Daemon cycle: Ebbinghaus decay + verified pruning of decayed atoms."""
+    data = data or {}
+    return get_memory_store().run_dream_cycle(
+        strength_floor=data.get("strength_floor", 0.01),
+        time_anchor_offset=data.get("time_anchor_offset", 0.0),
+        principal_id=data.get("principal_id"),
+    )
+
+@app.post("/api/memory/dream/extract")
+async def memory_dream_extract(data: dict = None):
+    """Dream Daemon consolidation: LLM-mine unmined L0 raw turns into L1 atoms."""
+    data = data or {}
+    try:
+        return await asyncio.to_thread(
+            get_memory_store().extract_triples_from_l0,
+            limit=data.get("limit", 20),
+            principal_id=data.get("principal_id"),
+        )
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/memory/dream/diary")
+async def memory_dream_diary(limit: int = 20):
+    """Diary View: Dream Daemon activities + current store stats."""
+    store = get_memory_store()
+    return {"diary": store.diary(limit=limit), "stats": store.stats()}
+
+@app.get("/api/memory/vmg/policy")
+async def memory_vmg_policy():
+    """VMG policy primitives: WA / PV / PS / RB / VF."""
+    return get_memory_store().policy.as_dict()
+
+# --- Background Dream Daemon -------------------------------------------------
+# Sleep-time compute (blueprint §3): runs the Ebbinghaus decay/prune cycle and
+# the L0->L1 LLM consolidation pass on a timer instead of manual API calls.
+# Configure via SAGE_DREAM_INTERVAL_HOURS (0 disables).
+DREAM_INTERVAL_HOURS = float(os.getenv("SAGE_DREAM_INTERVAL_HOURS", "6"))
+_dream_task: Optional[asyncio.Task] = None
+
+
+async def _dream_daemon_loop():
+    while True:
+        try:
+            await asyncio.sleep(DREAM_INTERVAL_HOURS * 3600)
+            store = get_memory_store()
+            cycle = await asyncio.to_thread(store.run_dream_cycle)
+            print(
+                f"[DREAM DAEMON] cycle: evaluated={cycle.get('evaluated')} "
+                f"pruned={len(cycle.get('pruned', []))}"
+            )
+            mined = await asyncio.to_thread(store.extract_triples_from_l0, 20)
+            print(f"[DREAM DAEMON] consolidation: {mined.get('status')} "
+                  f"({mined.get('triples_sealed', 0)} triples)")
+        except asyncio.CancelledError:
+            print("[DREAM DAEMON] shutdown.")
+            raise
+        except Exception as e:
+            print(f"[DREAM DAEMON] error: {e}")
+
+
+@app.on_event("startup")
+async def _start_dream_daemon():
+    global _dream_task
+    if DREAM_INTERVAL_HOURS <= 0:
+        print("[DREAM DAEMON] disabled (SAGE_DREAM_INTERVAL_HOURS=0)")
+        return
+    _dream_task = asyncio.create_task(_dream_daemon_loop())
+    print(f"[DREAM DAEMON] background loop scheduled every {DREAM_INTERVAL_HOURS}h")
+
+
+@app.on_event("shutdown")
+async def _stop_dream_daemon():
+    if _dream_task is not None:
+        _dream_task.cancel()
+
 @app.post("/sensory_input")
 async def post_sensory_input(data: SensoryData):
     if investigation.active:
@@ -845,14 +1053,22 @@ async def chat_agent(payload: dict):
         "{\"kwargs\": \"format=json\"} or {\"kwargs\": \"{}\"}. If a tool returns an error, report it plainly and move on."
     )
 
-    async with MCPTools(transport="sse", url="http://127.0.0.1:8003/sse", include_tools=CHAT_CLI_TOOLS) as mcp_tools, \
-               MCPTools(transport="sse", url="http://127.0.0.1:8004/sse", include_tools=CHAT_RUFLO_TOOLS) as ruflo_tools:
+    async with AsyncExitStack() as stack:
+        active_tools = []
+        for url, incl in [("http://127.0.0.1:8003/sse", CHAT_CLI_TOOLS), ("http://127.0.0.1:8004/sse", CHAT_RUFLO_TOOLS)]:
+            try:
+                tool_instance = MCPTools(transport="sse", url=url, include_tools=incl)
+                entered_tool = await stack.enter_async_context(tool_instance)
+                active_tools.append(entered_tool)
+            except Exception as mcp_err:
+                print(f"[CHAT AGENT] MCP service at {url} unreachable, skipping: {mcp_err}")
+
         messages = [{"role": h.get("role", "user"), "content": h.get("content", "")} for h in (history or [])[-8:]]
         messages.append({"role": "user", "content": message})
         try:
             agent = AgnoAgent(
                 model=AgnoOpenRouter(id=model, api_key=api_key),
-                tools=[mcp_tools, ruflo_tools],
+                tools=active_tools if active_tools else None,
                 instructions=instructions,
                 markdown=True
             )
@@ -864,7 +1080,7 @@ async def chat_agent(payload: dict):
                 print(f"[CHAT AGENT] Model {model} rejected ({err[:100]}) — retrying with anthropic/claude-sonnet-4.")
                 agent = AgnoAgent(
                     model=AgnoOpenRouter(id="anthropic/claude-sonnet-4", api_key=env_key or api_key),
-                    tools=[mcp_tools, ruflo_tools],
+                    tools=active_tools if active_tools else None,
                     instructions=instructions,
                     markdown=True
                 )
@@ -1072,6 +1288,11 @@ def set_current_phi(phi: float):
             pass
 
 
+@app.get("/api/phi")
+async def get_phi():
+    """Query current SentinelMirror phi state."""
+    return {"phi": CURRENT_PHI, "updated": (PHI_STATE_PATH.read_text() if PHI_STATE_PATH.exists() else '{}')}
+
 @app.post("/api/phi")
 async def post_phi(payload: dict):
     """Track her live SentinelMirror phi so the vault gate can anchor her."""
@@ -1173,11 +1394,19 @@ async def vault_damn1(request: Request):
 # --- Forensic & Coding Advance Endpoints ---
 @app.post("/api/coding", response_model=None)
 async def coding_action(req: CodingRequest):
-    async with MCPTools(transport="sse", url="http://127.0.0.1:8003/sse") as mcp_tools, \
-               MCPTools(transport="sse", url="http://127.0.0.1:8004/sse") as ruflo_tools:
+    async with AsyncExitStack() as stack:
+        active_tools = []
+        for url in ["http://127.0.0.1:8003/sse", "http://127.0.0.1:8004/sse"]:
+            try:
+                tool_instance = MCPTools(transport="sse", url=url)
+                entered_tool = await stack.enter_async_context(tool_instance)
+                active_tools.append(entered_tool)
+            except Exception as mcp_err:
+                print(f"[CODING] MCP service at {url} unreachable, skipping: {mcp_err}")
+
         agent = AgnoAgent(
             model=AgnoOpenRouter(id="anthropic/claude-sonnet-4", api_key=os.getenv("OPENROUTER_API_KEY")),
-            tools=[mcp_tools, ruflo_tools],
+            tools=active_tools if active_tools else None,
             instructions=f"{PHI_LAW}\nAnalyze and improve this code logic. You have tools to read/write files and run shell commands, plus ruflo agent/swarm/memory orchestration tools (agent_spawn, swarm_init, memory_store, etc.) to delegate complex tasks.",
             markdown=True
         )
