@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "dev:server": "python3 server.py",
+    "dev:all": "concurrently -n vite,server -c blue,green \"vite\" \"python3 server.py\"", 
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint .",

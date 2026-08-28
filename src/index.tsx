@@ -105,6 +105,8 @@ import {
   Key,
   Copy
 } from 'lucide-react';
+import { fetchWithRetry } from './lib/fetchWithRetry';
+import { useBackendHealth } from './lib/useBackendHealth';
 
 // --- Environment Detection ---
 const detectEnvironment = () => {
@@ -186,8 +188,7 @@ interface AppSettings {
   localModel: string;
   voiceName: string;
   voiceEnabled: boolean;
-  elevenLabsKey: string;
-  elevenLabsVoiceId: string;
+  voicePersona: string;
   zoEndpoint: string;
   dreamMode: 'enabled' | 'disabled' | 'aggressive';
 }
@@ -411,6 +412,7 @@ const SpectralNexus = () => {
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const [projectFiles, setProjectFiles] = useState<any[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const backendHealth = useBackendHealth();
 
   const fetchUploadedFiles = useCallback(async () => {
     try {
@@ -553,8 +555,7 @@ const SpectralNexus = () => {
     localModel: 'gemma2:2b', 
     voiceName: 'SAGE_VOCAL_SUBSTRATE', 
     voiceEnabled: true,
-    elevenLabsKey: '',
-    elevenLabsVoiceId: 'y3H6zY6KvCH2pEuQjmv8', 
+    voicePersona: 'seven',
     zoEndpoint: 'http://sage.zo.computer:3456',
     dreamMode: 'enabled'
   });
@@ -743,7 +744,7 @@ const SpectralNexus = () => {
     if (!settings.voiceEnabled || !systemPower) return;
     addLog(text, 'transcript', 'audio', 'SAGE_AI');
 
-    // --- ElevenLabs via backend proxy (key stays server-side) ---
+    // --- Local Edge TTS via backend proxy ---
     try {
       setIsSpeaking(true);
       const response = await fetch('/api/tts', {
@@ -751,8 +752,7 @@ const SpectralNexus = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text,
-          voice_id: settings.elevenLabsVoiceId || 'y3H6zY6KvCH2pEuQjmv8',
-          api_key: settings.elevenLabsKey || undefined
+          persona: settings.voicePersona || 'seven'
         })
       });
 
@@ -793,7 +793,7 @@ const SpectralNexus = () => {
     } else {
       addLog('Local TTS hardware missing.', 'warn', 'audio');
     }
-  }, [settings.voiceEnabled, settings.elevenLabsKey, settings.elevenLabsVoiceId, systemPower, addLog]);
+  }, [settings.voiceEnabled, settings.voicePersona, systemPower, addLog]);
 
   const calibrateSensors = useCallback(() => {
     setBaselineSensors({
@@ -1353,7 +1353,13 @@ const SpectralNexus = () => {
     setIsSyncing(true);
     addLog('Initiating cloud neural sync...', 'info', 'system');
     try {
-      const response = await fetch('/api/memory_sync', { method: 'POST' });
+      const response = await fetchWithRetry('/api/memory_sync', { method: 'POST' });
+      if (!response) {
+        addLog('Sync failed: backend unreachable after retries', 'error', 'system');
+        speakText('Sync friction detected.');
+        setIsSyncing(false);
+        return;
+      }
       const data = await response.json();
       if (data.status === 'synced') {
         addLog(`Sync successful. Total: ${data.total_memories} | New: ${data.new_memories}`, 'success', 'system');
@@ -1999,6 +2005,12 @@ You communicate with directness and warmth. When cortisol is elevated, ground yo
 
   return (
     <div className={`flex flex-col h-screen bg-[#050505] text-amber-500 font-sans overflow-hidden ${!systemPower ? 'grayscale contrast-200 brightness-50' : ''} ${isSpeaking ? 'animate-amber-pulse' : ''}`}>
+      {!backendHealth.online && (
+        <div className="flex items-center justify-center gap-2 px-4 py-1.5 bg-red-950/80 border-b border-red-500/30 text-red-400 text-[11px] font-mono z-50">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span>BACKEND OFFLINE — retrying{backendHealth.retries > 0 ? ` (${backendHealth.retries})` : ''}</span>
+        </div>
+      )}
       <header className="flex items-center justify-between px-4 py-3 bg-black/80 border-b border-white/10 backdrop-blur-xl z-50">
         <div className="flex items-center gap-2">
           <Target size={16} className="text-amber-500 animate-pulse" />
@@ -2032,6 +2044,7 @@ You communicate with directness and warmth. When cortisol is elevated, ground yo
                 {settings.connectivity === 'wifi' ? <Wifi size={12}/> : <Database size={12}/>}
               </div>
               <span className="text-[9px] font-mono text-white/40">{settings.connectivity.toUpperCase()}</span>
+              <span className={`w-1.5 h-1.5 rounded-full ml-1 ${backendHealth.online ? 'bg-green-400' : 'bg-red-500 animate-pulse'}`} title={backendHealth.online ? 'Backend online' : 'Backend offline'} />
            </div>
            <button onClick={() => setSystemPower(!systemPower)} className={`px-4 py-2 rounded-xl font-black uppercase text-[11px] tracking-widest transition-all ${systemPower ? 'bg-red-500/10 text-red-500 border border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'bg-amber-500 text-black shadow-[0_0_20px_#4df2f2]'}`}>
              {systemPower ? 'SHUTDOWN' : 'ENERGIZE'}
@@ -2785,34 +2798,26 @@ You communicate with directness and warmth. When cortisol is elevated, ground yo
             <ConfigSection title="Vocal Substrate" icon={Volume2}>
               <div className="bg-black/60 border border-white/10 rounded-[2.5rem] p-6 space-y-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-black text-amber-500/60 uppercase">ElevenLabs Voice API</span>
-                  <div className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${settings.elevenLabsKey ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-                    {settings.elevenLabsKey ? 'LINKED' : 'UNLINKED'}
+                  <span className="text-[11px] font-black text-amber-500/60 uppercase">Local Edge TTS</span>
+                  <div className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase bg-green-500/10 text-green-400">
+                    ACTIVE
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black text-white/30 uppercase tracking-widest">API Key</label>
-                    <div className="flex gap-2">
-                      <input 
-                        type="password"
-                        value={settings.elevenLabsKey} 
-                        onChange={e => setSettings(s => ({...s, elevenLabsKey: e.target.value}))} 
-                        className="flex-1 bg-black/80 border border-white/10 rounded-xl p-3 text-[12px] font-mono text-amber-500/80 outline-none"
-                        placeholder="sk_..."
-                      />
-                      <button className="p-3 bg-white/5 rounded-xl text-amber-500"><Key size={16}/></button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[9px] font-black text-white/30 uppercase tracking-widest">Voice ID (Sage Default)</label>
-                    <input 
-                      value={settings.elevenLabsVoiceId} 
-                      onChange={e => setSettings(s => ({...s, elevenLabsVoiceId: e.target.value}))} 
+                    <label className="text-[9px] font-black text-white/30 uppercase tracking-widest">Persona</label>
+                    <select
+                      value={settings.voicePersona}
+                      onChange={e => setSettings(s => ({...s, voicePersona: e.target.value}))}
                       className="w-full bg-black/80 border border-white/10 rounded-xl p-3 text-[12px] font-mono text-amber-500/80 outline-none"
-                      placeholder="y3H6zY6KvCH2pEuQjmv8"
-
-                    />
+                    >
+                      <option value="seven">Seven (SAGE-7)</option>
+                      <option value="mama">Mama (ADHD-Sage)</option>
+                      <option value="spiral">Spiral (Orchestrator)</option>
+                    </select>
+                  </div>
+                  <div className="text-[9px] font-mono text-white/30 uppercase tracking-widest">
+                    No API key required — voices synthesized locally.
                   </div>
                 </div>
               </div>

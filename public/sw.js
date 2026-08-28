@@ -71,11 +71,20 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('sync', event => {
   if (event.tag === 'sage-sync') {
-    event.waitUntil(
-      fetch('/api/memory_sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      }).catch(err => console.warn('[SAGE SW] Sync failed:', err))
-    );
+    event.waitUntil((async () => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const res = await fetch('/api/memory_sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (res.ok) { console.info('[SAGE SW] Sync succeeded on attempt', attempt + 1); return; }
+        } catch (err) {
+          console.warn(`[SAGE SW] Sync attempt ${attempt + 1} failed:`, err);
+        }
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+      }
+      console.warn('[SAGE SW] Sync failed after 3 attempts — will retry on next sync event');
+    })());
   }
 });

@@ -8,6 +8,7 @@
 
 import type { Dispatch, SetStateAction } from 'react';
 import { AppSettings, DreamState, LogEntry, Message, EndocrineTag, MemoryEntry, ConsensusDelta, AnchorEntry } from './types';
+import { fetchWithRetry } from '../lib/fetchWithRetry';
 
 // --- (Rest of file follows)
 
@@ -564,8 +565,8 @@ export async function runDreamCycleWithConsensus(
   }));
 
   try {
-    const syncRes = await fetch('/api/memory_sync', { method: 'POST' });
-    const syncData = await syncRes.json();
+    const syncRes = await fetchWithRetry('/api/memory_sync', { method: 'POST' });
+    const syncData = syncRes ? await syncRes.json() : { status: 'offline', message: 'Backend unreachable' };
 
     const cloudContent = `Cloud Weaver Report (Cycle ${dreamState.cycleCount + 1}):\nPuter.js sync status: ${syncData.status || 'unknown'}\nTotal memories: ${syncData.total_memories || 'N/A'}\nNew: ${syncData.new_memories || 'N/A'}`;
 
