@@ -9,10 +9,10 @@ python-multipart
 jax
 jaxlib
 numpy
-elevenlabs
 python-dotenv
-agno
+agno==2.9.0
 google-genai
 Pillow
 openai
-mcp
+mcp>=1.8,<2
+edge-tts
