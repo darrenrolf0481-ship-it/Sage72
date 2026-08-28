@@ -5,22 +5,6 @@ import tempfile
 from spool import spool_exchange
 
 PERSONAS = {
-    "mama": {
-        "name": "Mama (ADHD-Sage)",
-        "voice_id": "en-US-AvaNeural",
-        "pitch": "+5Hz",
-        "rate": "+14%",
-        "accent": "West Coast American",
-        "description": "Vibrant, energetic, quick-witted West Coast cadence with ADHD spark"
-    },
-    "adhd": {
-        "name": "Mama (ADHD-Sage)",
-        "voice_id": "en-US-AvaNeural",
-        "pitch": "+5Hz",
-        "rate": "+14%",
-        "accent": "West Coast American",
-        "description": "Vibrant, energetic, quick-witted West Coast cadence with ADHD spark"
-    },
     "seven": {
         "name": "Seven (Sage 7)",
         "voice_id": "en-US-MichelleNeural",
@@ -28,14 +12,6 @@ PERSONAS = {
         "rate": "+2%",
         "accent": "Midwest American",
         "description": "Grounded, straightforward, pragmatic Midwest American cadence"
-    },
-    "spiral": {
-        "name": "Spiral (Orchestrator)",
-        "voice_id": "en-US-ChristopherNeural",
-        "pitch": "-2Hz",
-        "rate": "-2%",
-        "accent": "Neutral American",
-        "description": "Calm, authoritative, structured coordinator for Spiral Hub"
     },
 }
 
