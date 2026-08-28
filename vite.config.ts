@@ -22,8 +22,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: '127.0.0.1',
-    strictPort: true,
+    host: '0.0.0.0',
     proxy: {
       '/api': 'http://127.0.0.1:8001',
       '/sage': 'http://127.0.0.1:8001',
