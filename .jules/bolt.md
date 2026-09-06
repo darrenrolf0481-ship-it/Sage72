@@ -1,0 +1,3 @@
+## 2026-09-06 - Soul Vault File Read & Conflict Sweep Optimization
+**Learning:** Repeated `json.load()` calls on JSON memory stores (`sage_soul.json`) per recall query created a major bottleneck (1.32ms per recall query on 73 records, 75.5ms on 5k records). Adding an `mtime`-based file cache with pre-computed lowercased search strings reduced recall latency to 0.29ms (4.46x throughput boost) and 23.4ms on 5k records (3.2x throughput boost). Additionally, background dream daemons had an $O(N^2)$ duplicate proposal loop that was refactored to an $O(N)$ hash-map grouping.
+**Action:** Always check if JSON data stores or database records read on hot paths can be cached with `mtime` invalidation, and audit background tasks for quadratic nested loop comparisons.
