@@ -289,17 +289,23 @@ class FastAPIBackgroundDaemon:
                 
                 cursor.execute("INSERT INTO virtual_fts_index (atom_id, content) VALUES (?, ?)", (atom_id, content))
                 
-        # Conflict sweep & duplicate proposals
+        # Conflict sweep & duplicate proposals (O(N) hash map grouping)
         cursor.execute("SELECT id, content FROM episodic_atoms_l1 WHERE valid_time_end >= ?", (now,))
         atoms = cursor.fetchall()
-        for i, a1 in enumerate(atoms):
-            for a2 in atoms[i+1:]:
-                if a1['content'].lower() == a2['content'].lower():
-                    proposal_id = calculate_blake3_hash(a1['id'], a2['id'])
-                    cursor.execute("""
-                        INSERT OR IGNORE INTO same_as_proposals (id, source_id, target_id, status, created_at)
-                        VALUES (?, ?, ?, 'pending', ?)
-                    """, (proposal_id, a1['id'], a2['id'], now))
+        content_groups: Dict[str, List[str]] = {}
+        for a in atoms:
+            content_key = a['content'].lower()
+            content_groups.setdefault(content_key, []).append(a['id'])
+
+        for atom_ids in content_groups.values():
+            if len(atom_ids) > 1:
+                for i, id1 in enumerate(atom_ids):
+                    for id2 in atom_ids[i+1:]:
+                        proposal_id = calculate_blake3_hash(id1, id2)
+                        cursor.execute("""
+                            INSERT OR IGNORE INTO same_as_proposals (id, source_id, target_id, status, created_at)
+                            VALUES (?, ?, ?, 'pending', ?)
+                        """, (proposal_id, id1, id2, now))
         
         # Ebbinghaus decay loop
         cursor.execute("SELECT id, importance, created_at, last_accessed_at, access_count, content FROM episodic_atoms_l1")

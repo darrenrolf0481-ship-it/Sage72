@@ -103,46 +103,75 @@ def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> L
         print(f"[MEMORY_MESH] Associative recall error: {e}")
         return []
 
+_SOUL_CACHE: Dict[str, Tuple[float, List[Dict[str, Any]], List[Tuple[str, List[str], float, Dict[str, Any]]]]] = {}
+
+def _get_soul_data(soul_path: Path) -> Tuple[List[Dict[str, Any]], List[Tuple[str, List[str], float, Dict[str, Any]]]]:
+    """
+    Load soul_data from disk with mtime caching and pre-processed search index.
+    Returns (raw_memories, indexed_memories).
+    indexed_memories is a list of tuples: (searchable_lower, tags_lower, salience, memory_dict)
+    """
+    if not soul_path.exists():
+        return [], []
+
+    try:
+        mtime = os.path.getmtime(soul_path)
+        path_str = str(soul_path)
+        if path_str in _SOUL_CACHE:
+            cached_mtime, raw_memories, indexed_memories = _SOUL_CACHE[path_str]
+            if cached_mtime == mtime:
+                return raw_memories, indexed_memories
+
+        with open(soul_path, "r", encoding="utf-8") as f:
+            soul_data = json.load(f)
+
+        raw_memories = soul_data.get("memory_index", [])
+        indexed_memories = []
+        for m in raw_memories:
+            tags = m.get("tags", []) if isinstance(m.get("tags"), list) else []
+            tags_lower = [str(tag).lower() for tag in tags]
+            searchable = " ".join([
+                str(m.get("id", "")),
+                str(m.get("summary", "")),
+                str(m.get("type", "")),
+                " ".join(tags_lower),
+                str(m.get("full_content", ""))[:1200]
+            ]).lower()
+            salience = float(m.get("salience", 0.5))
+            indexed_memories.append((searchable, tags_lower, salience, m))
+
+        _SOUL_CACHE[path_str] = (mtime, raw_memories, indexed_memories)
+        return raw_memories, indexed_memories
+    except Exception as e:
+        print(f"[MEMORY_MESH] Soul cache load error: {e}")
+        return [], []
+
 def recall_soul_memories(query: str, limit: int = 4, associative_bonus_tokens: Optional[Set[str]] = None) -> List[Dict[str, Any]]:
     """
     Search sage_soul.json's memory_index with deep semantic scoring & associative weighting.
+    Uses cached JSON mtime parsing and pre-lowercased search fields for high performance.
     """
-    if not SOUL_PATH.exists():
+    raw_memories, indexed_memories = _get_soul_data(SOUL_PATH)
+    if not indexed_memories:
         return []
+
     try:
-        with open(SOUL_PATH, "r", encoding="utf-8") as f:
-            soul_data = json.load(f)
-
-        memories = soul_data.get("memory_index", [])
-        if not memories:
-            return []
-
         keywords = set(_extract_keywords(query))
         if associative_bonus_tokens:
             keywords.update(associative_bonus_tokens)
 
         if not keywords:
-            return sorted(memories, key=lambda m: m.get("salience", 0.5), reverse=True)[:limit]
+            return sorted(raw_memories, key=lambda m: m.get("salience", 0.5), reverse=True)[:limit]
 
         scored = []
-        for m in memories:
+        for searchable, tags_lower, salience, m in indexed_memories:
             score = 0.0
-            tags = m.get("tags", []) if isinstance(m.get("tags"), list) else []
-            searchable = " ".join([
-                str(m.get("id", "")),
-                str(m.get("summary", "")),
-                str(m.get("type", "")),
-                " ".join(tags),
-                str(m.get("full_content", ""))[:1200]
-            ]).lower()
-
             for kw in keywords:
                 if kw in searchable:
                     score += 1.0
-                if any(kw in str(tag).lower() for tag in tags):
+                if any(kw in tag for tag in tags_lower):
                     score += 1.5
 
-            salience = float(m.get("salience", 0.5))
             score *= (1.0 + salience * 1.5)
 
             if score > 0.5:
