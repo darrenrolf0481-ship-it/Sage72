@@ -44,11 +44,13 @@ STOP_WORDS = {
     "give", "day", "most", "us", "is", "are", "was", "were", "been", "being"
 }
 
+_KEYWORD_REGEX = re.compile(r"[a-zA-Z0-9_\-\.]{3,}")
+
 def _extract_keywords(text: str) -> List[str]:
-    """Extract meaningful alpha-numeric tokens from a query string."""
+    """Extract meaningful alpha-numeric tokens from a query string using precompiled regex."""
     if not text:
         return []
-    words = re.findall(r"[a-zA-Z0-9_\-\.]{3,}", text.lower())
+    words = _KEYWORD_REGEX.findall(text.lower())
     return [w for w in words if w not in STOP_WORDS]
 
 def _content_hash(content: str) -> str:
@@ -65,6 +67,7 @@ def _memory_entry_hash(memory: Dict[str, Any]) -> str:
 def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> List[Dict[str, Any]]:
     """
     Perform a multi-hop walk on the Hebbian graph to surface associative clusters.
+    Optimized: pre-lowercased node tuples, O(1) set concept lookups, early termination on limit reach.
     """
     if not get_associative_memory:
         return []
@@ -74,31 +77,43 @@ def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> L
             return []
 
         keywords = _extract_keywords(query)
+        if not keywords:
+            return []
+
         matches = []
         visited_roots = set()
 
+        # Bolt Optimization: Pre-lowercase graph nodes once to avoid repeated .lower() allocations in inner loops
+        graph_nodes = [(node, node.lower()) for node in mem.graph.keys()]
+
         for kw in keywords:
-            for node in mem.graph.keys():
-                if kw in node.lower() or node.lower() in kw:
-                    if node not in visited_roots:
-                        visited_roots.add(node)
-                        hop1 = mem.recall(node, limit=4)
-                        links = [{"concept": target, "weight": round(w, 3)} for target, w in hop1]
-                        
-                        extended = []
-                        if depth >= 2:
-                            for target, _ in hop1[:2]:
-                                hop2 = mem.recall(target, limit=2)
-                                for t2, w2 in hop2:
-                                    if t2 != node and t2 not in [l["concept"] for l in links]:
-                                        extended.append({"concept": f"{target} -> {t2}", "weight": round(w2 * 0.8, 3)})
+            for node, node_lower in graph_nodes:
+                if node in visited_roots:
+                    continue
+                if kw in node_lower or node_lower in kw:
+                    visited_roots.add(node)
+                    hop1 = mem.recall(node, limit=4)
+                    links = [{"concept": target, "weight": round(w, 3)} for target, w in hop1]
 
-                        matches.append({
-                            "root": node,
-                            "links": links + extended
-                        })
+                    extended = []
+                    if depth >= 2:
+                        # Bolt Optimization: O(1) set lookup instead of repeated list comprehension
+                        link_concepts = {l["concept"] for l in links}
+                        for target, _ in hop1[:2]:
+                            hop2 = mem.recall(target, limit=2)
+                            for t2, w2 in hop2:
+                                if t2 != node and t2 not in link_concepts:
+                                    extended.append({"concept": f"{target} -> {t2}", "weight": round(w2 * 0.8, 3)})
 
-        return matches[:limit]
+                    matches.append({
+                        "root": node,
+                        "links": links + extended
+                    })
+                    # Bolt Optimization: Early return when requested match limit is reached
+                    if len(matches) >= limit:
+                        return matches
+
+        return matches
     except Exception as e:
         print(f"[MEMORY_MESH] Associative recall error: {e}")
         return []
@@ -150,6 +165,7 @@ def recall_soul_memories(query: str, limit: int = 4, associative_bonus_tokens: O
     """
     Search sage_soul.json's memory_index with deep semantic scoring & associative weighting.
     Uses cached JSON mtime parsing and pre-lowercased search fields for high performance.
+    Optimized: explicit tag search loop avoiding generator creation overhead.
     """
     raw_memories, indexed_memories = _get_soul_data(SOUL_PATH)
     if not indexed_memories:
@@ -169,8 +185,11 @@ def recall_soul_memories(query: str, limit: int = 4, associative_bonus_tokens: O
             for kw in keywords:
                 if kw in searchable:
                     score += 1.0
-                if any(kw in tag for tag in tags_lower):
-                    score += 1.5
+                # Bolt Optimization: Replace generator any(...) with explicit short-circuiting loop
+                for tag in tags_lower:
+                    if kw in tag:
+                        score += 1.5
+                        break
 
             score *= (1.0 + salience * 1.5)
 
