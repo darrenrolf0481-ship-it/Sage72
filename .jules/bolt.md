@@ -1,3 +1,7 @@
 ## 2026-09-06 - Soul Vault File Read & Conflict Sweep Optimization
 **Learning:** Repeated `json.load()` calls on JSON memory stores (`sage_soul.json`) per recall query created a major bottleneck (1.32ms per recall query on 73 records, 75.5ms on 5k records). Adding an `mtime`-based file cache with pre-computed lowercased search strings reduced recall latency to 0.29ms (4.46x throughput boost) and 23.4ms on 5k records (3.2x throughput boost). Additionally, background dream daemons had an $O(N^2)$ duplicate proposal loop that was refactored to an $O(N)$ hash-map grouping.
 **Action:** Always check if JSON data stores or database records read on hot paths can be cached with `mtime` invalidation, and audit background tasks for quadratic nested loop comparisons.
+
+## 2026-09-08 - Memory Mesh Graph Recall & Token Extraction Optimization
+**Learning:** `recall_associative_pathways` in `sage_core/memory_mesh.py` performed thousands of dynamic `.lower()` string allocations per query turn, used $O(N)$ list comprehensions inside nested loops for link checking, and scanned all nodes even after reaching the match `limit`. Pre-lowercased node tuples, $O(1)$ set concept lookups, early limit exit, and pre-compiled regex lowered prompt synthesis latency from 7.35ms to 2.87ms (2.56x throughput boost).
+**Action:** When traversing graph structures in memory recall hot paths, pre-lowercase nodes, convert inner collections to sets, and break as soon as the match limit is satisfied.
