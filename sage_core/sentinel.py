@@ -77,10 +77,18 @@ class AssociativeMemory:
         self.learning_rate_base = 0.05
         self.salience_floor_base = 0.02
         self._dirty = False
+        self._lowercased_nodes: Optional[List[Tuple[str, str]]] = None
         self.load()
+
+    def get_lowercased_nodes(self) -> List[Tuple[str, str]]:
+        """Return cached list of (node, node.lower()) pairs for fast substring matching."""
+        if self._lowercased_nodes is None:
+            self._lowercased_nodes = [(node, node.lower()) for node in self.graph.keys()]
+        return self._lowercased_nodes
 
     def load(self):
         """Loads graph from persistence file if present."""
+        self._lowercased_nodes = None
         if not self.persistence_path or not os.path.exists(self.persistence_path):
             return
         try:
@@ -122,6 +130,7 @@ class AssociativeMemory:
                     self.graph = graph
                     self.synapse_count = synapse_count
                     self._dirty = False
+                    self._lowercased_nodes = None
                 finally:
                     self._release_lock(lock_file)
         except Exception as e:
@@ -176,6 +185,9 @@ class AssociativeMemory:
             return {}
 
         # Create nodes if missing
+        if concept_a not in self.graph or concept_b not in self.graph:
+            self._lowercased_nodes = None
+
         if concept_a not in self.graph:
             self.graph[concept_a] = {}
         if concept_b not in self.graph:
@@ -244,6 +256,7 @@ class AssociativeMemory:
         after_edges = sum(len(edges) for edges in self.graph.values())
         if changed:
             self._dirty = True
+            self._lowercased_nodes = None
         self.save(merge=False)
 
         return {
