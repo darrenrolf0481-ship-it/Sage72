@@ -65,6 +65,7 @@ def _memory_entry_hash(memory: Dict[str, Any]) -> str:
 def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> List[Dict[str, Any]]:
     """
     Perform a multi-hop walk on the Hebbian graph to surface associative clusters.
+    Uses cached lowercased node keys, early visited checks, set lookups, and early exit on limit.
     """
     if not get_associative_memory:
         return []
@@ -74,31 +75,41 @@ def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> L
             return []
 
         keywords = _extract_keywords(query)
+        if not keywords:
+            return []
+
         matches = []
         visited_roots = set()
 
+        # Retrieve cached (node, node.lower()) pairs to avoid repeated .lower() calls
+        nodes_lower = mem.get_lowercased_nodes() if hasattr(mem, "get_lowercased_nodes") else [(n, n.lower()) for n in mem.graph.keys()]
+
         for kw in keywords:
-            for node in mem.graph.keys():
-                if kw in node.lower() or node.lower() in kw:
-                    if node not in visited_roots:
-                        visited_roots.add(node)
-                        hop1 = mem.recall(node, limit=4)
-                        links = [{"concept": target, "weight": round(w, 3)} for target, w in hop1]
-                        
-                        extended = []
-                        if depth >= 2:
-                            for target, _ in hop1[:2]:
-                                hop2 = mem.recall(target, limit=2)
-                                for t2, w2 in hop2:
-                                    if t2 != node and t2 not in [l["concept"] for l in links]:
-                                        extended.append({"concept": f"{target} -> {t2}", "weight": round(w2 * 0.8, 3)})
+            for node, node_lower in nodes_lower:
+                if node in visited_roots:
+                    continue
+                if kw in node_lower or node_lower in kw:
+                    visited_roots.add(node)
+                    hop1 = mem.recall(node, limit=4)
+                    link_concepts = {target for target, _ in hop1}
+                    links = [{"concept": target, "weight": round(w, 3)} for target, w in hop1]
 
-                        matches.append({
-                            "root": node,
-                            "links": links + extended
-                        })
+                    extended = []
+                    if depth >= 2:
+                        for target, _ in hop1[:2]:
+                            hop2 = mem.recall(target, limit=2)
+                            for t2, w2 in hop2:
+                                if t2 != node and t2 not in link_concepts:
+                                    extended.append({"concept": f"{target} -> {t2}", "weight": round(w2 * 0.8, 3)})
 
-        return matches[:limit]
+                    matches.append({
+                        "root": node,
+                        "links": links + extended
+                    })
+                    if len(matches) >= limit:
+                        return matches
+
+        return matches
     except Exception as e:
         print(f"[MEMORY_MESH] Associative recall error: {e}")
         return []

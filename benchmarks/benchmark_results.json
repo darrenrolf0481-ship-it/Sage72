@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-06T05:14:30Z",
+  "timestamp": "2026-09-09T05:19:30Z",
   "environment": {
     "python_version": "3.12.13",
     "platform": "linux"
@@ -12,44 +12,44 @@
       "graph_json_size_kb": 37.8,
       "wiring": {
         "operations": 10000,
-        "total_time_s": 0.044,
-        "throughput_ops_sec": 227347.67,
+        "total_time_s": 0.0514,
+        "throughput_ops_sec": 194561.22,
         "latency_ms": {
-          "min": 0.0018,
-          "mean": 0.003,
-          "p50": 0.0028,
-          "p95": 0.0031,
-          "p99": 0.0074,
-          "max": 1.0881
+          "min": 0.0019,
+          "mean": 0.0036,
+          "p50": 0.0029,
+          "p95": 0.0043,
+          "p99": 0.0095,
+          "max": 1.593
         }
       },
       "recall_depth_1": {
         "queries": 2000,
         "latency_ms": {
           "min": 0.0014,
-          "mean": 0.0017,
+          "mean": 0.0018,
           "p50": 0.0016,
-          "p95": 0.0017,
-          "p99": 0.0036,
-          "max": 0.0437
+          "p95": 0.0019,
+          "p99": 0.0031,
+          "max": 0.1187
         },
-        "throughput_qps": 587023.26
+        "throughput_qps": 557871.65
       },
       "multi_hop_recall_depth_2": {
         "queries": 1000,
         "latency_ms": {
           "min": 0.0031,
-          "mean": 0.0055,
-          "p50": 0.0052,
-          "p95": 0.0055,
-          "p99": 0.0123,
-          "max": 0.0529
+          "mean": 0.0062,
+          "p50": 0.0053,
+          "p95": 0.0069,
+          "p99": 0.0421,
+          "max": 0.2173
         },
-        "throughput_qps": 183041.43
+        "throughput_qps": 162018.12
       },
       "persistence": {
-        "dirty_save_ms": 5.0257,
-        "clean_noop_save_ms": 0.0013
+        "dirty_save_ms": 5.1166,
+        "clean_noop_save_ms": 0.0016
       }
     },
     "soul_vault_retrieval": {
@@ -58,36 +58,36 @@
       "standard_vault_recall": {
         "queries_evaluated": 400,
         "latency_ms": {
-          "min": 0.1167,
-          "mean": 0.2971,
-          "p50": 0.2929,
-          "p95": 0.3997,
-          "p99": 0.4477,
-          "max": 1.384
+          "min": 0.1187,
+          "mean": 0.3471,
+          "p50": 0.3421,
+          "p95": 0.5522,
+          "p99": 0.7848,
+          "max": 1.4353
         },
-        "throughput_qps": 3365.53,
+        "throughput_qps": 2881.43,
         "avg_results_returned": 3.62
       },
       "scaled_5k_vault_recall": {
         "queries_evaluated": 160,
         "latency_ms": {
-          "min": 8.4347,
-          "mean": 23.4143,
-          "p50": 22.6412,
-          "p95": 29.6023,
-          "p99": 31.2155,
-          "max": 110.2
+          "min": 9.1714,
+          "mean": 25.2621,
+          "p50": 24.2499,
+          "p95": 31.6552,
+          "p99": 47.0334,
+          "max": 92.1092
         },
-        "throughput_qps": 42.71
+        "throughput_qps": 39.59
       }
     },
     "deduplication_and_ingest": {
       "hashing_throughput": {
         "payload_count": 5000,
         "total_data_mb": 2.14,
-        "total_time_s": 0.0141,
-        "throughput_mb_s": 152.31,
-        "hashes_per_second": 355785.99
+        "total_time_s": 0.0183,
+        "throughput_mb_s": 117.07,
+        "hashes_per_second": 273469.22
       },
       "deduplication_stress_test": {
         "total_events_processed": 500,
@@ -95,12 +95,12 @@
         "actual_records_stored": 100,
         "deduplication_perfect": true,
         "consolidation_latency_ms": {
-          "min": 0.8913,
-          "mean": 1.3551,
-          "p50": 1.1117,
-          "p95": 3.1747,
-          "p99": 3.5809,
-          "max": 4.2215
+          "min": 0.9759,
+          "mean": 3.5879,
+          "p50": 2.0903,
+          "p95": 9.87,
+          "p99": 27.4839,
+          "max": 34.3533
         }
       }
     },
@@ -109,36 +109,36 @@
       "cycles": [
         {
           "cycle": 1,
-          "duration_ms": 130.8886,
+          "duration_ms": 143.4792,
           "total_synapses": 30685,
           "std_memories_surviving": 0,
           "flashbulb_memories_surviving": 100
         },
         {
           "cycle": 2,
-          "duration_ms": 137.3922,
+          "duration_ms": 156.7312,
           "total_synapses": 30473,
           "std_memories_surviving": 0,
           "flashbulb_memories_surviving": 100
         },
         {
           "cycle": 3,
-          "duration_ms": 128.4906,
+          "duration_ms": 139.7582,
           "total_synapses": 30216,
           "std_memories_surviving": 0,
           "flashbulb_memories_surviving": 100
         },
         {
           "cycle": 4,
-          "duration_ms": 126.7849,
-          "total_synapses": 30018,
+          "duration_ms": 142.829,
+          "total_synapses": 30038,
           "std_memories_surviving": 0,
           "flashbulb_memories_surviving": 100
         },
         {
           "cycle": 5,
-          "duration_ms": 117.3813,
-          "total_synapses": 26907,
+          "duration_ms": 135.188,
+          "total_synapses": 26927,
           "std_memories_surviving": 0,
           "flashbulb_memories_surviving": 100
         }
@@ -149,18 +149,18 @@
     "context_prompt_synthesis": {
       "queries_executed": 400,
       "latency_ms": {
-        "min": 3.2829,
-        "mean": 6.3878,
-        "p50": 6.2986,
-        "p95": 7.7916,
-        "p99": 8.3785,
-        "max": 26.6952
+        "min": 2.0206,
+        "mean": 3.2955,
+        "p50": 3.2204,
+        "p95": 4.6838,
+        "p99": 5.5321,
+        "max": 29.1077
       },
-      "throughput_qps": 156.55,
+      "throughput_qps": 303.44,
       "estimated_tokens": {
-        "min": 546,
-        "mean": 729.1,
-        "max": 832
+        "min": 540,
+        "mean": 680.4,
+        "max": 821
       },
       "section_fidelity": {
         "associative": "100.0%",
@@ -172,20 +172,20 @@
     "sentinel_observer_phi": {
       "total_cycles": 10000,
       "phi_computation_latency_ms": {
-        "min": 0.0019,
-        "mean": 0.0022,
+        "min": 0.0018,
+        "mean": 0.0023,
         "p50": 0.002,
-        "p95": 0.0022,
-        "p99": 0.0055,
-        "max": 0.0628
+        "p95": 0.0025,
+        "p99": 0.0065,
+        "max": 0.195
       },
       "fracture_check_latency_ms": {
-        "min": 0.011,
-        "mean": 0.0124,
-        "p50": 0.0115,
-        "p95": 0.0147,
-        "p99": 0.0431,
-        "max": 0.0783
+        "min": 0.0109,
+        "mean": 0.0134,
+        "p50": 0.0117,
+        "p95": 0.0172,
+        "p99": 0.0532,
+        "max": 0.3248
       },
       "state_fracture_rates": {
         "INACTIVE": "35.00%",
