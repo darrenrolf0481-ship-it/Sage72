@@ -65,6 +65,7 @@ def _memory_entry_hash(memory: Dict[str, Any]) -> str:
 def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> List[Dict[str, Any]]:
     """
     Perform a multi-hop walk on the Hebbian graph to surface associative clusters.
+    Optimized with single-pass node lowercasing per call and O(1) set lookups for hop2 concept checks.
     """
     if not get_associative_memory:
         return []
@@ -77,20 +78,25 @@ def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> L
         matches = []
         visited_roots = set()
 
+        # Build (node, node.lower()) tuples once per call to avoid repeating .lower() per keyword
+        nodes = [(node, node.lower()) for node in mem.graph.keys()]
+
         for kw in keywords:
-            for node in mem.graph.keys():
-                if kw in node.lower() or node.lower() in kw:
+            for node, nl in nodes:
+                if kw in nl or nl in kw:
                     if node not in visited_roots:
                         visited_roots.add(node)
                         hop1 = mem.recall(node, limit=4)
                         links = [{"concept": target, "weight": round(w, 3)} for target, w in hop1]
-                        
+                        # O(1) set lookup instead of allocating lists repeatedly inside hop2 loop
+                        link_concepts = {l["concept"] for l in links}
+
                         extended = []
                         if depth >= 2:
                             for target, _ in hop1[:2]:
                                 hop2 = mem.recall(target, limit=2)
                                 for t2, w2 in hop2:
-                                    if t2 != node and t2 not in [l["concept"] for l in links]:
+                                    if t2 != node and t2 not in link_concepts:
                                         extended.append({"concept": f"{target} -> {t2}", "weight": round(w2 * 0.8, 3)})
 
                         matches.append({
