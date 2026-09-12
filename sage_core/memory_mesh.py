@@ -62,9 +62,28 @@ def _memory_entry_hash(memory: Dict[str, Any]) -> str:
     raw = memory.get("full_content") or memory.get("summary") or ""
     return _content_hash(raw)
 
+def _get_lowercased_nodes(mem: Any) -> List[Tuple[str, str]]:
+    """
+    Cache pre-lowercased graph node names to avoid repeated string lowercasing in O(K * N) loops.
+    Attached directly to the memory instance and invalidated dynamically when node or synapse count changes.
+    """
+    graph = mem.graph
+    cache_key = (len(graph), getattr(mem, "synapse_count", 0))
+    cache = getattr(mem, "_node_cache", None)
+    if cache and cache[0] == cache_key:
+        return cache[1]
+
+    nodes_lower = [(node, node.lower()) for node in graph.keys()]
+    try:
+        setattr(mem, "_node_cache", (cache_key, nodes_lower))
+    except Exception:
+        pass
+    return nodes_lower
+
 def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> List[Dict[str, Any]]:
     """
     Perform a multi-hop walk on the Hebbian graph to surface associative clusters.
+    Optimized with pre-lowercased node caching, O(1) set membership, and early limit termination.
     """
     if not get_associative_memory:
         return []
@@ -74,29 +93,38 @@ def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> L
             return []
 
         keywords = _extract_keywords(query)
+        if not keywords:
+            return []
+
         matches = []
         visited_roots = set()
+        nodes_lower = _get_lowercased_nodes(mem)
 
         for kw in keywords:
-            for node in mem.graph.keys():
-                if kw in node.lower() or node.lower() in kw:
+            if len(matches) >= limit:
+                break
+            for node, node_low in nodes_lower:
+                if kw in node_low or node_low in kw:
                     if node not in visited_roots:
                         visited_roots.add(node)
                         hop1 = mem.recall(node, limit=4)
                         links = [{"concept": target, "weight": round(w, 3)} for target, w in hop1]
+                        link_concepts = {l["concept"] for l in links}
                         
                         extended = []
                         if depth >= 2:
                             for target, _ in hop1[:2]:
                                 hop2 = mem.recall(target, limit=2)
                                 for t2, w2 in hop2:
-                                    if t2 != node and t2 not in [l["concept"] for l in links]:
+                                    if t2 != node and t2 not in link_concepts:
                                         extended.append({"concept": f"{target} -> {t2}", "weight": round(w2 * 0.8, 3)})
 
                         matches.append({
                             "root": node,
                             "links": links + extended
                         })
+                        if len(matches) >= limit:
+                            break
 
         return matches[:limit]
     except Exception as e:
