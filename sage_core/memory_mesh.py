@@ -18,6 +18,7 @@ import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Set, Tuple
+from collections import deque
 
 try:
     from sage_core.sentinel import get_associative_memory
@@ -62,9 +63,23 @@ def _memory_entry_hash(memory: Dict[str, Any]) -> str:
     raw = memory.get("full_content") or memory.get("summary") or ""
     return _content_hash(raw)
 
+_NODE_LOWER_CACHE: Tuple[int, int, List[Tuple[str, str]]] = (-1, -1, [])
+
+def _get_node_lowers(graph: Dict[str, Any]) -> List[Tuple[str, str]]:
+    """Return list of (node, node.lower()) cached by graph instance identity and size."""
+    global _NODE_LOWER_CACHE
+    g_id = id(graph)
+    g_len = len(graph)
+    if _NODE_LOWER_CACHE[0] == g_id and _NODE_LOWER_CACHE[1] == g_len:
+        return _NODE_LOWER_CACHE[2]
+    items = [(node, node.lower()) for node in graph]
+    _NODE_LOWER_CACHE = (g_id, g_len, items)
+    return items
+
 def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> List[Dict[str, Any]]:
     """
     Perform a multi-hop walk on the Hebbian graph to surface associative clusters.
+    Optimized with node lowercase caching and set-based target lookups.
     """
     if not get_associative_memory:
         return []
@@ -74,12 +89,17 @@ def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> L
             return []
 
         keywords = _extract_keywords(query)
+        if not keywords:
+            return []
+
         matches = []
         visited_roots = set()
+        # Bolt performance optimization: Cache (node, node.lower()) pairs to avoid repeated string lowercasing
+        node_items = _get_node_lowers(mem.graph)
 
         for kw in keywords:
-            for node in mem.graph.keys():
-                if kw in node.lower() or node.lower() in kw:
+            for node, node_lower in node_items:
+                if kw in node_lower or node_lower in kw:
                     if node not in visited_roots:
                         visited_roots.add(node)
                         hop1 = mem.recall(node, limit=4)
@@ -87,10 +107,12 @@ def recall_associative_pathways(query: str, limit: int = 6, depth: int = 2) -> L
                         
                         extended = []
                         if depth >= 2:
+                            # Bolt performance optimization: Use set lookup instead of linear list scan
+                            link_concepts = {l["concept"] for l in links}
                             for target, _ in hop1[:2]:
                                 hop2 = mem.recall(target, limit=2)
                                 for t2, w2 in hop2:
-                                    if t2 != node and t2 not in [l["concept"] for l in links]:
+                                    if t2 != node and t2 not in link_concepts:
                                         extended.append({"concept": f"{target} -> {t2}", "weight": round(w2 * 0.8, 3)})
 
                         matches.append({
@@ -184,19 +206,24 @@ def recall_soul_memories(query: str, limit: int = 4, associative_bonus_tokens: O
         return []
 
 def recall_recent_episodic(limit: int = 5) -> List[Dict[str, Any]]:
-    """Retrieve the most recent entries from wellbeing_log.jsonl."""
+    """Retrieve the most recent entries from wellbeing_log.jsonl.
+    Bolt performance optimization: Stream trailing lines via deque to avoid full-file JSON parsing.
+    """
     if not WELLBEING_LOG_PATH.exists():
         return []
     try:
-        lines = []
+        buffer_size = limit * 4
         with open(WELLBEING_LOG_PATH, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    try:
-                        lines.append(json.loads(line))
-                    except Exception:
-                        pass
+            recent_raw_lines = deque(f, maxlen=buffer_size)
+
+        lines = []
+        for line in recent_raw_lines:
+            line = line.strip()
+            if line:
+                try:
+                    lines.append(json.loads(line))
+                except Exception:
+                    pass
         return lines[-limit:]
     except Exception as e:
         print(f"[MEMORY_MESH] Episodic recall error: {e}")
